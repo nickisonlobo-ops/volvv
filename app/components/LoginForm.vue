@@ -146,6 +146,8 @@ import { useAuth } from '~/composables/useAuth'
 
 defineOptions({ name: 'LoginForm' })
 
+const props = withDefaults(defineProps<{ initialTab?: 'login' | 'register' }>(), { initialTab: 'login' })
+
 const router = useRouter()
 const { login: authLogin, register: authRegister, loading: authLoading, error: authError } = useAuth()
 
@@ -154,7 +156,7 @@ const tabs: { key: 'login' | 'register'; label: string }[] = [
   { key: 'register', label: 'Criar conta' },
 ]
 
-const activeTab = ref<'login' | 'register'>('login')
+const activeTab = ref<'login' | 'register'>(props.initialTab)
 const showPassword = ref(false)
 const showRegisterPassword = ref(false)
 
