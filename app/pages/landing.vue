@@ -22,8 +22,8 @@
 
         <!-- Desktop actions -->
         <div class="nav-actions">
-          <NuxtLink to="/login" class="nav-btn-ghost">Entrar</NuxtLink>
-          <NuxtLink to="/login" class="nav-btn-primary">Experimentar grátis</NuxtLink>
+          
+          <a href="https://wa.me/5511940527609" target="_blank" rel="noopener noreferrer" class="nav-btn-primary">Experimentar grátis</a>
         </div>
 
         <!-- Hamburger (mobile) -->
@@ -39,8 +39,8 @@
       <div v-if="mobileOpen" class="nav-mobile">
         <a v-for="link in navLinks" :key="link.href" :href="link.href" class="nav-mobile__link" @click="mobileOpen = false">{{ link.label }}</a>
         <div class="nav-mobile__actions">
-          <NuxtLink to="/login" class="nav-btn-ghost" @click="mobileOpen = false">Entrar</NuxtLink>
-          <NuxtLink to="/login" class="nav-btn-primary" @click="mobileOpen = false">Experimentar grátis</NuxtLink>
+          <a href="https://wa.me/5511940527609" target="_blank" rel="noopener noreferrer" class="nav-btn-ghost" @click="mobileOpen = false">Entrar</a>
+          <a href="https://wa.me/5511940527609" target="_blank" rel="noopener noreferrer" class="nav-btn-primary" @click="mobileOpen = false">Experimentar grátis</a>
         </div>
       </div>
     </nav>
@@ -81,11 +81,11 @@
 
         <!-- CTAs -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
-          <NuxtLink to="/login"
+          <a href="https://wa.me/5511940527609" target="_blank" rel="noopener noreferrer"
             class="inline-flex items-center text-base font-black px-10 py-4 rounded-full text-white transition-all duration-200 hover:scale-105"
             style="background: linear-gradient(135deg, #f472b6, #c026d3); box-shadow: 0 8px 28px rgba(236,72,153,0.4);">
-            Criar minha conta grátis
-          </NuxtLink>
+            Entrar em contato
+          </a>
           <a href="#funcionalidades"
             class="inline-flex items-center gap-2 text-base font-semibold px-8 py-4 rounded-full border-2 border-pink-200 text-pink-500 bg-white hover:bg-pink-50 hover:border-pink-300 transition-all duration-200 shadow-sm">
             Ver como funciona
@@ -384,12 +384,12 @@
                 {{ item }}
               </li>
             </ul>
-            <NuxtLink to="/login"
+            <a href="https://wa.me/5511940527609" target="_blank" rel="noopener noreferrer"
               class="mt-2 w-full py-3.5 rounded-full text-sm font-black text-center transition-all duration-200 hover:scale-[1.02] block"
               :class="plan.featured ? 'text-white shadow-lg hover:shadow-pink-300/60' : 'border-2 border-pink-200 text-pink-500 hover:border-pink-400 hover:bg-pink-50'"
               :style="plan.featured ? 'background: linear-gradient(135deg, #f472b6, #c026d3)' : ''">
               {{ plan.cta }}
-            </NuxtLink>
+            </a>
           </div>
         </div>
         <p class="text-center text-xs text-rose-900/35 mt-8">Suporte via WhatsApp em todos os planos. Sem fidelidade. Cancele quando quiser.</p>
@@ -436,11 +436,11 @@
         <p class="text-rose-900/55 text-lg mb-10 max-w-md mx-auto leading-relaxed">
           E voce merece um sistema que organiza tudo sem dor de cabeca. Comece hoje, de graça.
         </p>
-        <NuxtLink to="/login"
+        <a href="https://wa.me/5511940527609" target="_blank" rel="noopener noreferrer"
           class="inline-flex items-center gap-3 text-lg font-black px-12 py-5 rounded-full text-white shadow-2xl shadow-pink-300/50 transition-all duration-200 hover:scale-105 hover:shadow-pink-400/60"
           style="background: linear-gradient(135deg, #f472b6, #c026d3)">
           Começar agora, de graça
-        </NuxtLink>
+        </a>
         <p class="text-xs text-rose-900/35 mt-5">Sem cartão de crédito. Pronto em 5 minutos. Suporte via WhatsApp.</p>
       </div>
     </section>
@@ -457,7 +457,7 @@
           <span class="text-sm font-black" style="background: linear-gradient(135deg, #ec4899, #c026d3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text">Glow Up Studio</span>
         </div>
         <p class="text-xs text-rose-900/35 text-center">2026 Glow Up Studio. Feito com amor para empreendedoras da beleza.</p>
-        <NuxtLink to="/login" class="text-xs font-semibold text-pink-400 hover:text-pink-600 transition-colors">Acessar plataforma</NuxtLink>
+        <a href="https://wa.me/5511940527609" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-pink-400 hover:text-pink-600 transition-colors">Acessar plataforma</a>
       </div>
     </footer>
 
