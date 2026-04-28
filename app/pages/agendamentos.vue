@@ -172,7 +172,7 @@
               :class="ag.status === 'solicitado' ? 'bg-amber-50/40' : ''"
             >
               <td class="px-5 py-3 font-semibold text-gray-700">
-                {{ new Date(ag.data_hora).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }) }}
+                {{ new Date(ag.data_hora).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: 'America/Sao_Paulo' }) }}
               </td>
               <td class="px-5 py-3 font-semibold text-[#ff46a2]">{{ formatHora(ag.data_hora) }}</td>
               <td class="px-5 py-3">
@@ -685,10 +685,10 @@
                 <div class="flex-1 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-3 text-center">
                   <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-1">Data</p>
                   <p class="text-base font-black text-gray-900 leading-tight">
-                    {{ new Date(confirmandoSolicitacao.data_hora.slice(0,10) + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.','') }}
+                    {{ new Date(confirmandoSolicitacao.data_hora).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', timeZone: 'America/Sao_Paulo' }).replace('.','') }}
                   </p>
                   <p class="text-[10px] text-gray-400 mt-0.5 capitalize">
-                    {{ new Date(confirmandoSolicitacao.data_hora.slice(0,10) + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long' }) }}
+                    {{ new Date(confirmandoSolicitacao.data_hora).toLocaleDateString('pt-BR', { weekday: 'long', timeZone: 'America/Sao_Paulo' }) }}
                   </p>
                 </div>
                 <div class="flex-1 bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3 text-center">
@@ -1273,7 +1273,7 @@ function formatMes(iso: string) {
 }
 
 function formatHora(iso: string) {
-  return iso.slice(11, 16)
+  return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Sao_Paulo' })
 }
 
 function statusLabel(s: string) {
