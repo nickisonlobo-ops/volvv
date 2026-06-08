@@ -393,8 +393,8 @@
                 <p class="text-[11px] text-gray-400 mt-0.5">Ativos · Inativos · Frequência · Tempo sem comprar · Valor</p>
               </div>
               <span class="hidden sm:inline-flex shrink-0 ml-1 text-[10px] font-bold px-2.5 py-1 rounded-full"
-                :class="cli.inativosMais60 > 0 ? 'bg-amber-50 text-amber-500 border-amber-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'">
-                {{ cli.inativosMais60 > 0 ? cli.inativosMais60 + ' inativos' : '✓ Base ativa' }}
+                :class="cli.inativosMais30 > 0 ? 'bg-amber-50 text-amber-500 border-amber-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'">
+                {{ cli.inativosMais30 > 0 ? cli.inativosMais30 + ' inativos' : '✓ Base ativa' }}
               </span>
             </div>
             <div class="flex items-center gap-2 ml-4 shrink-0">
@@ -461,8 +461,8 @@
           <!-- Insights + Campanhas -->
           <div class="flex flex-col gap-3">
 
-            <!-- Insight: clientes inativos +60 dias -->
-            <div v-if="cli.inativosMais60 > 0" class="rounded-xl border border-amber-200 overflow-hidden">
+            <!-- Insight: clientes inativos +30 dias -->
+            <div v-if="cli.inativosMais30 > 0" class="rounded-xl border border-amber-200 overflow-hidden">
               <div class="px-4 py-3 bg-amber-50 flex items-start gap-3">
                 <div class="mt-0.5 w-7 h-7 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -473,9 +473,10 @@
                     <span class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">Retenção</span>
                   </div>
                   <p class="text-sm font-semibold text-gray-800">
-                    {{ cli.inativosMais60 }} cliente{{ cli.inativosMais60 > 1 ? 's' : '' }} importante{{ cli.inativosMais60 > 1 ? 's' : '' }}
-                    não {{ cli.inativosMais60 > 1 ? 'compram' : 'compra' }} há mais de 60 dias.
-                    <span v-if="cli.inativosMais90 > 0"> Desses, {{ cli.inativosMais90 }} estão inativos há mais de 90 dias.</span>
+                    {{ cli.inativosMais30 }} cliente{{ cli.inativosMais30 > 1 ? 's' : '' }}
+                    não {{ cli.inativosMais30 > 1 ? 'retornam' : 'retorna' }} há mais de 30 dias.
+                    <span v-if="cli.inativosMais60 > 0" class="text-amber-600 font-bold"> {{ cli.inativosMais60 }} há +60 dias.</span>
+                    <span v-if="cli.inativosMais90 > 0" class="text-red-500 font-bold"> {{ cli.inativosMais90 }} há +90 dias.</span>
                   </p>
                 </div>
               </div>
@@ -483,9 +484,9 @@
                 <div>
                   <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">💡 Impacto Estimado</p>
                   <p class="text-sm text-gray-600 leading-relaxed">
-                    Recuperar apenas 30% desses clientes pode gerar
-                    <span class="font-bold text-emerald-600">{{ formatCurrency(cli.potencialRecuperacao * 0.3) }}</span>
-                    adicionais no próximo mês.
+                    Se {{ cli.inativosMais30 > 1 ? 'esses clientes voltarem' : 'esse cliente voltar' }} este mês, você pode gerar
+                    <span class="font-bold text-emerald-600">{{ formatCurrency(cli.potencialRecuperacao) }}</span>
+                    em receita adicional.
                   </p>
                 </div>
                 <div>
@@ -506,11 +507,93 @@
                   </ul>
                 </div>
               </div>
+
+              <!-- Lista de clientes inativos com WhatsApp -->
+              <div v-if="cli.listaInativos.length > 0" class="border-t border-gray-100">
+                <div class="px-4 py-2.5 bg-gray-50 flex items-center justify-between">
+                  <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Clientes inativos — contatar agora</p>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-semibold text-gray-400">{{ cli.listaInativos.filter((c: any) => !clientesContatados.has(c.id)).length }} pendente{{ cli.listaInativos.filter((c: any) => !clientesContatados.has(c.id)).length !== 1 ? 's' : '' }}</span>
+                    <button
+                      v-if="clientesContatados.size > 0"
+                      type="button"
+                      class="text-[10px] font-bold text-red-500 hover:text-red-700 hover:underline transition-colors"
+                      @click="limparTodosContatados"
+                    >
+                      Limpar enviados
+                    </button>
+                  </div>
+                </div>
+                <div class="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+                  <div
+                    v-for="inativo in cli.listaInativos"
+                    :key="inativo.id"
+                    class="px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors"
+                    :class="clientesContatados.has(inativo.id) ? 'opacity-60 bg-emerald-50/30' : ''"
+                  >
+                    <!-- Avatar -->
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[10px] font-black text-white" :style="{ background: clientesContatados.has(inativo.id) ? '#10b981' : 'var(--color-primary, #6366f1)' }">
+                      <svg v-if="clientesContatados.has(inativo.id)" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                      <span v-else>{{ inativo.nome.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() }}</span>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-semibold text-gray-800 truncate">
+                        {{ inativo.nome }}
+                        <span v-if="clientesContatados.has(inativo.id)" class="text-[10px] font-bold text-emerald-600 ml-1">✓ Enviado</span>
+                      </p>
+                      <p class="text-[10px] text-gray-400">
+                        Inativo há {{ inativo.diasInativo }} dias · Gasta {{ formatCurrency(inativo.ticketIndividual) }} por visita
+                      </p>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="flex items-center gap-1.5 shrink-0">
+                      <!-- Botão WhatsApp -->
+                      <button
+                        v-if="inativo.telefone && !clientesContatados.has(inativo.id)"
+                        type="button"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors"
+                        @click="enviarWhatsAppInativo(inativo)"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        Enviar
+                      </button>
+
+                      <!-- Botão marcar como enviado (sem abrir WhatsApp) -->
+                      <button
+                        v-if="inativo.telefone && !clientesContatados.has(inativo.id)"
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors border border-gray-200"
+                        title="Marcar como enviado"
+                        @click="marcarComoEnviado(inativo.id)"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                      </button>
+
+                      <!-- Botão desmarcar (já enviado) -->
+                      <button
+                        v-if="clientesContatados.has(inativo.id)"
+                        type="button"
+                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                        @click="desmarcarEnviado(inativo.id)"
+                      >
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                        Enviado
+                      </button>
+
+                      <!-- Sem telefone -->
+                      <span v-if="!inativo.telefone" class="text-[10px] text-gray-300 font-medium">Sem tel.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Insight: nenhum cliente inativo -->
-            <div v-if="cli.inativosMais60 === 0 && cli.total > 0" class="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-              <p class="text-sm font-bold text-emerald-700">✅ Ótimo! Nenhum cliente importante inativo nos últimos 60 dias.</p>
+            <div v-if="cli.inativosMais30 === 0 && cli.total > 0" class="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+              <p class="text-sm font-bold text-emerald-700">✅ Ótimo! Nenhum cliente inativo nos últimos 30 dias.</p>
             </div>
 
             <!-- Insight: base pequena -->
@@ -1386,6 +1469,22 @@ const clientes     = ref<any[]>([])
 const agendTodos   = ref<any[]>([])   // todos agendamentos (para análise de clientes)
 const produtos     = ref<any[]>([])   // produtos_casa_racao
 
+// Clientes contatados — persiste no localStorage
+const clientesContatados = ref<Set<number>>(new Set())
+
+function carregarContatados() {
+  try {
+    const saved = localStorage.getItem('consultor_clientes_contatados')
+    if (saved) clientesContatados.value = new Set(JSON.parse(saved))
+  } catch {}
+}
+
+function salvarContatados() {
+  try {
+    localStorage.setItem('consultor_clientes_contatados', JSON.stringify([...clientesContatados.value]))
+  } catch {}
+}
+
 // ── helpers ───────────────────────────────────────────────────
 function formatCurrency(v: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v ?? 0)
@@ -1433,7 +1532,7 @@ async function fetchAll() {
       .eq('empresa_id', empresaId.value),
     supabase
       .from('clientes')
-      .select('id, nome, ativo, created_at')
+      .select('id, nome, telefone, ativo, created_at')
       .eq('empresa_id', empresaId.value),
     supabase
       .from('agendamentos')
@@ -1459,7 +1558,10 @@ async function fetchAll() {
   loading.value = false
 }
 
-onMounted(fetchAll)
+onMounted(() => {
+  carregarContatados()
+  fetchAll()
+})
 
 // ── métricas financeiras ──────────────────────────────────────
 const fin = computed(() => {
@@ -1500,6 +1602,7 @@ const fin = computed(() => {
 const cli = computed(() => {
   const total  = clientes.value.length
   const hoje   = new Date(); hoje.setHours(0, 0, 0, 0)
+  const d30    = new Date(hoje); d30.setDate(d30.getDate() - 30)
   const d60    = new Date(hoje); d60.setDate(d60.getDate() - 60)
   const d90    = new Date(hoje); d90.setDate(d90.getDate() - 90)
 
@@ -1523,6 +1626,7 @@ const cli = computed(() => {
 
   // Clientes ativos nos últimos 90 dias
   let ativos90       = 0
+  let inativosMais30 = 0
   let inativosMais60 = 0
   let inativosMais90 = 0
   let totalGasto     = 0
@@ -1534,6 +1638,7 @@ const cli = computed(() => {
     clientesComHistorico++
     totalGasto += hist.total
     if (hist.data >= d90) ativos90++
+    if (hist.data < d30)  inativosMais30++
     if (hist.data < d60)  inativosMais60++
     if (hist.data < d90)  inativosMais90++
   }
@@ -1548,7 +1653,25 @@ const cli = computed(() => {
   }
   const frequenciaMedia = qtdAtivos > 0 ? somaVisitas / qtdAtivos : 0
 
-  const potencialRecuperacao = inativosMais60 * ticketMedioCliente
+  // Lista de clientes inativos +30 dias (com nome e telefone para WhatsApp)
+  const listaInativos = clientes.value
+    .filter(cliente => {
+      const hist = ultimoPorCliente.get(cliente.id)
+      return hist && hist.data < d30
+    })
+    .map(cliente => {
+      const hist = ultimoPorCliente.get(cliente.id)!
+      const diasInativo = Math.floor((hoje.getTime() - hist.data.getTime()) / (1000 * 60 * 60 * 24))
+      // Valor médio por visita deste cliente (baseado no histórico real dele)
+      const ticketIndividual = hist.visitas > 0 ? hist.total / hist.visitas : hist.total
+      return { id: cliente.id, nome: cliente.nome, telefone: (cliente as any).telefone ?? null, diasInativo, totalGasto: hist.total, ticketIndividual }
+    })
+    .sort((a, b) => b.diasInativo - a.diasInativo)
+    .slice(0, 20)
+
+  // Potencial de recuperação = soma do ticket individual de cada cliente inativo
+  // (quanto cada um gastava por visita, baseado no histórico real dele)
+  const potencialRecuperacao = listaInativos.reduce((soma, c) => soma + c.ticketIndividual, 0)
 
   // Top 5 clientes por receita total
   const topClientes = clientes.value
@@ -1560,7 +1683,7 @@ const cli = computed(() => {
     .sort((a, b) => b.total - a.total)
     .slice(0, 5)
 
-  return { total, ativos90, inativosMais60, inativosMais90, ticketMedioCliente, frequenciaMedia, potencialRecuperacao, topClientes }
+  return { total, ativos90, inativosMais30, inativosMais60, inativosMais90, ticketMedioCliente, frequenciaMedia, potencialRecuperacao, topClientes, listaInativos }
 })
 
 // ── diagnósticos financeiros ──────────────────────────────────
@@ -2126,6 +2249,33 @@ function autoResize(e: Event) {
   const el = e.target as HTMLTextAreaElement
   el.style.height = 'auto'
   el.style.height = Math.min(el.scrollHeight, 120) + 'px'
+}
+
+function enviarWhatsAppInativo(cliente: { id: number; nome: string; telefone: string | null; diasInativo: number }) {
+  if (!cliente.telefone) return
+  const numero = cliente.telefone.replace(/\D/g, '')
+  const tel = numero.length <= 11 ? '55' + numero : numero
+  const msg = encodeURIComponent(
+    `Olá ${cliente.nome.split(' ')[0]}! 😊\n\nSentimos sua falta! Faz ${cliente.diasInativo} dias que não nos visitou.\n\nPreparamos algo especial para seu retorno — entre em contato para saber mais! 💜`
+  )
+  window.open(`https://wa.me/${tel}?text=${msg}`, '_blank')
+  clientesContatados.value.add(cliente.id)
+  salvarContatados()
+}
+
+function marcarComoEnviado(clienteId: number) {
+  clientesContatados.value.add(clienteId)
+  salvarContatados()
+}
+
+function desmarcarEnviado(clienteId: number) {
+  clientesContatados.value.delete(clienteId)
+  salvarContatados()
+}
+
+function limparTodosContatados() {
+  clientesContatados.value.clear()
+  salvarContatados()
 }
 
 function usarSugestao(sugestao: string) {

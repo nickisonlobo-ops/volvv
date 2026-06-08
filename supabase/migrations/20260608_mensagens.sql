@@ -1,8 +1,8 @@
 -- Criar tabela de mensagens para comunicação com clientes
 CREATE TABLE IF NOT EXISTS mensagens (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
-  cliente_id UUID NOT NULL REFERENCES public.clientes(id) ON DELETE CASCADE,
+  empresa_id BIGINT NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
+  cliente_id BIGINT NOT NULL REFERENCES public.clientes(id) ON DELETE CASCADE,
   usuario_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   conteudo TEXT NOT NULL,
   tipo VARCHAR(20) NOT NULL DEFAULT 'entrada', -- 'entrada' ou 'saida'

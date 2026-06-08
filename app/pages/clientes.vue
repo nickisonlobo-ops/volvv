@@ -197,7 +197,7 @@
                   <button
                     type="button"
                     class="font-semibold text-gray-800 max-w-[160px] block truncate hover:text-violet-600 transition-colors cursor-pointer"
-                    @click="abrirCliente(cli.id)"
+                    @click="abrirDetalhesCliente(cli)"
                   >
                     {{ cli.nome }}
                   </button>
@@ -228,6 +228,15 @@
               </td>
               <td class="px-7 py-4 text-right sm:sticky sm:right-0 group-hover:bg-pink-50/40 transition-colors">
                 <div class="flex items-center justify-end gap-1">
+                  <button
+                    v-if="cli.telefone"
+                    type="button"
+                    class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-green-500 hover:bg-green-50 transition-colors"
+                    title="WhatsApp"
+                    @click="abrirWhatsApp(cli)"
+                  >
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  </button>
                   <button
                     v-if="isAdminOrGerente"
                     type="button"
@@ -389,6 +398,218 @@
         </div>
       </Transition>
     </Teleport>
+
+    <!-- MODAL DE DETALHES DO CLIENTE -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="modalDetalhesAberto"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          @click.self="fecharDetalhes"
+        >
+          <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- CABEÇALHO -->
+            <div class="sticky top-0 flex items-center justify-between px-6 sm:px-8 py-4 sm:py-6 border-b border-gray-100 bg-gray-50/50">
+              <div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">{{ clienteSelecionado?.nome }}</h2>
+                <p class="text-sm text-gray-500 mt-1">Detalhes do cliente</p>
+              </div>
+              <button
+                type="button"
+                class="w-8 h-8 flex items-center justify-center rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-200 transition-colors"
+                @click="fecharDetalhes"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- CONTEÚDO -->
+            <div class="px-6 sm:px-8 py-6 space-y-6">
+              <!-- INFORMAÇÕES BÁSICAS -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-gray-50 rounded-2xl p-4">
+                  <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Telefone</span>
+                  <p class="text-lg font-bold text-gray-900 mt-2">{{ clienteSelecionado?.telefone || '—' }}</p>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-4">
+                  <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Email</span>
+                  <p class="text-lg font-bold text-gray-900 mt-2 truncate">{{ clienteSelecionado?.email || '—' }}</p>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-4">
+                  <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">CPF/CNPJ</span>
+                  <p class="text-lg font-bold text-gray-900 mt-2">{{ clienteSelecionado?.cpf_cnpj || '—' }}</p>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-4 sm:col-span-2">
+                  <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Endereço</span>
+                  <p class="text-lg font-bold text-gray-900 mt-2">
+                    {{ clienteSelecionado ? formatarEndereco(clienteSelecionado) : '—' }}
+                  </p>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-4">
+                  <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Status</span>
+                  <div class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold"
+                    :class="clienteSelecionado?.ativo
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-red-100 text-red-700'"
+                  >
+                    <span class="w-2 h-2 rounded-full"
+                      :class="clienteSelecionado?.ativo ? 'bg-green-600' : 'bg-red-600'"
+                    />
+                    {{ clienteSelecionado?.ativo ? 'Ativo' : 'Inativo' }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- BOTÕES DE AÇÃO -->
+              <div class="flex gap-3 pt-4 border-t border-gray-100">
+                <button
+                  v-if="clienteSelecionado?.telefone"
+                  @click="abrirWhatsApp(clienteSelecionado!)"
+                  class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-bold hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  WhatsApp
+                </button>
+                <button
+                  v-if="isAdminOrGerente"
+                  @click="editCliente(clienteSelecionado!)"
+                  class="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Editar
+                </button>
+              </div>
+
+              <!-- HISTÓRICO DE ATENDIMENTOS -->
+              <div class="border-t border-gray-100 pt-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center justify-between">
+                  <span>Histórico de Atendimentos</span>
+                  <span class="inline-flex items-center justify-center min-w-[32px] h-8 px-2 rounded-lg bg-violet-100 text-violet-700 text-sm font-bold">
+                    {{ atendimentosCliente.length }}
+                  </span>
+                </h3>
+
+                <div v-if="carregandoAtendimentos" class="flex items-center justify-center gap-3 py-8">
+                  <span class="inline-block w-8 h-8 border-4 border-violet-600 border-t-transparent rounded-full animate-spin" />
+                  <span class="text-sm text-gray-500">Carregando atendimentos...</span>
+                </div>
+
+                <div v-else-if="atendimentosCliente.length === 0" class="py-8 text-center text-gray-500">
+                  <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p class="text-sm">Nenhum atendimento registrado</p>
+                </div>
+
+                <div v-else class="space-y-3 max-h-[300px] overflow-y-auto">
+                  <div
+                    v-for="atendimento in atendimentosCliente"
+                    :key="atendimento.id"
+                    class="border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div class="flex items-start justify-between gap-4 mb-2">
+                      <div>
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-widest">
+                          {{ formatarData(atendimento.data_hora) }}
+                        </p>
+                        <p class="text-base font-bold text-gray-900">
+                          {{ atendimento.servicos?.join(', ') || 'Serviço não especificado' }}
+                        </p>
+                      </div>
+                      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap"
+                        :class="statusClass(atendimento.status)"
+                      >
+                        <span class="w-2 h-2 rounded-full" :class="statusDotClass(atendimento.status)" />
+                        {{ formatarStatus(atendimento.status) }}
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
+                      <div v-if="atendimento.funcionario">
+                        <span class="text-gray-500 text-xs">Profissional</span>
+                        <p class="font-semibold text-gray-900">{{ atendimento.funcionario }}</p>
+                      </div>
+                      <div>
+                        <span class="text-gray-500 text-xs">Valor</span>
+                        <p class="font-semibold text-gray-900">{{ formatarValor(atendimento.valor_total) }}</p>
+                      </div>
+                      <div v-if="atendimento.observacoes" class="sm:col-span-3">
+                        <span class="text-gray-500 text-xs">Observações</span>
+                        <p class="font-semibold text-gray-900 line-clamp-2">{{ atendimento.observacoes }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MODAL ENVIAR MENSAGEM (DENTRO DO MODAL PRINCIPAL) -->
+              <div v-if="modalMensagem" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full">
+                  <div class="flex items-center justify-between px-6 sm:px-8 py-4 sm:py-6 border-b border-gray-100 bg-gray-50/50">
+                    <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Enviar Mensagem</h3>
+                    <button
+                      type="button"
+                      class="w-8 h-8 flex items-center justify-center rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-200 transition-colors"
+                      @click="fecharModalMensagem"
+                    >
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="px-6 sm:px-8 py-6 space-y-4">
+                    <div>
+                      <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Para</label>
+                      <p class="text-lg font-bold text-gray-900 mt-2">{{ clienteSelecionado?.nome }}</p>
+                    </div>
+                    <div>
+                      <label class="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2">Mensagem</label>
+                      <textarea
+                        v-model="formularioMensagem.conteudo"
+                        placeholder="Digite sua mensagem aqui..."
+                        rows="5"
+                        class="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 placeholder:text-gray-400 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-violet-600 focus:border-violet-600 resize-none"
+                      />
+                    </div>
+                    <div v-if="erroMensagem" class="flex items-center gap-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                      <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path stroke-linecap="round" d="M12 8v4m0 4h.01" />
+                      </svg>
+                      {{ erroMensagem }}
+                    </div>
+                  </div>
+                  <div class="flex gap-3 px-6 sm:px-8 py-4 border-t border-gray-100 bg-gray-50/50">
+                    <button
+                      type="button"
+                      class="flex-1 py-3 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-bold text-sm"
+                      @click="fecharModalMensagem"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      class="flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-violet-700 text-white hover:shadow-lg hover:scale-[1.02] transition-all font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      :disabled="!formularioMensagem.conteudo.trim() || enviarMensagemLoading"
+                      @click="enviarMensagem"
+                    >
+                      <span v-if="enviarMensagemLoading" class="inline-flex items-center gap-2">
+                        <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Enviando...
+                      </span>
+                      <span v-else>Enviar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -397,7 +618,6 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { createSupabaseClient } from '~/lib/supabase'
 import { useAdmin } from '~/composables/useAdmin'
 import { useEmpresa } from '~/composables/useEmpresa'
-import { useRouter } from 'vue-router'
 import AppInput from '~/components/AppInput.vue'
 import AppButton from '~/components/AppButton.vue'
 
@@ -435,6 +655,15 @@ const modalError = ref<string | null>(null)
 const excluindo = ref<Cliente | null>(null)
 const deleting = ref(false)
 const deleteError = ref<string | null>(null)
+
+const clienteSelecionado = ref<Cliente | null>(null)
+const modalDetalhesAberto = ref(false)
+const carregandoAtendimentos = ref(false)
+const atendimentosCliente = ref<any[]>([])
+const modalMensagem = ref(false)
+const formularioMensagem = reactive({ conteudo: '' })
+const enviarMensagemLoading = ref(false)
+const erroMensagem = ref<string | null>(null)
 
 const form = reactive({
   nome: '',
@@ -516,8 +745,80 @@ function initials(nome: string): string {
 // �"?�"? CRUD �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 onMounted(async () => { await loadEmpresa(); await fetchClientes() })
 
-function abrirCliente(clienteId: string) {
-  router.push(`/clientes/${clienteId}`)
+async function abrirDetalhesCliente(cliente: Cliente) {
+  clienteSelecionado.value = cliente
+  modalDetalhesAberto.value = true
+  await fetchAtendimentosCliente(cliente.id)
+}
+
+function fecharDetalhes() {
+  clienteSelecionado.value = null
+  modalDetalhesAberto.value = false
+  atendimentosCliente.value = []
+}
+
+function abrirWhatsApp(cliente: Cliente) {
+  if (!cliente.telefone) return
+  // Remove tudo que não é número
+  const numero = cliente.telefone.replace(/\D/g, '')
+  // Adiciona 55 (Brasil) se não tiver código de país
+  const tel = numero.length <= 11 ? '55' + numero : numero
+  const msg = encodeURIComponent(`Olá ${cliente.nome}! `)
+  window.open(`https://wa.me/${tel}?text=${msg}`, '_blank')
+}
+
+async function fetchAtendimentosCliente(clienteId: string) {
+  carregandoAtendimentos.value = true
+  const { data, error: fetchError } = await supabase
+    .from('agendamentos')
+    .select(`
+      id,
+      data_hora,
+      status,
+      valor_total,
+      observacoes,
+      funcionario_id,
+      agendamento_servicos (
+        servico_id,
+        servicos (nome)
+      )
+    `)
+    .eq('cliente_id', clienteId)
+    .eq('empresa_id', empresaId.value!)
+    .order('data_hora', { ascending: false })
+
+  carregandoAtendimentos.value = false
+  
+  if (fetchError) {
+    console.error('Erro ao carregar atendimentos:', fetchError)
+    return
+  }
+
+  if (data) {
+    const funcionarioIds = [...new Set(data.map((a: any) => a.funcionario_id).filter(Boolean))]
+    let funcionarios: Record<string, string> = {}
+
+    if (funcionarioIds.length > 0) {
+      const { data: funcs } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', funcionarioIds)
+
+      if (funcs) {
+        funcionarios = Object.fromEntries(funcs.map((f: any) => [f.id, f.full_name]))
+      }
+    }
+
+    atendimentosCliente.value = data.map((a: any) => ({
+      id: a.id,
+      data_hora: a.data_hora,
+      status: a.status,
+      valor_total: a.valor_total,
+      observacoes: a.observacoes,
+      funcionario: a.funcionario_id ? funcionarios[a.funcionario_id] || 'Não especificado' : null,
+      servicos: a.agendamento_servicos?.map((s: any) => s.servicos?.nome).filter(Boolean) || [],
+    }))
+  }
 }
 
 async function fetchClientes() {
@@ -658,6 +959,108 @@ async function executarExclusao() {
 
   excluindo.value = null
   await fetchClientes()
+}
+
+// 🔹 Funções para Modal de Detalhes 🔹
+function formatarEndereco(cliente: Cliente): string {
+  const parts = [
+    cliente.endereco,
+    cliente.numero,
+    cliente.bairro,
+    cliente.cidade,
+    cliente.estado,
+    cliente.cep,
+  ].filter(Boolean)
+  return parts.join(', ')
+}
+
+function formatarData(data: string): string {
+  return new Date(data).toLocaleDateString('pt-BR', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function formatarValor(valor: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(valor || 0)
+}
+
+function formatarStatus(status: string): string {
+  const statusMap: Record<string, string> = {
+    agendado: 'Agendado',
+    confirmado: 'Confirmado',
+    concluido: 'Concluído',
+    cancelado: 'Cancelado',
+    faltou: 'Faltou',
+  }
+  return statusMap[status] || status
+}
+
+function statusClass(status: string): string {
+  const classes: Record<string, string> = {
+    agendado: 'bg-blue-100 text-blue-700',
+    confirmado: 'bg-purple-100 text-purple-700',
+    concluido: 'bg-green-100 text-green-700',
+    cancelado: 'bg-red-100 text-red-700',
+    faltou: 'bg-orange-100 text-orange-700',
+  }
+  return classes[status] || 'bg-gray-100 text-gray-700'
+}
+
+function statusDotClass(status: string): string {
+  const classes: Record<string, string> = {
+    agendado: 'bg-blue-600',
+    confirmado: 'bg-purple-600',
+    concluido: 'bg-green-600',
+    cancelado: 'bg-red-600',
+    faltou: 'bg-orange-600',
+  }
+  return classes[status] || 'bg-gray-600'
+}
+
+function abrirModalMensagem() {
+  modalMensagem.value = true
+  formularioMensagem.conteudo = ''
+  erroMensagem.value = null
+}
+
+function fecharModalMensagem() {
+  modalMensagem.value = false
+  formularioMensagem.conteudo = ''
+  erroMensagem.value = null
+}
+
+async function enviarMensagem() {
+  if (!formularioMensagem.conteudo.trim() || !clienteSelecionado.value) return
+
+  enviarMensagemLoading.value = true
+  erroMensagem.value = null
+
+  const { error: insertError } = await supabase
+    .from('mensagens')
+    .insert({
+      empresa_id: empresaId.value,
+      cliente_id: clienteSelecionado.value.id,
+      usuario_id: (await supabase.auth.getUser()).data.user?.id,
+      conteudo: formularioMensagem.conteudo.trim(),
+      tipo: 'saida',
+    })
+
+  enviarMensagemLoading.value = false
+
+  if (insertError) {
+    erroMensagem.value = 'Erro ao enviar mensagem: ' + insertError.message
+    return
+  }
+
+  fecharModalMensagem()
 }
 </script>
 
