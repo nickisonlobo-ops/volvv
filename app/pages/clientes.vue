@@ -194,7 +194,13 @@
                   <div class="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-black text-sm shrink-0 shadow-sm shadow-pink-200 select-none">
                     {{ initials(cli.nome) }}
                   </div>
-                  <span class="font-semibold text-gray-800 max-w-[160px] block truncate">{{ cli.nome }}</span>
+                  <button
+                    type="button"
+                    class="font-semibold text-gray-800 max-w-[160px] block truncate hover:text-violet-600 transition-colors cursor-pointer"
+                    @click="abrirCliente(cli.id)"
+                  >
+                    {{ cli.nome }}
+                  </button>
                 </div>
               </td>
               <td class="px-5 py-4">
@@ -391,6 +397,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { createSupabaseClient } from '~/lib/supabase'
 import { useAdmin } from '~/composables/useAdmin'
 import { useEmpresa } from '~/composables/useEmpresa'
+import { useRouter } from 'vue-router'
 import AppInput from '~/components/AppInput.vue'
 import AppButton from '~/components/AppButton.vue'
 
@@ -412,6 +419,7 @@ interface Cliente {
 }
 
 const supabase = createSupabaseClient()
+const router = useRouter()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { isAdminOrGerente } = useAdmin()
 
@@ -507,6 +515,10 @@ function initials(nome: string): string {
 
 // �"?�"? CRUD �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 onMounted(async () => { await loadEmpresa(); await fetchClientes() })
+
+function abrirCliente(clienteId: string) {
+  router.push(`/clientes/${clienteId}`)
+}
 
 async function fetchClientes() {
   loading.value = true
