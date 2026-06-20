@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-gray-50/60 p-3 sm:p-8">
+  <div class="min-h-full bg-transparent p-3 sm:p-8">
 
     <!-- ══════════════════════════════════════════════════════ CABEÇALHO -->
     <div class="relative rounded-3xl overflow-hidden mb-8 shadow-xl">
