@@ -489,14 +489,59 @@
                 </button>
               </div>
 
-              <select
-                v-model="form.cliente_id"
-                class="w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
-                :class="formErrors.cliente_id ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-gray-50'"
-              >
-                <option :value="null" disabled>Selecione o cliente</option>
-                <option v-for="c in clientes" :key="c.id" :value="c.id">{{ c.nome }}</option>
-              </select>
+              <!-- Campo de busca de cliente -->
+              <div class="relative">
+                <input
+                  v-model="buscaCliente"
+                  type="text"
+                  placeholder="Pesquisar cliente pelo nome..."
+                  class="w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
+                  :class="formErrors.cliente_id ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-gray-50'"
+                  @focus="clienteDropdownAberto = true"
+                  @input="clienteDropdownAberto = true"
+                />
+                <!-- Cliente selecionado badge -->
+                <div v-if="form.cliente_id && !buscaCliente" class="absolute inset-0 flex items-center px-4 pointer-events-none">
+                  <span class="text-sm font-semibold text-gray-800">{{ clienteSelecionadoNome }}</span>
+                </div>
+                <!-- Botão limpar -->
+                <button
+                  v-if="form.cliente_id"
+                  type="button"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 hover:bg-red-100 hover:text-red-500 transition-colors"
+                  @click="form.cliente_id = null; buscaCliente = ''"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+                <!-- Dropdown de resultados -->
+                <div
+                  v-if="clienteDropdownAberto && clientesFiltradosAgendamento.length > 0 && buscaCliente.trim()"
+                  class="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto"
+                >
+                  <button
+                    v-for="c in clientesFiltradosAgendamento"
+                    :key="c.id"
+                    type="button"
+                    class="w-full text-left px-4 py-2.5 text-sm hover:bg-pink-50 transition-colors flex items-center gap-3 border-b border-gray-50 last:border-0"
+                    @mousedown.prevent="selecionarCliente(c)"
+                  >
+                    <span class="w-7 h-7 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-[10px] font-black shrink-0">
+                      {{ c.nome.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() }}
+                    </span>
+                    <div>
+                      <p class="font-semibold text-gray-800">{{ c.nome }}</p>
+                      <p v-if="c.telefone" class="text-[10px] text-gray-400">{{ c.telefone }}</p>
+                    </div>
+                  </button>
+                </div>
+                <!-- Sem resultados -->
+                <div
+                  v-if="clienteDropdownAberto && clientesFiltradosAgendamento.length === 0 && buscaCliente.trim().length >= 2"
+                  class="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg p-4 text-center"
+                >
+                  <p class="text-sm text-gray-400">Nenhum cliente encontrado</p>
+                </div>
+              </div>
               <p v-if="formErrors.cliente_id" class="text-xs text-red-500 mt-1">{{ formErrors.cliente_id }}</p>
             </div>
 
@@ -1133,7 +1178,7 @@ interface AgendamentoRow {
   servicos_nomes?: string | null
 }
 
-interface ClienteOption { id: number; nome: string }
+interface ClienteOption { id: number; nome: string; telefone?: string | null }
 interface FuncionarioOption { id: number; nome: string | null; email: string | null; profile_id: string | null }
 interface ServicoOption { id: number; nome: string; preco: number; duracao_min: number; comissao_percentual: number | null; funcionario_id: number | null; funcionario_profile_id: string | null; foto_url: string | null; servico_funcionarios: { funcionarios: { id: number; nome: string | null } }[] }
 
@@ -1301,6 +1346,27 @@ const form = reactive({
 const formErrors = reactive({ cliente_id: '', slots: '' })
 const slotsPerServicoInterno = ref<SlotItemInterno[]>([])
 
+// ── Busca de cliente no agendamento ───────────────────────────
+const buscaCliente = ref('')
+const clienteDropdownAberto = ref(false)
+
+const clientesFiltradosAgendamento = computed(() => {
+  const q = buscaCliente.value.trim().toLowerCase()
+  if (q.length < 1) return []
+  return clientes.value.filter(c => c.nome.toLowerCase().includes(q)).slice(0, 10)
+})
+
+const clienteSelecionadoNome = computed(() => {
+  if (!form.cliente_id) return ''
+  const c = clientes.value.find(c => c.id === form.cliente_id)
+  return c?.nome ?? ''
+})
+
+function selecionarCliente(cliente: { id: number; nome: string }) {
+  form.cliente_id = cliente.id
+  buscaCliente.value = ''
+  clienteDropdownAberto.value = false
+}
 // ── Serviços simultâneos ──────────────────────────────────────
 // Armazena pares "idA-idB" que podem ser feitos ao mesmo tempo
 const simultaneosPares = ref<Set<string>>(new Set())
@@ -1655,7 +1721,7 @@ async function fetchAgendamentos() {
 async function fetchClientes() {
   const { data } = await supabase
     .from('clientes')
-    .select('id, nome')
+    .select('id, nome, telefone')
     .eq('empresa_id', empresaId.value!)
     .eq('ativo', true)
     .order('nome')
@@ -1735,6 +1801,8 @@ function resetForm() {
   form.observacoes = ''; form.servicosSelecionados = []
   formErrors.cliente_id = ''; formErrors.slots = ''
   slotsPerServicoInterno.value = []
+  buscaCliente.value = ''
+  clienteDropdownAberto.value = false
 }
 
 function abrirAdicionar() {

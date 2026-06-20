@@ -12,6 +12,9 @@
   --color-btn:            #374151;
   --color-btn-text:       #ffffff;
   --color-icon:           #6b7280;
+  --color-card:           #ffffff;
+  --color-card-texto:     #1e293b;
+  --color-card-border:    rgba(0,0,0,0.06);
 
   --color-primary-5:      rgba(55,65,81,0.05);
   --color-primary-10:     rgba(55,65,81,0.10);
@@ -38,4 +41,12 @@
   --color-icon-border: rgba(107,114,128,0.30);
 
   --grad-direction: 135deg;
+}
+
+/* ═══ Theme-aware card styling ═══ 
+   Quando o tema define cards escuros, aplica automaticamente */
+.theme-card {
+  background: var(--color-card, #ffffff);
+  color: var(--color-card-texto, #1e293b);
+  border-color: var(--color-card-border, rgba(0,0,0,0.06));
 }

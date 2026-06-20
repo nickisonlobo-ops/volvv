@@ -261,6 +261,16 @@ export function usePersonalizacao() {
     root.style.setProperty('--color-icon-light',   hexToRgba(cfg.cor_icone, 0.12))
     root.style.setProperty('--color-icon-border',  hexToRgba(cfg.cor_icone, 0.30))
 
+    // ── Card (background + texto) ────────────────────────────────
+    const cardBg = cfg.cor_card_grad
+      ? `linear-gradient(${dir}, ${cfg.cor_card}, ${cfg.cor_card_grad})`
+      : cfg.cor_card
+    root.style.setProperty('--color-card',         cardBg)
+    root.style.setProperty('--color-card-texto',   cfg.cor_card_texto)
+    // Detectar se é card escuro para ajustar borda
+    const isCardDark = isColorDark(cfg.cor_card)
+    root.style.setProperty('--color-card-border',  isCardDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)')
+
     // ── Injeta CSS global para sobrescrever classes Tailwind pink ──
     injectGlobalThemeCSS(cfg)
   }
@@ -360,99 +370,129 @@ export function usePersonalizacao() {
 
       /* ── Cards (fundo + texto) ── */
       .bg-white.rounded-3xl,
-      .bg-white.rounded-2xl {
+      .bg-white.rounded-2xl,
+      .bg-white.rounded-xl,
+      .bg-white.shadow-sm,
+      .bg-white.shadow-md,
+      .bg-white.border {
         ${cfg.cor_card_grad
           ? `background: linear-gradient(${cfg.grad_direction ?? '135deg'}, ${cfg.cor_card}, ${cfg.cor_card_grad}) !important;`
           : `background-color: ${cfg.cor_card} !important;`}
-      }
-      .bg-white.rounded-3xl *,
-      .bg-white.rounded-2xl * {
-        --tw-card-text: ${cfg.cor_card_texto};
+        color: ${cfg.cor_card_texto} !important;
+        border-color: ${isColorDark(cfg.cor_card) ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'} !important;
       }
       .bg-white.rounded-3xl .text-gray-800,
-      .bg-white.rounded-2xl .text-gray-800 { color: ${cfg.cor_card_texto} !important; }
-      .bg-white.rounded-3xl .text-gray-700,
-      .bg-white.rounded-2xl .text-gray-700 { color: ${cfg.cor_card_texto} !important; }
-      .bg-white.rounded-3xl .text-gray-600,
-      .bg-white.rounded-2xl .text-gray-600 { color: ${hexToRgba(cfg.cor_card_texto, 0.8)} !important; }
-      .bg-white.rounded-3xl .text-gray-500,
-      .bg-white.rounded-2xl .text-gray-500 { color: ${hexToRgba(cfg.cor_card_texto, 0.65)} !important; }
+      .bg-white.rounded-2xl .text-gray-800,
+      .bg-white.rounded-xl .text-gray-800,
+      .bg-white.shadow-sm .text-gray-800,
+      .bg-white.shadow-md .text-gray-800 {
+        color: ${cfg.cor_card_texto} !important;
+      }
       .bg-white.rounded-3xl .text-gray-400,
-      .bg-white.rounded-2xl .text-gray-400 { color: ${hexToRgba(cfg.cor_card_texto, 0.5)} !important; }
-      .bg-white.rounded-3xl .text-gray-300,
-      .bg-white.rounded-2xl .text-gray-300 { color: ${hexToRgba(cfg.cor_card_texto, 0.35)} !important; }
-      .bg-white.rounded-3xl .bg-gray-50,
-      .bg-white.rounded-2xl .bg-gray-50 { background-color: ${hexToRgba(cfg.cor_card_texto, 0.04)} !important; }
-      .bg-white.rounded-3xl .bg-gray-50\/50,
-      .bg-white.rounded-2xl .bg-gray-50\/50 { background-color: ${hexToRgba(cfg.cor_card_texto, 0.02)} !important; }
-      .bg-white.rounded-3xl .border-gray-100,
-      .bg-white.rounded-2xl .border-gray-100 { border-color: ${hexToRgba(cfg.cor_card_texto, 0.08)} !important; }
-      .bg-white.rounded-3xl .divide-gray-50 > * + *,
-      .bg-white.rounded-2xl .divide-gray-50 > * + * { border-color: ${hexToRgba(cfg.cor_card_texto, 0.05)} !important; }
+      .bg-white.rounded-2xl .text-gray-400,
+      .bg-white.rounded-xl .text-gray-400,
+      .bg-white.shadow-sm .text-gray-400 {
+        color: ${isColorDark(cfg.cor_card) ? 'rgba(255,255,255,0.5)' : '#9ca3af'} !important;
+      }
+      /* Overrides para tema dark */
+      ${isColorDark(cfg.cor_card) ? `
+      .bg-gray-50, .bg-gray-50\\/80, .bg-gray-50\\/50, .bg-gray-100 {
+        background-color: rgba(255,255,255,0.04) !important;
+        color: ${cfg.cor_card_texto} !important;
+      }
+      .bg-white {
+        background-color: ${cfg.cor_card} !important;
+        color: ${cfg.cor_card_texto} !important;
+      }
+      .border-gray-100, .border-gray-200, .border-gray-50 {
+        border-color: rgba(255,255,255,0.06) !important;
+      }
+      .divide-gray-50 > * + *, .divide-gray-100 > * + * {
+        border-color: rgba(255,255,255,0.06) !important;
+      }
+      .text-gray-800, .text-gray-900, .text-gray-950 {
+        color: ${cfg.cor_card_texto} !important;
+      }
+      .text-gray-600, .text-gray-700 {
+        color: rgba(255,255,255,0.7) !important;
+      }
+      .text-gray-500 {
+        color: rgba(255,255,255,0.5) !important;
+      }
+      .text-gray-400 {
+        color: rgba(255,255,255,0.4) !important;
+      }
+      .text-gray-300 {
+        color: rgba(255,255,255,0.3) !important;
+      }
+      /* Placeholder text */
+      ::placeholder {
+        color: rgba(255,255,255,0.3) !important;
+      }
+      /* Inputs e selects */
+      input, select, textarea {
+        background-color: rgba(255,255,255,0.05) !important;
+        color: ${cfg.cor_card_texto} !important;
+        border-color: rgba(255,255,255,0.1) !important;
+      }
+      input:focus, select:focus, textarea:focus {
+        border-color: ${cfg.cor_primaria} !important;
+      }
+      /* Links e textos indigo/blue hardcoded */
+      .text-indigo-600, .text-indigo-700, .text-blue-600, .text-blue-700 {
+        color: ${lighten(cfg.cor_primaria, 0.20)} !important;
+      }
+      .text-indigo-500, .text-blue-500 {
+        color: ${cfg.cor_primaria} !important;
+      }
+      /* Font semibold/bold em cards */
+      .font-semibold, .font-bold, .font-black {
+        color: inherit;
+      }
+      /* Badges/tags que usam bg-gray-100 text-gray-600 */
+      .bg-gray-100.text-gray-600 {
+        background-color: rgba(255,255,255,0.08) !important;
+        color: rgba(255,255,255,0.7) !important;
+      }
+      .shadow-sm, .shadow-md {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+      }
+      table thead, table thead tr {
+        background-color: rgba(255,255,255,0.03) !important;
+      }
+      table thead th {
+        color: rgba(255,255,255,0.5) !important;
+      }
+      /* Hover rows */
+      tr:hover, .hover\\:bg-indigo-50\\/30:hover, .hover\\:bg-gray-50:hover {
+        background-color: rgba(255,255,255,0.03) !important;
+      }
+      /* Modals e dropdowns */
+      .bg-white.rounded-2xl, .bg-white.rounded-xl {
+        background-color: ${cfg.cor_card} !important;
+        color: ${cfg.cor_card_texto} !important;
+      }
+      ` : ''}
 
-      /* ══════════════════════════════════════════════════════════
-         Páginas de Veículos — overrides amber → cor primária
-         ══════════════════════════════════════════════════════════ */
-
-      /* Backgrounds amber */
+      /* ═══ Veículos — amber → cor primária ═══ */
       .bg-amber-50  { background-color: ${lighten(p, 0.90)} !important; }
       .bg-amber-100 { background-color: ${lighten(p, 0.80)} !important; }
       .bg-amber-200 { background-color: ${lighten(p, 0.60)} !important; }
-      .bg-amber-300 { background-color: ${lighten(p, 0.40)} !important; }
       .bg-amber-400 { background-color: ${lighten(p, 0.20)} !important; }
       .bg-amber-500 { background-color: ${p} !important; }
       .bg-amber-600 { background-color: ${darken(p, 0.10)} !important; }
-      .bg-amber-700 { background-color: ${darken(p, 0.20)} !important; }
-
-      /* Textos amber */
-      .text-amber-200 { color: ${lighten(p, 0.60)} !important; }
-      .text-amber-300 { color: ${lighten(p, 0.40)} !important; }
       .text-amber-400 { color: ${lighten(p, 0.20)} !important; }
       .text-amber-500 { color: ${p} !important; }
       .text-amber-600 { color: ${darken(p, 0.10)} !important; }
       .text-amber-700 { color: ${darken(p, 0.20)} !important; }
-      .text-amber-800 { color: ${darken(p, 0.35)} !important; }
-
-      /* Bordas amber */
-      .border-amber-100 { border-color: ${lighten(p, 0.80)} !important; }
       .border-amber-200 { border-color: ${lighten(p, 0.60)} !important; }
-      .border-amber-300 { border-color: ${lighten(p, 0.40)} !important; }
       .border-amber-400 { border-color: ${lighten(p, 0.20)} !important; }
-      .border-amber-500 { border-color: ${p} !important; }
-
-      /* Opacity amber */
-      .bg-amber-400\\/10 { background-color: ${hexToRgba(p, 0.10)} !important; }
-      .bg-amber-400\\/20 { background-color: ${hexToRgba(p, 0.20)} !important; }
-      .bg-amber-500\\/20 { background-color: ${hexToRgba(p, 0.20)} !important; }
-      .border-amber-400\\/20 { border-color: ${hexToRgba(p, 0.20)} !important; }
-      .border-amber-400\\/30 { border-color: ${hexToRgba(p, 0.30)} !important; }
-      .text-amber-300\\/50  { color: ${hexToRgba(p, 0.50)} !important; }
-      .text-amber-400\\/60  { color: ${hexToRgba(p, 0.60)} !important; }
-      .shadow-amber-900\\/30 { --tw-shadow-color: ${hexToRgba(darken(p, 0.50), 0.30)} !important; }
-
-      /* Hover amber */
-      .hover\\:bg-amber-400:hover { background-color: ${lighten(p, 0.20)} !important; }
-      .hover\\:bg-amber-50:hover  { background-color: ${lighten(p, 0.90)} !important; }
-
-      /* Focus amber */
-      .focus\\:ring-amber-500:focus { --tw-ring-color: ${p} !important; }
-      .focus\\:border-amber-500:focus { border-color: ${p} !important; }
-
-      /* Gradientes amber (cabeçalhos das páginas de veículos) */
-      .from-amber-400 { --tw-gradient-from: ${lighten(p, 0.20)} !important; }
       .from-amber-500 { --tw-gradient-from: ${p} !important; }
-      .from-amber-600 { --tw-gradient-from: ${darken(p, 0.10)} !important; }
-      .to-amber-400   { --tw-gradient-to: ${lighten(p, 0.20)} !important; }
       .to-amber-500   { --tw-gradient-to: ${p} !important; }
-      .via-amber-500  { --tw-gradient-via: ${p} !important; }
-
-      /* Ring amber */
-      .ring-amber-400\\/20 { --tw-ring-color: ${hexToRgba(p, 0.20)} !important; }
-
-      /* Accent amber (slider de preço no catálogo) */
+      .hover\\:bg-amber-50:hover { background-color: ${lighten(p, 0.90)} !important; }
       input[type=range].accent-amber-500 { accent-color: ${p} !important; }
 
-      /* ── Botões de ação (+ Adicionar, Nova ...) ── */
+      /* ═══ Botões de ação ═══ */
       .inline-flex.rounded-xl.shadow-lg {
         background-color: ${cfg.cor_botao || p} !important;
         color: ${cfg.cor_botao_texto || '#ffffff'} !important;
@@ -468,6 +508,15 @@ export function usePersonalizacao() {
     const g = parseInt(hex.slice(3, 5), 16)
     const b = parseInt(hex.slice(5, 7), 16)
     return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  }
+
+  /** Detecta se uma cor hex é escura (luminância < 0.4) */
+  function isColorDark(hex: string): boolean {
+    const r = parseInt(hex.slice(1, 3), 16) / 255
+    const g = parseInt(hex.slice(3, 5), 16) / 255
+    const b = parseInt(hex.slice(5, 7), 16) / 255
+    const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    return luminance < 0.4
   }
 
   /** Mistura a cor com branco (amount 0–1: 1 = branco puro) */

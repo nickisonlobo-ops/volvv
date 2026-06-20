@@ -434,9 +434,9 @@
 
             <div class="relative rounded-xl overflow-hidden p-4 bg-gray-50 border border-gray-100 shadow-sm">
               <div class="absolute top-0 left-0 w-1 h-full rounded-l-xl" :style="{ background: 'var(--color-primary, #6366f1)' }"></div>
-              <p class="text-[9px] font-black uppercase tracking-[0.18em] text-gray-400 mb-1.5 pl-2">Ticket Médio</p>
-              <p class="text-xl font-black text-gray-900 leading-none pl-2 truncate">{{ formatCurrency(cli.ticketMedioCliente) }}</p>
-              <p class="text-[10px] text-gray-400 mt-1.5 pl-2">média histórica</p>
+              <p class="text-[9px] font-black uppercase tracking-[0.18em] text-gray-400 mb-1.5 pl-2">Valor/Visita</p>
+              <p class="text-xl font-black text-gray-900 leading-none pl-2 truncate">{{ formatCurrency(cli.valorPorVisitaAtivos || cli.ticketMedioCliente) }}</p>
+              <p class="text-[10px] text-gray-400 mt-1.5 pl-2">média por atendimento</p>
             </div>
 
           </div>
@@ -448,7 +448,7 @@
               <div class="relative flex-1">
                 <p class="text-[9px] font-black uppercase tracking-[0.18em] text-white/60 mb-1">Potencial de Recuperação Estimado</p>
                 <p class="text-sm text-white/80 leading-snug">
-                  Se {{ cli.inativosMais60 }} clientes inativos voltarem a comprar com o ticket médio histórico, você recupera até:
+                  Se {{ cli.inativosMais30 }} clientes inativos voltarem a comprar, você recupera até:
                 </p>
               </div>
               <div class="relative shrink-0 text-right">
@@ -616,7 +616,7 @@
               <div class="px-4 py-3 grid sm:grid-cols-2 gap-4 bg-white">
                 <div>
                   <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">💡 Impacto Estimado</p>
-                  <p class="text-sm text-gray-700">Cada 10 novos clientes com ticket médio de {{ formatCurrency(cli.ticketMedioCliente || 100) }} representam {{ formatCurrency((cli.ticketMedioCliente || 100) * 10) }} em receita potencial.</p>
+                  <p class="text-sm text-gray-700">Cada 10 novos clientes com ticket médio de {{ formatCurrency(cli.valorPorVisitaAtivos || 100) }} representam {{ formatCurrency((cli.valorPorVisitaAtivos || 100) * 10) }} em receita potencial.</p>
                 </div>
                 <div>
                   <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">✅ Ações Recomendadas</p>
@@ -657,8 +657,8 @@
               <div class="px-4 py-3 grid sm:grid-cols-2 gap-4 bg-white">
                 <div>
                   <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">💡 Impacto Estimado</p>
-                  <p class="text-sm text-gray-700">Se cada cliente ativo retornar apenas mais 1x por trimestre, você gera {{ formatCurrency(cli.ativos90 * cli.ticketMedioCliente) }} extras.</p>
-                  <p v-if="cli.ativos90 > 0" class="text-base font-black text-purple-600 mt-1">{{ formatCurrency(cli.ativos90 * cli.ticketMedioCliente) }}<span class="text-xs font-semibold text-gray-400">/trimestre</span></p>
+                  <p class="text-sm text-gray-700">Se cada cliente ativo retornar apenas mais 1x por trimestre, você gera {{ formatCurrency(cli.ativos90 * cli.valorPorVisitaAtivos) }} extras.</p>
+                  <p v-if="cli.ativos90 > 0" class="text-base font-black text-purple-600 mt-1">{{ formatCurrency(cli.ativos90 * cli.valorPorVisitaAtivos) }}<span class="text-xs font-semibold text-gray-400">/trimestre</span></p>
                 </div>
                 <div>
                   <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">✅ Ações Recomendadas</p>
@@ -1645,13 +1645,22 @@ const cli = computed(() => {
 
   const ticketMedioCliente = clientesComHistorico > 0 ? totalGasto / clientesComHistorico : 0
 
-  // Frequência média (visitas nos últimos 90 dias entre clientes ativos)
+  // Frequência média e valor real por visita dos clientes ativos (últimos 90 dias)
   let somaVisitas = 0
   let qtdAtivos   = 0
+  let somaValorAtivos = 0
+  let somaVisitasAtivos = 0
   for (const [clienteId, hist] of ultimoPorCliente) {
-    if (hist.data >= d90) { somaVisitas += hist.visitas; qtdAtivos++ }
+    if (hist.data >= d90) {
+      somaVisitas += hist.visitas
+      qtdAtivos++
+      somaValorAtivos += hist.total
+      somaVisitasAtivos += hist.visitas
+    }
   }
   const frequenciaMedia = qtdAtivos > 0 ? somaVisitas / qtdAtivos : 0
+  // Valor real médio por visita dos clientes ativos (baseado em atendimentos reais)
+  const valorPorVisitaAtivos = somaVisitasAtivos > 0 ? somaValorAtivos / somaVisitasAtivos : 0
 
   // Lista de clientes inativos +30 dias (com nome e telefone para WhatsApp)
   const listaInativos = clientes.value
@@ -1683,7 +1692,7 @@ const cli = computed(() => {
     .sort((a, b) => b.total - a.total)
     .slice(0, 5)
 
-  return { total, ativos90, inativosMais30, inativosMais60, inativosMais90, ticketMedioCliente, frequenciaMedia, potencialRecuperacao, topClientes, listaInativos }
+  return { total, ativos90, inativosMais30, inativosMais60, inativosMais90, ticketMedioCliente, valorPorVisitaAtivos, frequenciaMedia, potencialRecuperacao, topClientes, listaInativos }
 })
 
 // ── diagnósticos financeiros ──────────────────────────────────
@@ -1846,10 +1855,10 @@ const oportunidades = computed(() => {
     ops.push({
       id: 'clientes-inativos',
       titulo: 'Recuperar clientes inativos',
-      descricao: `${c.inativosMais60} cliente${c.inativosMais60 > 1 ? 's' : ''} não compra${c.inativosMais60 > 1 ? 'm' : ''} há mais de 60 dias. Campanha de retorno pode reativar boa parte da base.`,
+      descricao: `${c.inativosMais30} cliente${c.inativosMais30 > 1 ? 's' : ''} não retorna${c.inativosMais30 > 1 ? 'm' : ''} há mais de 30 dias. Campanha de retorno pode reativar a base.`,
       categoria: 'Clientes',
       prazo: 'Esta semana',
-      valor: Math.round(c.potencialRecuperacao * 0.3),
+      valor: Math.round(c.potencialRecuperacao),
       cor: '#3b82f6',
       acoes: ['Enviar cupom de retorno', 'WhatsApp personalizado', 'Oferta exclusiva por tempo limitado'],
     })
@@ -1905,7 +1914,7 @@ const oportunidades = computed(() => {
 
   // 5. Aumentar frequência dos clientes ativos
   if (c.ativos90 > 0 && c.frequenciaMedia < 2) {
-    const ganho = Math.round(c.ativos90 * c.ticketMedioCliente * 0.5)
+    const ganho = Math.round(c.ativos90 * c.valorPorVisitaAtivos)
     if (ganho > 0) {
       ops.push({
         id: 'frequencia-clientes',
@@ -2091,15 +2100,15 @@ const planoAcao = computed(() => {
   const tarefas: any[] = []
 
   // 1. Clientes inativos → urgente se muitos, semana se poucos
-  if (c.inativosMais60 > 0) {
+  if (c.inativosMais30 > 0) {
     tarefas.push({
       id: 'tarefa-clientes-inativos',
-      titulo: `Entrar em contato com ${c.inativosMais60} cliente${c.inativosMais60 > 1 ? 's' : ''} inativo${c.inativosMais60 > 1 ? 's' : ''}`,
+      titulo: `Entrar em contato com ${c.inativosMais30} cliente${c.inativosMais30 > 1 ? 's' : ''} inativo${c.inativosMais60 > 1 ? 's' : ''}`,
       modulo: 'Clientes',
       prioridade: c.inativosMais60 >= 10 ? 'Alta' : 'Média',
       semana: c.inativosMais60 >= 10 ? 'Urgente — Hoje' : 'Esta Semana',
       objetivo: `Reativar clientes que não compram há mais de 60 dias, oferecendo um motivo de retorno (cupom, promoção ou mensagem personalizada).`,
-      impactoValor: Math.round(c.potencialRecuperacao * 0.3),
+      impactoValor: Math.round(c.potencialRecuperacao),
       prazo: c.inativosMais60 >= 10 ? 'Iniciar hoje' : 'Nos próximos 3 dias',
       descricaoPrazo: 'Quanto mais rápido o contato, maior a taxa de reativação.',
     })
@@ -2204,7 +2213,7 @@ const planoAcao = computed(() => {
       prioridade: 'Baixa',
       semana: 'Este Mês',
       objetivo: `Aumentar a frequência média de visitas (atual: ${c.frequenciaMedia.toFixed(1)}x/trimestre) criando um fluxo de comunicação pós-atendimento.`,
-      impactoValor: Math.round(c.ativos90 * c.ticketMedioCliente * 0.5),
+      impactoValor: Math.round(c.ativos90 * c.valorPorVisitaAtivos),
       prazo: 'Nos próximos 15 dias',
       descricaoPrazo: 'Configurar mensagem automática de WhatsApp 30 dias após cada atendimento.',
     })
@@ -2315,7 +2324,7 @@ function gerarResposta(pergunta: string): string {
     }
     if (f.propDespesas > 70) linhas.push(`1. Reduzir despesas em 10% geraria +${fmt(f.despesasMes * 0.1)}/mês direto no lucro.`)
     if (f.ticketMedio > 0 && f.ticketMedio < 150) linhas.push(`2. Aumentar ticket médio em R$ 20 com ${f.totalAtendimentos} atendimentos = +${fmt(20 * f.totalAtendimentos)}/mês.`)
-    if (c.inativosMais60 > 0) linhas.push(`3. Recuperar ${c.inativosMais60} clientes inativos pode gerar +${fmt(c.potencialRecuperacao * 0.3)}/mês.`)
+    if (c.inativosMais30 > 0) linhas.push(`3. Recuperar ${c.inativosMais30} clientes inativos pode gerar +${fmt(c.potencialRecuperacao)}/mês.`)
     if (e.parados90 > 0) linhas.push(`4. Liquidar ${e.parados90} produto(s) parado(s) libera ${fmt(e.valorParados90 * 0.7)} em caixa.`)
     const totalOps = ops.reduce((s, o) => s + o.valor, 0)
     if (totalOps > 0) linhas.push(`\n💡 Potencial total identificado: +${fmt(totalOps)}/mês executando todas as oportunidades.`)
@@ -2344,8 +2353,8 @@ function gerarResposta(pergunta: string): string {
       linhas.push(`\n📦 Capital imobilizado: ${fmt(e.valorParados90)} em ${e.parados90} produto(s) parado(s) há 90+ dias sem giro.`)
       encontrou = true
     }
-    if (c.inativosMais60 > 0) {
-      linhas.push(`\n👥 Clientes inativos: ${c.inativosMais60} cliente(s) não compram há 60+ dias — ${fmt(c.potencialRecuperacao)} em receita potencial perdida.`)
+    if (c.inativosMais30 > 0) {
+      linhas.push(`\n👥 Clientes inativos: ${c.inativosMais30} cliente(s) não retornam há 30+ dias — ${fmt(c.potencialRecuperacao)} em receita potencial perdida.`)
       encontrou = true
     }
     if (!encontrou) linhas.push(`\n✅ Não identifiquei perdas significativas nos dados atuais. Continue monitorando!`)
@@ -2360,10 +2369,10 @@ function gerarResposta(pergunta: string): string {
     linhas.push(`• Inativos há mais de 60 dias: ${c.inativosMais60}`)
     linhas.push(`• Inativos há mais de 90 dias: ${c.inativosMais90}`)
     linhas.push('')
-    if (c.inativosMais60 > 0) {
-      linhas.push(`🎯 Priorize os ${c.inativosMais60} clientes inativos há 60+ dias.`)
-      linhas.push(`Ticket médio histórico: ${fmt(c.ticketMedioCliente)}`)
-      linhas.push(`Potencial de recuperação (30%): ${fmt(c.potencialRecuperacao * 0.3)}/mês`)
+    if (c.inativosMais30 > 0) {
+      linhas.push(`🎯 Priorize os ${c.inativosMais30} clientes inativos há 30+ dias.`)
+      linhas.push(`Valor médio por visita: ${fmt(c.valorPorVisitaAtivos)}`)
+      linhas.push(`Potencial se todos voltarem: ${fmt(c.potencialRecuperacao)}/mês`)
       linhas.push('')
       linhas.push(`📣 Estratégia recomendada:`)
       linhas.push(`1. Enviar mensagem personalizada pelo WhatsApp com cupom de retorno.`)
@@ -2411,7 +2420,7 @@ function gerarResposta(pergunta: string): string {
       linhas.push(`1. Antecipar recebíveis — peça pagamento adiantado de clientes.`)
       linhas.push(`2. Postergar pagamentos não urgentes para o próximo mês.`)
       linhas.push(`3. Liquidar estoque parado (${fmt(e.valorParados90)}) para gerar caixa rápido.`)
-      if (c.inativosMais60 > 0) linhas.push(`4. Reativar ${c.inativosMais60} clientes inativos — potencial ${fmt(c.potencialRecuperacao * 0.3)}.`)
+      if (c.inativosMais30 > 0) linhas.push(`4. Reativar ${c.inativosMais30} clientes inativos — potencial ${fmt(c.potencialRecuperacao)}.`)
     } else {
       linhas.push(`✅ Fluxo positivo! Você tem ${fmt(f.fluxoCaixa)} de saldo este mês.`)
       linhas.push(`\n💡 Sugestões para manter o fluxo saudável:`)
@@ -2430,7 +2439,7 @@ function gerarResposta(pergunta: string): string {
     linhas.push(`• Atendimentos: ${f.totalAtendimentos} | Ticket médio: ${fmt(f.ticketMedio)}`)
     linhas.push('')
     linhas.push(`🎯 Para vender mais este mês:`)
-    if (c.inativosMais60 > 0) linhas.push(`1. Recupere ${c.inativosMais60} cliente(s) inativo(s) — potencial imediato de ${fmt(c.potencialRecuperacao * 0.3)}.`)
+    if (c.inativosMais30 > 0) linhas.push(`1. Recupere ${c.inativosMais30} cliente(s) inativo(s) — potencial imediato de ${fmt(c.potencialRecuperacao)}.`)
     if (f.ticketMedio < 150) linhas.push(`2. Aumente o ticket médio oferecendo combos e serviços complementares no atendimento.`)
     if (e.parados90 > 0) linhas.push(`3. Crie promoção dos ${e.parados90} produto(s) parado(s) para atrair clientes à loja.`)
     linhas.push(`4. Peça indicações: clientes satisfeitos indicam com pequenos incentivos (desconto na próxima visita).`)
