@@ -1,4 +1,4 @@
-﻿import { useState } from '#app'
+import { useState } from '#app'
 import { ref } from 'vue'
 import { createSupabaseClient } from '~/lib/supabase'
 import { useEmpresa } from './useEmpresa'
@@ -13,6 +13,7 @@ export interface PersonalizacaoConfig {
   nome_empresa: string
   logo_url: string | null
   logo_orcamento_url: string | null
+  logo_orcamento_size: string
   logo_size: string
   // Gradiente opcional — segunda cor
   cor_primaria_grad: string | null
@@ -37,6 +38,7 @@ const DEFAULTS: PersonalizacaoConfig = {
   nome_empresa: '',
   logo_url: null,
   logo_orcamento_url: null,
+  logo_orcamento_size: '160',
   logo_size: 'md',
   cor_primaria_grad: '#a855f7',
   cor_fundo_grad: null,
@@ -126,6 +128,7 @@ export function usePersonalizacao() {
       nome_empresa:        newConfig.nome_empresa,
       logo_url:            newConfig.logo_url,
       logo_orcamento_url:  newConfig.logo_orcamento_url ?? null,
+      logo_orcamento_size: newConfig.logo_orcamento_size ?? '160',
       logo_size:           newConfig.logo_size          ?? DEFAULTS.logo_size,
       cor_primaria_grad:   newConfig.cor_primaria_grad   ?? null,
       cor_fundo_grad:      newConfig.cor_fundo_grad      ?? null,

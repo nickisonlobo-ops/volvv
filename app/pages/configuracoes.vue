@@ -127,6 +127,23 @@
             <p class="text-xs text-gray-400">Use versão colorida/escura para fundos claros.</p>
           </div>
         </div>
+
+        <!-- Tamanho do logo para documentos -->
+        <div v-if="form.logo_orcamento_url" class="space-y-3 pt-3 border-t border-gray-100">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-medium text-gray-700">Tamanho do logo no orçamento</label>
+            <span class="text-sm font-black px-2.5 py-0.5 rounded-lg bg-gray-50 text-gray-600 border border-gray-100">{{ logoDocSizePx }}px</span>
+          </div>
+          <div class="flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-100 py-6" style="min-height: 120px">
+            <img :src="form.logo_orcamento_url!" alt="preview logo docs" class="object-contain rounded-xl transition-all duration-100" :style="{ height: logoDocSizePx + 'px' }" />
+          </div>
+          <input type="range" min="40" max="300" step="4" :value="logoDocSizePx" class="w-full h-2 rounded-full cursor-pointer" style="accent-color: var(--color-primary, #ec4899)" @input="onLogoDocSlider($event)" />
+          <div class="flex justify-between text-[10px] text-gray-400 font-semibold select-none">
+            <span>40px</span>
+            <span>170px</span>
+            <span>300px</span>
+          </div>
+        </div>
       </section>
 
       <!-- Nome da empresa -->
@@ -710,6 +727,16 @@ const logoSizePx = computed(() => {
 
 function onLogoSlider(e: Event) {
   form.logo_size = String((e.target as HTMLInputElement).value)
+}
+
+const logoDocSizePx = computed(() => parseInt(form.logo_orcamento_size || '160') || 160)
+
+let _logoDocSaveTimer: ReturnType<typeof setTimeout> | null = null
+function onLogoDocSlider(e: Event) {
+  form.logo_orcamento_size = (e.target as HTMLInputElement).value
+  // Debounce auto-save (500ms)
+  if (_logoDocSaveTimer) clearTimeout(_logoDocSaveTimer)
+  _logoDocSaveTimer = setTimeout(() => handleSave(), 500)
 }
 
 // Computed para preview — usa degradê se ativado

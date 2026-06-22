@@ -55,7 +55,7 @@
 
       <!-- Header with logo/company name -->
       <div class="text-center">
-        <img v-if="empresa.logo_url" :src="empresa.logo_url" :alt="empresa.nome" class="h-40 max-w-[280px] mx-auto mb-6 object-contain" />
+        <img v-if="empresa.logo_url" :src="empresa.logo_url" :alt="empresa.nome" class="mx-auto mb-6 object-contain" style="height: 300px; max-width: 90%" />
         <h2 class="text-xl font-bold mb-1" :style="{ color: 'var(--color-primary-text, #ffffff)' }">Orçamento</h2>
         <div class="flex items-center justify-center gap-3 mt-2">
           <span v-if="orcamento?.numero_orcamento" class="inline-block text-xs font-bold px-2.5 py-1 rounded-full" :style="{ background: 'var(--color-primary-5, rgba(79,70,229,0.1))', color: 'var(--color-primary, #4f46e5)' }">
@@ -368,6 +368,7 @@ const artes = ref<{ id: number; nome_arquivo: string; url: string }[]>([])
 const empresa = ref<{ nome: string; logo_url: string | null }>({ nome: '', logo_url: null })
 const pageBg = ref('var(--color-bg, #f8fafc)')
 const lightboxUrl = ref<string | null>(null)
+const logoOrcSizePx = ref(160)
 const isLegacy = ref(false)
 
 const showRejectReason = ref(false)
@@ -644,6 +645,11 @@ async function loadEmpresaInfo(empresaId: number) {
     nome: data?.nome_empresa || empresaRes.data?.nome || '',
     logo_url: data?.logo_orcamento_url || data?.logo_url || null,
   }
+
+  // Tamanho do logo — usa logo_size que já funciona
+  const sizeStr = data?.logo_size || '160'
+  const parsed = parseInt(sizeStr)
+  logoOrcSizePx.value = isNaN(parsed) ? 160 : Math.max(parsed, 80)
 
   // Aplicar tema da empresa na página de aprovação
   if (data && typeof document !== 'undefined') {
