@@ -2,295 +2,261 @@
   <Teleport to="body">
     <div
       v-if="show && orcamento"
-      class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       @click.self="emit('close')"
     >
-      <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative">
+      <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-2xl relative">
 
-        <!-- Close button -->
-        <button
-          type="button"
-          class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-colors"
-          @click="emit('close')"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
-        <!-- Header -->
-        <div class="flex items-center gap-3 mb-6">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-800">
-            {{ orcamento.numero_orcamento ?? `#${orcamento.id}` }}
-          </h2>
-          <span
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
-            :class="statusBadgeClass"
-          >
-            {{ statusDisplay.label }}
-          </span>
-          <span v-if="orcamento.pedido_id" class="inline-flex items-center text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-200 text-gray-500">Legado</span>
-        </div>
-
-        <!-- Client info -->
-        <div class="mb-6">
-          <h3 class="text-xs font-black text-gray-400 uppercase tracking-[0.15em] mb-3">Dados do Cliente</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="bg-gray-50 rounded-xl px-4 py-3">
-              <span class="text-[10px] font-bold text-gray-400 uppercase">Nome</span>
-              <p class="text-sm font-semibold text-gray-800 mt-0.5">{{ orcamento.cliente_nome ?? '—' }}</p>
-            </div>
-            <div class="bg-gray-50 rounded-xl px-4 py-3">
-              <span class="text-[10px] font-bold text-gray-400 uppercase">Telefone</span>
-              <p class="text-sm font-semibold text-gray-800 mt-0.5">{{ orcamento.cliente_telefone ?? 'Não informado' }}</p>
-</div>
-            <div class="bg-gray-50 rounded-xl px-4 py-3">
-              <span class="text-[10px] font-bold text-gray-400 uppercase">Validade</span>
-              <p class="text-sm font-semibold mt-0.5" :class="isVencido ? 'text-red-600' : 'text-gray-800'">{{ formatDate(orcamento.data_validade) }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Items table -->
-        <div class="mb-6 border-t border-gray-100 pt-6">
-          <h3 class="text-xs font-black text-gray-400 uppercase tracking-[0.15em] mb-3">Itens do Orçamento</h3>
-          <div v-if="loadingItens" class="flex items-center justify-center py-8">
-            <span class="inline-block w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          </div>
-          <div v-else class="overflow-x-auto rounded-xl border border-gray-200">
-            <table class="w-full text-sm">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="text-left px-4 py-2.5 text-xs font-bold text-gray-500 uppercase">Descrição</th>
-                  <th class="text-left px-4 py-2.5 text-xs font-bold text-gray-500 uppercase">Material</th>
-                  <th class="text-center px-4 py-2.5 text-xs font-bold text-gray-500 uppercase">Dimensões</th>
-                  <th class="text-center px-4 py-2.5 text-xs font-bold text-gray-500 uppercase">Qtd</th>
-                  <th class="text-right px-4 py-2.5 text-xs font-bold text-gray-500 uppercase">Valor</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-100">
-                <tr v-for="item in itens" :key="item.id" class="hover:bg-gray-50/50">
-                  <td class="px-4 py-3 text-gray-800 font-medium">
-                    <div class="flex items-center gap-2">
-                      <span>{{ item.descricao }}</span>
-                      <a
-                        v-if="item.foto_arte_url && isPdf(item.foto_arte_url)"
-                        :href="item.foto_arte_url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="shrink-0"
-                        title="Abrir arte (PDF)"
-                      >
-                        <svg class="w-5 h-5 text-red-500 hover:text-red-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zm-2.5 9.5a1.5 1.5 0 0 1 0 3H9v1.5H7.5v-6H10.5a1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 0 1 0 3H14v1.5h-1.5v-6H15.5a1.5 1.5 0 0 1 0 3z"/>
-                        </svg>
-                      </a>
-                      <img
-                        v-else-if="item.foto_arte_url"
-                        :src="item.foto_arte_url"
-                        alt="Arte do adesivo"
-                        class="w-8 h-8 rounded object-cover border border-gray-200 shrink-0"
-                      />
-                      <img
-                        v-if="item.foto_local_url && !isPdf(item.foto_local_url)"
-                        :src="item.foto_local_url"
-                        alt="Local de instalação"
-                        class="w-8 h-8 rounded object-cover border border-green-200 shrink-0"
-                        title="Foto do local de instalação"
-                      />
-                      <a
-                        v-else-if="item.foto_local_url && isPdf(item.foto_local_url)"
-                        :href="item.foto_local_url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="shrink-0"
-                        title="Local de instalação (PDF)"
-                      >
-                        <svg class="w-5 h-5 text-green-500 hover:text-green-700 transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zm-2.5 9.5a1.5 1.5 0 0 1 0 3H9v1.5H7.5v-6H10.5a1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 0 1 0 3H14v1.5h-1.5v-6H15.5a1.5 1.5 0 0 1 0 3z"/>
-                        </svg>
-                      </a>
-                    </div>
-                  </td>
-                  <td class="px-4 py-3 text-gray-600">{{ item.material_nome ?? `#${item.material_id}` }}</td>
-                  <td class="px-4 py-3 text-center text-gray-600">{{ item.largura_cm }} × {{ item.altura_cm }} cm</td>
-                  <td class="px-4 py-3 text-center text-gray-700 font-semibold">{{ item.quantidade }}</td>
-                  <td class="px-4 py-3 text-right text-gray-800 font-semibold">{{ formatCurrency(item.valor_item) }}</td>
-                </tr>
-                <tr v-if="itens.length === 0">
-                  <td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">Nenhum item encontrado</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Resumo Financeiro -->
-        <div class="mb-6 border-t border-gray-100 pt-6">
-          <h3 class="text-xs font-black text-gray-400 uppercase tracking-[0.15em] mb-3">Resumo Financeiro</h3>
-          <div class="bg-gray-50 rounded-xl p-4 space-y-2">
-            <div class="flex justify-between text-sm text-gray-600">
-              <span>Subtotal ({{ orcamento.quantidade_total_itens ?? itens.length }} itens)</span>
-              <span class="font-medium">{{ formatCurrency(subtotalItens) }}</span>
-            </div>
-            <div v-if="orcamento.valor_mao_obra_global > 0" class="flex justify-between text-sm text-gray-600">
-              <span>Mão de obra</span>
-              <span class="font-medium">+ {{ formatCurrency(orcamento.valor_mao_obra_global) }}</span>
-            </div>
-            <div v-if="orcamento.desconto_volume_percentual > 0" class="flex justify-between text-sm text-green-600">
-              <span>Desconto volume ({{ orcamento.desconto_volume_percentual }}%)</span>
-              <span class="font-medium">- {{ formatCurrency(descontoVolumeValor) }}</span>
-            </div>
-            <div v-if="orcamento.desconto_percentual > 0" class="flex justify-between text-sm text-green-600">
-              <span>Desconto manual ({{ orcamento.desconto_percentual }}%)</span>
-              <span class="font-medium">- {{ formatCurrency(descontoManualPercValor) }}</span>
-            </div>
-            <div v-if="orcamento.desconto_valor > 0" class="flex justify-between text-sm text-green-600">
-              <span>Desconto valor fixo</span>
-              <span class="font-medium">- {{ formatCurrency(orcamento.desconto_valor) }}</span>
-            </div>
-            <div class="border-t border-gray-200 pt-2 mt-2 flex justify-between">
-              <span class="text-base font-bold text-gray-800">Total</span>
-              <span class="text-xl font-black text-indigo-700">{{ formatCurrency(orcamento.valor_total) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- OS vinculada -->
-        <div v-if="orcamento.os_numero" class="mb-6 border-t border-gray-100 pt-6">
-          <h3 class="text-xs font-black text-gray-400 uppercase tracking-[0.15em] mb-3">Ordem de Serviço Vinculada</h3>
+        <!-- Header com gradiente -->
+        <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-6 sm:px-8 py-4 flex items-center justify-between rounded-t-3xl">
           <div class="flex items-center gap-3">
-            <OSIndicadorBadge
-              :numero-os="orcamento.os_numero"
-              :status="orcamento.os_status"
-              @click="emit('openOS')"
-            />
-            <span class="text-sm text-gray-500">Clique para ver detalhes da OS</span>
+            <h2 class="text-lg sm:text-xl font-black text-gray-900">
+              {{ orcamento.numero_orcamento ?? `#${orcamento.id}` }}
+            </h2>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold" :class="statusBadgeClass">
+              {{ statusDisplay.label }}
+            </span>
+            <span v-if="orcamento.pedido_id" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-200 text-gray-500">Legado</span>
           </div>
+          <button type="button" class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all" @click="emit('close')">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
         </div>
 
-        <!-- ═══════ AÇÕES (Task 8.3) ═══════ -->
-        <div v-if="!orcamento.os_numero && statusDisplay.status !== 'rejeitado'" class="border-t border-gray-100 pt-6">
-          <h3 class="text-xs font-black text-gray-400 uppercase tracking-[0.15em] mb-4">Ações</h3>
+        <div class="px-6 sm:px-8 py-6 space-y-6">
 
-          <!-- Toast de sucesso -->
-          <div v-if="toastMessage" class="mb-4 p-3 rounded-xl text-sm font-medium" :class="toastType === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'">
-            {{ toastMessage }}
-          </div>
+          <!-- Dados do Cliente -->
+          <section>
+            <h3 class="text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] mb-3">Dados do Cliente</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="bg-gray-50/80 rounded-2xl px-4 py-3.5 border border-gray-100">
+                <span class="text-[10px] font-bold text-gray-400 uppercase">Nome</span>
+                <p class="text-sm font-bold text-gray-900 mt-0.5">{{ orcamento.cliente_nome ?? '—' }}</p>
+              </div>
+              <div class="bg-gray-50/80 rounded-2xl px-4 py-3.5 border border-gray-100">
+                <span class="text-[10px] font-bold text-gray-400 uppercase">Telefone</span>
+                <p class="text-sm font-bold text-gray-900 mt-0.5">{{ orcamento.cliente_telefone ?? 'Não informado' }}</p>
+              </div>
+              <div class="bg-gray-50/80 rounded-2xl px-4 py-3.5 border border-gray-100">
+                <span class="text-[10px] font-bold text-gray-400 uppercase">Validade</span>
+                <p class="text-sm font-bold mt-0.5" :class="isVencido ? 'text-red-600' : 'text-gray-900'">{{ formatDate(orcamento.data_validade) }}</p>
+              </div>
+            </div>
+          </section>
 
-          <div class="flex flex-wrap gap-3">
-            <!-- Gerar Link -->
-            <button
-              type="button"
-              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors"
-              :disabled="processando"
-              @click="gerarLinkAprovacao"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-2.06a4.5 4.5 0 00-1.242-7.244l-4.5-4.5a4.5 4.5 0 00-6.364 6.364L4.34 8.374" /></svg>
-              Gerar Link
-            </button>
+          <!-- Itens do Orçamento -->
+          <section>
+            <h3 class="text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] mb-3">Itens do Orçamento</h3>
+            <div v-if="loadingItens" class="flex items-center justify-center py-10">
+              <span class="inline-block w-7 h-7 border-[3px] rounded-full animate-spin" style="border-color: rgba(0,0,0,0.08); border-top-color: var(--color-primary, #f97316)" />
+            </div>
+            <div v-else class="space-y-3">
+              <div v-for="(item, idx) in itens" :key="item.id" class="rounded-2xl border border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm transition-all overflow-hidden">
+                <!-- Item header -->
+                <div class="flex items-center justify-between px-4 py-3 bg-gray-50/50">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-black text-gray-900">{{ item.descricao }}</span>
+                    <span class="text-[10px] text-gray-400 font-medium">{{ item.material_nome ?? `#${item.material_id}` }}</span>
+                  </div>
+                  <span class="text-sm font-black text-gray-900">{{ formatCurrency(item.valor_item) }}</span>
+                </div>
+                <!-- Item details -->
+                <div class="px-4 py-3 flex flex-wrap items-center gap-4 text-xs text-gray-500">
+                  <span><b class="text-gray-700">{{ item.largura_cm }} × {{ item.altura_cm }}</b> cm</span>
+                  <span>Qtd: <b class="text-gray-700">{{ item.quantidade }}</b></span>
+                  <span v-if="item.area_m2">Área: <b class="text-gray-700">{{ item.area_m2.toFixed(2) }}</b> m²</span>
+                </div>
+                <!-- Fotos grandes com clique para ampliar -->
+                <div v-if="item.foto_arte_url || item.foto_local_url" class="px-4 pb-4 flex flex-wrap gap-3">
+                  <!-- Foto Arte -->
+                  <div v-if="item.foto_arte_url && !isPdf(item.foto_arte_url)" class="relative group">
+                    <img
+                      :src="item.foto_arte_url"
+                      alt="Arte"
+                      class="w-28 h-28 sm:w-36 sm:h-36 rounded-xl object-cover border border-gray-200 cursor-pointer hover:shadow-md transition-all"
+                      @click="lightboxUrl = item.foto_arte_url"
+                    />
+                    <span class="absolute bottom-1.5 left-1.5 text-[9px] font-bold bg-black/60 text-white px-1.5 py-0.5 rounded">Arte</span>
+                  </div>
+                  <a v-else-if="item.foto_arte_url && isPdf(item.foto_arte_url)" :href="item.foto_arte_url" target="_blank" rel="noopener" class="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 transition-colors text-xs font-bold">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4z"/></svg>
+                    Arte (PDF)
+                  </a>
+                  <!-- Foto Local -->
+                  <div v-if="item.foto_local_url && !isPdf(item.foto_local_url)" class="relative group">
+                    <img
+                      :src="item.foto_local_url"
+                      alt="Local"
+                      class="w-28 h-28 sm:w-36 sm:h-36 rounded-xl object-cover border border-gray-200 cursor-pointer hover:shadow-md transition-all"
+                      @click="lightboxUrl = item.foto_local_url"
+                    />
+                    <span class="absolute bottom-1.5 left-1.5 text-[9px] font-bold bg-black/60 text-white px-1.5 py-0.5 rounded">Local</span>
+                  </div>
+                  <a v-else-if="item.foto_local_url && isPdf(item.foto_local_url)" :href="item.foto_local_url" target="_blank" rel="noopener" class="flex items-center gap-2 px-4 py-3 rounded-xl bg-green-50 border border-green-100 text-green-600 hover:bg-green-100 transition-colors text-xs font-bold">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4z"/></svg>
+                    Local (PDF)
+                  </a>
+                </div>
+              </div>
+              <div v-if="itens.length === 0" class="text-center py-8 text-gray-400 text-sm">Nenhum item encontrado</div>
+            </div>
+          </section>
 
-            <!-- Enviar WhatsApp -->
-            <button
-              type="button"
-              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors"
-              :disabled="processando"
-              @click="iniciarEnvioWhatsApp"
-            >
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.634-1.215A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818c-2.168 0-4.19-.586-5.932-1.609l-.424-.255-4.398 1.154 1.174-4.293-.279-.443A9.785 9.785 0 012.182 12c0-5.423 4.395-9.818 9.818-9.818 5.423 0 9.818 4.395 9.818 9.818 0 5.423-4.395 9.818-9.818 9.818z"/></svg>
-              Enviar WhatsApp
-            </button>
+          <!-- Resumo Financeiro -->
+          <section>
+            <h3 class="text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] mb-3">Resumo Financeiro</h3>
+            <div class="bg-gray-50/80 rounded-2xl border border-gray-100 p-5 space-y-2.5">
+              <div class="flex justify-between text-sm text-gray-600">
+                <span>Subtotal ({{ orcamento.quantidade_total_itens ?? itens.length }} itens)</span>
+                <span class="font-semibold">{{ formatCurrency(subtotalItens) }}</span>
+              </div>
+              <div v-if="orcamento.valor_mao_obra_global > 0" class="flex justify-between text-sm text-gray-600">
+                <span>Mão de obra</span>
+                <span class="font-semibold">+ {{ formatCurrency(orcamento.valor_mao_obra_global) }}</span>
+              </div>
+              <div v-if="orcamento.desconto_volume_percentual > 0" class="flex justify-between text-sm text-green-600">
+                <span>Desconto volume ({{ orcamento.desconto_volume_percentual }}%)</span>
+                <span class="font-semibold">- {{ formatCurrency(descontoVolumeValor) }}</span>
+              </div>
+              <div v-if="orcamento.desconto_percentual > 0" class="flex justify-between text-sm text-green-600">
+                <span>Desconto manual ({{ orcamento.desconto_percentual }}%)</span>
+                <span class="font-semibold">- {{ formatCurrency(descontoManualPercValor) }}</span>
+              </div>
+              <div v-if="orcamento.desconto_valor > 0" class="flex justify-between text-sm text-green-600">
+                <span>Desconto valor fixo</span>
+                <span class="font-semibold">- {{ formatCurrency(orcamento.desconto_valor) }}</span>
+              </div>
+              <div class="border-t border-gray-200 pt-3 mt-3 flex justify-between items-center">
+                <span class="text-base font-black text-gray-900">Total</span>
+                <span class="text-2xl font-black" style="color: var(--color-primary, #f97316)">{{ formatCurrency(orcamento.valor_total) }}</span>
+              </div>
+            </div>
+          </section>
 
-            <!-- Aprovar Internamente -->
-            <button
-              type="button"
-              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm"
-              :disabled="processando"
-              @click="showAprovacaoInterna = true"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-              Aprovar Internamente
-            </button>
-          </div>
+          <!-- OS vinculada -->
+          <section v-if="orcamento.os_numero">
+            <h3 class="text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] mb-3">Ordem de Serviço Vinculada</h3>
+            <div class="flex items-center gap-3">
+              <OSIndicadorBadge :numero-os="orcamento.os_numero" :status="orcamento.os_status" @click="emit('openOS')" />
+              <span class="text-sm text-gray-500">Clique para ver detalhes da OS</span>
+            </div>
+          </section>
 
-          <!-- Link gerado (exibição) -->
-          <div v-if="linkGerado" class="mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-200">
-            <label class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.15em] mb-2 block">Link de Aprovação</label>
-            <div class="flex items-center gap-2">
-              <input
-                type="text"
-                :value="linkGerado"
-                readonly
-                class="flex-1 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs text-gray-700 font-mono"
-              />
-              <button
-                type="button"
-                class="px-3 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
-                @click="copiarLink"
-              >
-                {{ linkCopiado ? '✓ Copiado' : 'Copiar' }}
+          <!-- ═══ AÇÕES ═══ -->
+          <section v-if="!orcamento.os_numero" class="border-t border-gray-100 pt-6">
+            <h3 class="text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] mb-4">Ações</h3>
+
+            <!-- Toast -->
+            <div v-if="toastMessage" class="mb-4 p-3.5 rounded-xl text-sm font-semibold" :class="toastType === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'">
+              {{ toastMessage }}
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+              <!-- Gerar Link -->
+              <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-colors hover:shadow-sm disabled:opacity-50" style="background: var(--color-primary-5, rgba(249,115,22,0.05)); color: var(--color-primary, #f97316); border-color: var(--color-primary-20, rgba(249,115,22,0.2))" :disabled="processando" @click="gerarLinkAprovacao">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-2.06a4.5 4.5 0 00-1.242-7.244l-4.5-4.5a4.5 4.5 0 00-6.364 6.364L4.34 8.374" /></svg>
+                Gerar Link
+              </button>
+
+              <!-- Enviar WhatsApp -->
+              <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 hover:shadow-sm transition-colors disabled:opacity-50" :disabled="processando" @click="iniciarEnvioWhatsApp">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.634-1.215A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818c-2.168 0-4.19-.586-5.932-1.609l-.424-.255-4.398 1.154 1.174-4.293-.279-.443A9.785 9.785 0 012.182 12c0-5.423 4.395-9.818 9.818-9.818 5.423 0 9.818 4.395 9.818 9.818 0 5.423-4.395 9.818-9.818 9.818z"/></svg>
+                Enviar WhatsApp
+              </button>
+
+              <!-- Aprovar Internamente -->
+              <button v-if="statusDisplay.status !== 'rejeitado' && statusDisplay.status !== 'aprovado'" type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-sm transition-colors shadow-sm disabled:opacity-50" :disabled="processando" @click="showAprovacaoInterna = true">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                Aprovar Internamente
+              </button>
+
+              <!-- Reprovar -->
+              <button v-if="statusDisplay.status !== 'rejeitado' && statusDisplay.status !== 'aprovado'" type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:shadow-sm transition-colors disabled:opacity-50" :disabled="processando" @click="showReprovar = true">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                Reprovar
+              </button>
+
+              <!-- Abrir link em nova aba -->
+              <button v-if="linkGerado || orcamento.token_aprovacao" type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200 hover:shadow-sm transition-colors" @click="abrirLinkNovaPagina">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                Abrir Link
+              </button>
+
+              <!-- Baixar PDF -->
+              <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white shadow-sm hover:shadow-md transition-all disabled:opacity-50 bg-emerald-600 hover:bg-emerald-700" :disabled="gerandoPdf" @click="gerarPdfOrcamento">
+                <span v-if="gerandoPdf" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                <svg v-else class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                {{ gerandoPdf ? 'Gerando...' : 'Baixar PDF' }}
               </button>
             </div>
-          </div>
 
-          <!-- Campo telefone manual (WhatsApp) -->
-          <div v-if="showTelefoneManual" class="mt-4 p-4 bg-green-50 rounded-xl border border-green-200">
-            <label class="text-[10px] font-black text-green-600 uppercase tracking-[0.15em] mb-2 block">Telefone do cliente (DDD + número)</label>
-            <div class="flex items-center gap-2">
-              <input
-                v-model="telefoneManual"
-                type="tel"
-                placeholder="Ex: 11999998888"
-                class="flex-1 rounded-lg border border-green-200 bg-white px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:border-green-400"
-              />
-              <button
-                type="button"
-                class="px-4 py-2.5 rounded-lg text-sm font-bold bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50"
-                :disabled="!telefoneValido"
-                @click="enviarWhatsApp(telefoneManual)"
-              >
-                Enviar
-              </button>
+            <!-- Link gerado -->
+            <div v-if="linkGerado" class="mt-4 p-4 rounded-2xl border" style="background: var(--color-primary-5, rgba(249,115,22,0.05)); border-color: var(--color-primary-20, rgba(249,115,22,0.2))">
+              <label class="text-[10px] font-black uppercase tracking-[0.15em] mb-2 block" style="color: var(--color-primary, #f97316)">Link de Aprovação</label>
+              <div class="flex items-center gap-2">
+                <input type="text" :value="linkGerado" readonly class="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs text-gray-700 font-mono" />
+                <button type="button" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white transition-colors" style="background: var(--color-primary, #f97316)" @click="copiarLink">
+                  {{ linkCopiado ? '✓ Copiado' : 'Copiar' }}
+                </button>
+              </div>
             </div>
-            <p v-if="telefoneManual && !telefoneValido" class="text-xs text-red-500 mt-1">Formato inválido. Use 10 ou 11 dígitos (DDD + número).</p>
-          </div>
 
-          <!-- Modal Aprovação Interna -->
-          <div v-if="showAprovacaoInterna" class="mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-            <label class="text-[10px] font-black text-emerald-600 uppercase tracking-[0.15em] mb-2 block">Forma de Pagamento</label>
-            <div class="flex items-end gap-3">
-              <select
-                v-model="formaPagamentoAprovacao"
-                class="flex-1 rounded-lg border border-emerald-200 bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-400"
-              >
-                <option value="" disabled>Selecione a forma de pagamento...</option>
-                <option value="dinheiro">Dinheiro</option>
-                <option value="pix">PIX</option>
-                <option value="cartao">Cartão</option>
-                <option value="boleto">Boleto</option>
-                <option value="parcelado">Parcelado</option>
-              </select>
-              <button
-                type="button"
-                class="px-5 py-2.5 rounded-lg text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm"
-                :disabled="!formaPagamentoAprovacao || processando"
-                @click="aprovarInternamente"
-              >
-                <span v-if="processando" class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span v-else>Confirmar Aprovação</span>
-              </button>
-              <button
-                type="button"
-                class="px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                @click="showAprovacaoInterna = false"
-              >
-                Cancelar
-              </button>
+            <!-- Campo telefone manual -->
+            <div v-if="showTelefoneManual" class="mt-4 p-4 bg-green-50 rounded-2xl border border-green-200">
+              <label class="text-[10px] font-black text-green-600 uppercase tracking-[0.15em] mb-2 block">Telefone do cliente (DDD + número)</label>
+              <div class="flex items-center gap-2">
+                <input v-model="telefoneManual" type="tel" placeholder="Ex: 11999998888" class="flex-1 rounded-xl border border-green-200 bg-white px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:border-green-400" />
+                <button type="button" class="px-4 py-2.5 rounded-xl text-sm font-bold bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50" :disabled="!telefoneValido" @click="enviarWhatsApp(telefoneManual)">
+                  Enviar
+                </button>
+              </div>
+              <p v-if="telefoneManual && !telefoneValido" class="text-xs text-red-500 mt-1.5">Formato inválido. Use 10 ou 11 dígitos (DDD + número).</p>
             </div>
-          </div>
+
+            <!-- Modal Aprovação Interna -->
+            <div v-if="showAprovacaoInterna" class="mt-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+              <label class="text-[10px] font-black text-emerald-600 uppercase tracking-[0.15em] mb-2 block">Forma de Pagamento</label>
+              <div class="flex items-end gap-3">
+                <select v-model="formaPagamentoAprovacao" class="flex-1 rounded-xl border border-emerald-200 bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-400">
+                  <option value="" disabled>Selecione a forma de pagamento...</option>
+                  <option value="dinheiro">Dinheiro</option>
+                  <option value="pix">PIX</option>
+                  <option value="cartao">Cartão</option>
+                  <option value="boleto">Boleto</option>
+                  <option value="parcelado">Parcelado</option>
+                </select>
+                <button type="button" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm" :disabled="!formaPagamentoAprovacao || processando" @click="aprovarInternamente">
+                  <span v-if="processando" class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span v-else>Confirmar</span>
+                </button>
+                <button type="button" class="px-3 py-2.5 rounded-xl text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors" @click="showAprovacaoInterna = false">Cancelar</button>
+              </div>
+            </div>
+
+            <!-- Modal Reprovar -->
+            <div v-if="showReprovar" class="mt-4 p-4 bg-red-50 rounded-2xl border border-red-200">
+              <label class="text-[10px] font-black text-red-600 uppercase tracking-[0.15em] mb-2 block">Confirmar Reprovação</label>
+              <p class="text-sm text-gray-600 mb-3">Tem certeza que deseja reprovar este orçamento?</p>
+              <div class="flex items-center gap-3">
+                <button type="button" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 shadow-sm" :disabled="processando" @click="reprovarOrcamento">
+                  <span v-if="processando" class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span v-else>Confirmar Reprovação</span>
+                </button>
+                <button type="button" class="px-3 py-2.5 rounded-xl text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors" @click="showReprovar = false">Cancelar</button>
+              </div>
+            </div>
+          </section>
+
         </div>
-
       </div>
+    </div>
+
+    <!-- Lightbox para ampliar imagens -->
+    <div v-if="lightboxUrl" class="fixed inset-0 bg-black/90 z-[60] flex items-center justify-center p-4" @click="lightboxUrl = null">
+      <button type="button" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors" @click.stop="lightboxUrl = null">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+      <img :src="lightboxUrl!" alt="Imagem ampliada" class="max-w-[90vw] max-h-[90vh] rounded-2xl object-contain shadow-2xl" @click.stop />
     </div>
   </Teleport>
 </template>
@@ -301,7 +267,6 @@ import { createSupabaseClient } from '~/lib/supabase'
 import type { StatusOS } from '~/composables/useOrdensServico'
 import OSIndicadorBadge from '~/components/OSIndicadorBadge.vue'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
 interface OrcamentoDetalhe {
   id: number
   pedido_id: number | null
@@ -340,20 +305,17 @@ interface ItemOrcamentoDetalhe {
   foto_local_url: string | null
 }
 
-// ─── Props ───────────────────────────────────────────────────────────────────
 const props = defineProps<{
   show: boolean
   orcamento: OrcamentoDetalhe | null
 }>()
 
-// ─── Emits ───────────────────────────────────────────────────────────────────
 const emit = defineEmits<{
   (e: 'close'): void
   (e: 'openOS'): void
   (e: 'refresh'): void
 }>()
 
-// ─── Composables ─────────────────────────────────────────────────────────────
 const supabase = createSupabaseClient()
 const {
   comporMensagemWhatsAppMultiItens,
@@ -364,7 +326,7 @@ const {
   classificarStatusOrcamentoV2,
 } = useOrcamentos()
 
-// ─── State ───────────────────────────────────────────────────────────────────
+// State
 const itens = ref<ItemOrcamentoDetalhe[]>([])
 const loadingItens = ref(false)
 const processando = ref(false)
@@ -373,17 +335,17 @@ const linkCopiado = ref(false)
 const showTelefoneManual = ref(false)
 const telefoneManual = ref('')
 const showAprovacaoInterna = ref(false)
+const showReprovar = ref(false)
 const formaPagamentoAprovacao = ref('')
 const toastMessage = ref('')
 const toastType = ref<'success' | 'error'>('success')
+const lightboxUrl = ref<string | null>(null)
+const gerandoPdf = ref(false)
 
-// ─── Computed ────────────────────────────────────────────────────────────────
+// Computed
 const statusDisplay = computed(() => {
   if (!props.orcamento) return { status: 'rascunho', label: 'Rascunho', cor: 'gray' }
-  return classificarStatusOrcamentoV2(
-    props.orcamento.status as any,
-    props.orcamento.data_validade
-  )
+  return classificarStatusOrcamentoV2(props.orcamento.status as any, props.orcamento.data_validade)
 })
 
 const statusBadgeClass = computed(() => {
@@ -399,9 +361,7 @@ const statusBadgeClass = computed(() => {
 
 const isVencido = computed(() => statusDisplay.value.status === 'vencido')
 
-const subtotalItens = computed(() => {
-  return itens.value.reduce((sum, item) => sum + item.valor_item, 0)
-})
+const subtotalItens = computed(() => itens.value.reduce((sum, item) => sum + item.valor_item, 0))
 
 const descontoVolumeValor = computed(() => {
   if (!props.orcamento) return 0
@@ -416,30 +376,27 @@ const descontoManualPercValor = computed(() => {
   return aposVolume * ((props.orcamento.desconto_percentual ?? 0) / 100)
 })
 
-const telefoneValido = computed(() => {
-  return validarTelefone(telefoneManual.value)
+const telefoneValido = computed(() => validarTelefone(telefoneManual.value))
+
+// Watchers
+watch(() => props.show, (newVal) => {
+  if (newVal && props.orcamento) {
+    fetchItens()
+    resetState()
+  }
 })
 
-// ─── Watchers ────────────────────────────────────────────────────────────────
-watch(
-  () => props.show,
-  (newVal) => {
-    if (newVal && props.orcamento) {
-      fetchItens()
-      resetState()
-    }
-  }
-)
-
-// ─── Methods ─────────────────────────────────────────────────────────────────
+// Methods
 function resetState() {
   linkGerado.value = ''
   linkCopiado.value = false
   showTelefoneManual.value = false
   telefoneManual.value = ''
   showAprovacaoInterna.value = false
+  showReprovar.value = false
   formaPagamentoAprovacao.value = ''
   toastMessage.value = ''
+  lightboxUrl.value = null
 }
 
 async function fetchItens() {
@@ -452,10 +409,7 @@ async function fetchItens() {
       .eq('orcamento_id', props.orcamento.id)
       .order('id', { ascending: true })
 
-    if (error) {
-      console.error('Erro ao buscar itens:', error)
-      return
-    }
+    if (error) { console.error('Erro ao buscar itens:', error); return }
 
     itens.value = (data ?? []).map((row: any) => ({
       id: row.id,
@@ -486,7 +440,6 @@ function showToast(message: string, type: 'success' | 'error' = 'success') {
 async function atualizarStatusParaEnviado() {
   if (!props.orcamento || props.orcamento.status !== 'rascunho') return
   try {
-    // Buscar etapa "Enviado" do pipeline de orçamentos
     const { data: etapaData } = await supabase
       .from('pipeline_etapas')
       .select('id')
@@ -496,9 +449,7 @@ async function atualizarStatusParaEnviado() {
       .single()
 
     const updatePayload: Record<string, unknown> = { status: 'enviado' }
-    if (etapaData) {
-      updatePayload.etapa_id = etapaData.id
-    }
+    if (etapaData) updatePayload.etapa_id = etapaData.id
 
     await supabase
       .from('orcamentos_adesivo')
@@ -509,28 +460,28 @@ async function atualizarStatusParaEnviado() {
   }
 }
 
-// ─── Gerar Link de Aprovação ─────────────────────────────────────────────────
+function abrirLinkNovaPagina() {
+  if (!props.orcamento) return
+  const token = linkGerado.value
+    ? linkGerado.value
+    : `${window.location.origin}/orcamento-aprovacao/${props.orcamento.token_aprovacao}`
+  const url = linkGerado.value || `${window.location.origin}/orcamento-aprovacao/${props.orcamento.token_aprovacao}`
+  window.open(url, '_blank')
+}
+
 async function gerarLinkAprovacao() {
   if (!props.orcamento) return
   processando.value = true
   try {
     const newToken = crypto.randomUUID()
-
     const { error } = await supabase
       .from('orcamentos_adesivo')
       .update({ token_aprovacao: newToken })
       .eq('id', props.orcamento.id)
 
-    if (error) {
-      showToast('Erro ao gerar token de aprovação.', 'error')
-      console.error(error)
-      return
-    }
+    if (error) { showToast('Erro ao gerar token de aprovação.', 'error'); console.error(error); return }
 
-    // If status is rascunho, update to enviado
     await atualizarStatusParaEnviado()
-
-    // Compose link
     const baseUrl = window.location.origin
     linkGerado.value = comporLinkAprovacao(baseUrl, newToken)
     showToast('Link de aprovação gerado com sucesso!')
@@ -543,7 +494,6 @@ async function gerarLinkAprovacao() {
   }
 }
 
-// ─── Copiar Link ─────────────────────────────────────────────────────────────
 async function copiarLink() {
   try {
     await navigator.clipboard.writeText(linkGerado.value)
@@ -554,17 +504,13 @@ async function copiarLink() {
   }
 }
 
-// ─── Envio WhatsApp ──────────────────────────────────────────────────────────
 async function iniciarEnvioWhatsApp() {
   if (!props.orcamento) return
-
   const telefone = props.orcamento.cliente_telefone
   if (!telefone || !validarTelefone(telefone)) {
-    // Client has no phone, show manual input
     showTelefoneManual.value = true
     return
   }
-
   await enviarWhatsApp(telefone)
 }
 
@@ -572,7 +518,6 @@ async function enviarWhatsApp(telefone: string) {
   if (!props.orcamento) return
   processando.value = true
   try {
-    // Ensure we have a token/link first
     let token = props.orcamento.token_aprovacao
     if (!token) {
       token = crypto.randomUUID()
@@ -580,22 +525,13 @@ async function enviarWhatsApp(telefone: string) {
         .from('orcamentos_adesivo')
         .update({ token_aprovacao: token })
         .eq('id', props.orcamento.id)
-
-      if (error) {
-        showToast('Erro ao gerar token para o link.', 'error')
-        console.error(error)
-        return
-      }
+      if (error) { showToast('Erro ao gerar token para o link.', 'error'); console.error(error); return }
     }
 
-    // If status is rascunho, update to enviado
     await atualizarStatusParaEnviado()
-
-    // Compose link
     const baseUrl = window.location.origin
     const linkAprovacao = comporLinkAprovacao(baseUrl, token)
 
-    // Compose WhatsApp message
     const descricaoResumida = itens.value.length > 0
       ? truncarDescricao(itens.value.map(i => i.descricao).join(', '), 80)
       : 'Adesivos personalizados'
@@ -609,10 +545,8 @@ async function enviarWhatsApp(telefone: string) {
       linkAprovacao,
     })
 
-    // Build WhatsApp link and open
     const waLink = comporLinkWhatsApp(telefone, mensagem)
     window.open(waLink, '_blank')
-
     showTelefoneManual.value = false
     showToast('WhatsApp aberto em nova aba!')
     emit('refresh')
@@ -624,7 +558,6 @@ async function enviarWhatsApp(telefone: string) {
   }
 }
 
-// ─── Aprovação Interna ───────────────────────────────────────────────────────
 async function aprovarInternamente() {
   if (!props.orcamento || !formaPagamentoAprovacao.value) return
   processando.value = true
@@ -635,11 +568,7 @@ async function aprovarInternamente() {
       p_origem: 'interno',
     })
 
-    if (error) {
-      showToast(`Erro na aprovação: ${error.message}`, 'error')
-      console.error('Erro RPC gerar_ordem_servico:', error)
-      return
-    }
+    if (error) { showToast(`Erro na aprovação: ${error.message}`, 'error'); console.error(error); return }
 
     showAprovacaoInterna.value = false
     showToast('Orçamento aprovado! Ordem de Serviço gerada com sucesso.')
@@ -652,7 +581,40 @@ async function aprovarInternamente() {
   }
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+async function reprovarOrcamento() {
+  if (!props.orcamento) return
+  processando.value = true
+  try {
+    // Buscar etapa "Rejeitado" do pipeline
+    const { data: etapaData } = await supabase
+      .from('pipeline_etapas')
+      .select('id')
+      .eq('pipeline_tipo', 'orcamentos')
+      .eq('nome', 'Rejeitado')
+      .limit(1)
+      .maybeSingle()
+
+    const updatePayload: Record<string, unknown> = { status: 'rejeitado' }
+    if (etapaData) updatePayload.etapa_id = etapaData.id
+
+    const { error } = await supabase
+      .from('orcamentos_adesivo')
+      .update(updatePayload)
+      .eq('id', props.orcamento.id)
+
+    if (error) { showToast(`Erro ao reprovar: ${error.message}`, 'error'); console.error(error); return }
+
+    showReprovar.value = false
+    showToast('Orçamento reprovado.')
+    emit('refresh')
+  } catch (err: any) {
+    showToast(`Erro inesperado: ${err?.message ?? 'Tente novamente.'}`, 'error')
+    console.error(err)
+  } finally {
+    processando.value = false
+  }
+}
+
 function formatCurrency(val: number | null | undefined): string {
   if (val == null) return 'R$ 0,00'
   return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -666,5 +628,101 @@ function formatDate(dateStr: string | null | undefined): string {
 function isPdf(url: string | null | undefined): boolean {
   if (!url) return false
   return url.toLowerCase().endsWith('.pdf')
+}
+
+async function gerarPdfOrcamento() {
+  if (!props.orcamento) return
+  gerandoPdf.value = true
+  try {
+    const { default: jsPDF } = await import('jspdf')
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+    const pageWidth = doc.internal.pageSize.getWidth()
+    let y = 20
+
+    // Header
+    doc.setFontSize(14)
+    doc.setFont('helvetica', 'bold')
+    const numero = props.orcamento.numero_orcamento ?? `#${props.orcamento.id}`
+    doc.text(`Orçamento ${numero}`, pageWidth / 2, y, { align: 'center' })
+    y += 6
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(100)
+    doc.text(`Emitido em ${formatDate(props.orcamento.created_at)}`, pageWidth / 2, y, { align: 'center' })
+    y += 10
+
+    // Separador
+    doc.setDrawColor(230)
+    doc.line(20, y, pageWidth - 20, y)
+    y += 8
+
+    // Cliente
+    doc.setTextColor(60)
+    doc.setFontSize(11)
+    doc.setFont('helvetica', 'bold')
+    doc.text('DADOS DO CLIENTE', 20, y)
+    y += 6
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(10)
+    doc.text(`Nome: ${props.orcamento.cliente_nome ?? '—'}`, 20, y); y += 5
+    doc.text(`Telefone: ${props.orcamento.cliente_telefone ?? 'Não informado'}`, 20, y); y += 5
+    doc.text(`Validade: ${formatDate(props.orcamento.data_validade)}`, 20, y); y += 10
+
+    // Itens
+    doc.setFontSize(11)
+    doc.setFont('helvetica', 'bold')
+    doc.text('ITENS DO ORÇAMENTO', 20, y)
+    y += 7
+
+    for (let i = 0; i < itens.value.length; i++) {
+      const item = itens.value[i]
+      if (y > 260) { doc.addPage(); y = 20 }
+
+      doc.setFontSize(9)
+      doc.setFont('helvetica', 'bold')
+      doc.setTextColor(80)
+      doc.text(`Item ${i + 1} — ${item.descricao}`, 20, y)
+      doc.text(formatCurrency(item.valor_item), pageWidth - 20, y, { align: 'right' })
+      y += 5
+
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(8)
+      doc.setTextColor(120)
+      doc.text(`${item.largura_cm} × ${item.altura_cm} cm | Qtd: ${item.quantidade} | ${item.material_nome ?? ''}`, 22, y)
+      y += 7
+    }
+
+    // Separador
+    y += 3
+    doc.setDrawColor(230)
+    doc.line(20, y, pageWidth - 20, y)
+    y += 8
+
+    // Total
+    doc.setFontSize(11)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(60)
+    doc.text('RESUMO', 20, y)
+    y += 7
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    doc.text('Subtotal:', 20, y)
+    doc.text(formatCurrency(subtotalItens.value), pageWidth - 20, y, { align: 'right' })
+    y += 6
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(12)
+    doc.setTextColor(0)
+    doc.text('TOTAL:', 20, y)
+    doc.text(formatCurrency(props.orcamento.valor_total), pageWidth - 20, y, { align: 'right' })
+
+    // Download
+    const nomeArquivo = `Orcamento_${numero.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
+    doc.save(nomeArquivo)
+  } catch (err) {
+    console.error('Erro ao gerar PDF:', err)
+    showToast('Erro ao gerar PDF', 'error')
+  } finally {
+    gerandoPdf.value = false
+  }
 }
 </script>

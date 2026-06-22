@@ -88,6 +88,7 @@ export function usePersonalizacao() {
         nome_empresa:        data.nome_empresa ?? nomeEmpresaFallback,
         logo_url:            data.logo_url            ?? null,
         logo_orcamento_url:  data.logo_orcamento_url  ?? null,
+        logo_orcamento_size: data.logo_orcamento_size ?? '160',
         logo_size:           data.logo_size           ?? DEFAULTS.logo_size,
         cor_primaria_grad:   data.cor_primaria_grad   ?? null,
         cor_fundo_grad:      data.cor_fundo_grad      ?? null,

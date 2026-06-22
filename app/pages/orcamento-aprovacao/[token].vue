@@ -55,7 +55,7 @@
 
       <!-- Header with logo/company name -->
       <div class="text-center">
-        <img v-if="empresa.logo_url" :src="empresa.logo_url" :alt="empresa.nome" class="mx-auto mb-6 object-contain" style="height: 300px; max-width: 90%" />
+        <img v-if="empresa.logo_url" :src="empresa.logo_url" :alt="empresa.nome" class="mx-auto mb-3 object-contain" :style="{ height: logoOrcSizePx + 'px', maxWidth: '90%' }" />
         <h2 class="text-xl font-bold mb-1" :style="{ color: 'var(--color-primary-text, #ffffff)' }">Orçamento</h2>
         <div class="flex items-center justify-center gap-3 mt-2">
           <span v-if="orcamento?.numero_orcamento" class="inline-block text-xs font-bold px-2.5 py-1 rounded-full" :style="{ background: 'var(--color-primary-5, rgba(79,70,229,0.1))', color: 'var(--color-primary, #4f46e5)' }">
@@ -271,24 +271,37 @@
         </div>
 
         <!-- Main action buttons -->
-        <div v-else class="flex gap-3">
+        <div v-else class="space-y-3">
+          <div class="flex gap-3">
+            <button
+              type="button"
+              class="flex-1 py-4 rounded-xl text-base font-bold bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/25 transition-all disabled:opacity-50"
+              :disabled="actionLoading"
+              @click="handleReject"
+            >
+              <span v-if="actionLoading && actionType === 'reject'" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
+              ✗ Reprovar
+            </button>
+            <button
+              type="button"
+              class="flex-1 py-4 rounded-xl text-base font-bold bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-500/25 transition-all disabled:opacity-50"
+              :disabled="actionLoading"
+              @click="handleApprove"
+            >
+              <span v-if="actionLoading && actionType === 'approve'" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
+              ✓ Aprovar
+            </button>
+          </div>
+          <!-- Botão Baixar PDF -->
           <button
             type="button"
-            class="flex-1 py-4 rounded-xl text-base font-bold bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/25 transition-all disabled:opacity-50"
-            :disabled="actionLoading"
-            @click="handleReject"
+            class="w-full py-3.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 shadow-lg bg-gray-700 text-white hover:bg-gray-800"
+            :disabled="gerandoPdf"
+            @click="gerarPdfOrcamento"
           >
-            <span v-if="actionLoading && actionType === 'reject'" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
-            ✗ Reprovar
-          </button>
-          <button
-            type="button"
-            class="flex-1 py-4 rounded-xl text-base font-bold bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-500/25 transition-all disabled:opacity-50"
-            :disabled="actionLoading"
-            @click="handleApprove"
-          >
-            <span v-if="actionLoading && actionType === 'approve'" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
-            ✓ Aprovar
+            <span v-if="gerandoPdf" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+            {{ gerandoPdf ? 'Gerando PDF...' : 'Baixar PDF' }}
           </button>
         </div>
       </div>
@@ -377,6 +390,7 @@ const actionLoading = ref(false)
 const actionDone = ref(false)
 const actionType = ref<'approve' | 'reject' | null>(null)
 const actionError = ref<string | null>(null)
+const gerandoPdf = ref(false)
 
 // ─── Computed ──────────────────────────────────────
 const subtotalItens = computed(() => {
@@ -646,8 +660,8 @@ async function loadEmpresaInfo(empresaId: number) {
     logo_url: data?.logo_orcamento_url || data?.logo_url || null,
   }
 
-  // Tamanho do logo — usa logo_size que já funciona
-  const sizeStr = data?.logo_size || '160'
+  // Tamanho do logo — usa logo_orcamento_size (valor numérico em px)
+  const sizeStr = data?.logo_orcamento_size || '160'
   const parsed = parseInt(sizeStr)
   logoOrcSizePx.value = isNaN(parsed) ? 160 : Math.max(parsed, 80)
 
@@ -884,6 +898,220 @@ async function confirmRejectLegacy() {
 
   actionDone.value = true
   showRejectReason.value = false
+}
+
+// ─── Gerar PDF do Orçamento ────────────────────────
+async function gerarPdfOrcamento() {
+  if (!orcamento.value) return
+  gerandoPdf.value = true
+
+  try {
+    const { default: jsPDF } = await import('jspdf')
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const pageHeight = doc.internal.pageSize.getHeight()
+    const marginL = 20
+    const marginR = pageWidth - 20
+    const contentW = marginR - marginL
+    let y = 20
+
+    function checkPage(needed: number) {
+      if (y + needed > pageHeight - 20) { doc.addPage(); y = 20 }
+    }
+
+    async function loadImageData(url: string): Promise<{ data: string; w: number; h: number } | null> {
+      try {
+        const img = new Image()
+        img.crossOrigin = 'anonymous'
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve()
+          img.onerror = () => reject()
+          img.src = url
+        })
+        const canvas = document.createElement('canvas')
+        canvas.width = img.naturalWidth
+        canvas.height = img.naturalHeight
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0)
+        return { data: canvas.toDataURL('image/png'), w: img.naturalWidth, h: img.naturalHeight }
+      } catch { return null }
+    }
+
+    // ─── LOGO ───
+    if (empresa.value.logo_url) {
+      const logoImg = await loadImageData(empresa.value.logo_url)
+      if (logoImg) {
+        const logoH = Math.min(22, logoOrcSizePx.value * 0.12)
+        const logoW = (logoImg.w / logoImg.h) * logoH
+        doc.addImage(logoImg.data, 'PNG', (pageWidth - logoW) / 2, y, logoW, logoH)
+        y += logoH + 6
+      }
+    }
+
+    // ─── NÚMERO + DATA ───
+    const numero = orcamento.value.numero_orcamento ?? `ORC-${orcamento.value.id}`
+    const dataEmissao = new Date(orcamento.value.created_at).toLocaleDateString('pt-BR')
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(242, 147, 37)
+    doc.text(numero, pageWidth / 2 - 2, y, { align: 'right' })
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(140)
+    doc.text(`  Emitido em ${dataEmissao}`, pageWidth / 2 + 2, y)
+    y += 10
+
+    // ─── ITENS DO ORÇAMENTO ───
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(30)
+    doc.text('ITENS DO ORÇAMENTO', marginL, y)
+    y += 7
+
+    const oItens = itensOrcamento.value
+    for (let i = 0; i < oItens.length; i++) {
+      const item = oItens[i]
+      checkPage(55)
+
+      // Item N + valor
+      doc.setFontSize(9)
+      doc.setFont('helvetica', 'bold')
+      doc.setTextColor(242, 147, 37)
+      doc.text(`Item ${i + 1}`, marginL + 2, y)
+      doc.setTextColor(30)
+      doc.text(formatCurrency(item.valor_item), marginR - 2, y, { align: 'right' })
+      y += 5.5
+
+      // Descrição
+      doc.setFontSize(10)
+      doc.setFont('helvetica', 'bold')
+      doc.setTextColor(30)
+      doc.text(item.descricao || '—', marginL + 2, y)
+      y += 6.5
+
+      // Material | Dimensões | Qtd labels
+      doc.setFontSize(7)
+      doc.setFont('helvetica', 'bold')
+      doc.setTextColor(160)
+      doc.text('MATERIAL', marginL + 2, y)
+      doc.text('DIMENSÕES', marginL + 50, y)
+      doc.text('QTD', marginL + 100, y)
+      y += 3.5
+      // Material | Dimensões | Qtd values
+      doc.setFontSize(9)
+      doc.setFont('helvetica', 'normal')
+      doc.setTextColor(60)
+      doc.text(item.material_nome || '—', marginL + 2, y)
+      doc.text(`${item.largura_cm} × ${item.altura_cm} cm`, marginL + 50, y)
+      doc.text(`${item.quantidade}`, marginL + 100, y)
+      y += 6
+
+      // Fotos Arte e Local
+      if (item.foto_arte_url || item.foto_local_url) {
+        const imgH = 42
+        checkPage(imgH + 10)
+
+        doc.setFontSize(7)
+        doc.setFont('helvetica', 'bold')
+        doc.setTextColor(160)
+        if (item.foto_arte_url && !isPdf(item.foto_arte_url)) doc.text('ARTE', marginL + 2, y)
+        if (item.foto_local_url && !isPdf(item.foto_local_url)) doc.text('LOCAL', marginL + contentW / 2 + 2, y)
+        y += 3
+
+        const imgStartY = y
+        if (item.foto_arte_url && !isPdf(item.foto_arte_url)) {
+          const arteImg = await loadImageData(item.foto_arte_url)
+          if (arteImg) {
+            const maxW = contentW / 2 - 4
+            const ratio = arteImg.w / arteImg.h
+            let iw = maxW; let ih = iw / ratio
+            if (ih > imgH) { ih = imgH; iw = ih * ratio }
+            doc.addImage(arteImg.data, 'PNG', marginL + 2, y, iw, ih)
+          }
+        }
+        if (item.foto_local_url && !isPdf(item.foto_local_url)) {
+          const localImg = await loadImageData(item.foto_local_url)
+          if (localImg) {
+            const maxW = contentW / 2 - 4
+            const ratio = localImg.w / localImg.h
+            let iw = maxW; let ih = iw / ratio
+            if (ih > imgH) { ih = imgH; iw = ih * ratio }
+            doc.addImage(localImg.data, 'PNG', marginL + contentW / 2 + 2, y, iw, ih)
+          }
+        }
+        y = imgStartY + imgH + 4
+      }
+
+      // Separador entre itens
+      if (i < oItens.length - 1) {
+        doc.setDrawColor(235)
+        doc.line(marginL + 2, y, marginR - 2, y)
+        y += 5
+      }
+    }
+
+    // ─── RESUMO FINANCEIRO ───
+    y += 4
+    checkPage(30)
+    doc.setDrawColor(230)
+    doc.line(marginL, y, marginR, y)
+    y += 5
+
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(100)
+    doc.text('Subtotal dos itens', marginL + 2, y)
+    doc.text(formatCurrency(subtotalItens.value), marginR - 2, y, { align: 'right' })
+    y += 5
+
+    if (orcamento.value.valor_mao_obra_global > 0) {
+      doc.text('Mão de obra', marginL + 2, y)
+      doc.text(formatCurrency(orcamento.value.valor_mao_obra_global), marginR - 2, y, { align: 'right' })
+      y += 5
+    }
+    if (totalDescontos.value > 0) {
+      doc.setTextColor(34, 139, 34)
+      doc.text('Descontos', marginL + 2, y)
+      doc.text(`-${formatCurrency(totalDescontos.value)}`, marginR - 2, y, { align: 'right' })
+      y += 5
+    }
+
+    // Total
+    doc.setDrawColor(240)
+    doc.line(marginL + 2, y, marginR - 2, y)
+    y += 5
+    doc.setFontSize(11)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(30)
+    doc.text('Total', marginL + 2, y)
+    doc.setTextColor(34, 139, 34)
+    doc.text(formatCurrency(orcamento.value.valor_total), marginR - 2, y, { align: 'right' })
+    y += 8
+
+    // ─── PRAZO + VALIDADE ───
+    checkPage(12)
+    doc.setDrawColor(240)
+    doc.line(marginL, y, marginR, y)
+    y += 5
+    doc.setFontSize(7)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(160)
+    doc.text('PRAZO ESTIMADO', marginL + 2, y)
+    doc.text('VÁLIDO ATÉ', marginL + contentW / 2, y)
+    y += 3.5
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(60)
+    doc.text(orcamento.value.prazo_estimado_dias ? `${orcamento.value.prazo_estimado_dias} dias` : '—', marginL + 2, y)
+    doc.text(orcamento.value.data_validade ? new Date(orcamento.value.data_validade).toLocaleDateString('pt-BR') : '—', marginL + contentW / 2, y)
+
+    // Download
+    const nomeArquivo = `Orcamento_${numero.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
+    doc.save(nomeArquivo)
+  } catch (err) {
+    console.error('Erro ao gerar PDF:', err)
+  } finally {
+    gerandoPdf.value = false
+  }
 }
 
 // ─── Mount ─────────────────────────────────────────
