@@ -55,7 +55,7 @@
 
       <!-- Header with logo/company name -->
       <div class="text-center">
-        <img v-if="empresa.logo_url" :src="empresa.logo_url" :alt="empresa.nome" class="h-20 mx-auto mb-4 object-contain" />
+        <img v-if="empresa.logo_url" :src="empresa.logo_url" :alt="empresa.nome" class="h-40 max-w-[280px] mx-auto mb-6 object-contain" />
         <h2 class="text-xl font-bold mb-1" :style="{ color: 'var(--color-primary-text, #ffffff)' }">Orçamento</h2>
         <div class="flex items-center justify-center gap-3 mt-2">
           <span v-if="orcamento?.numero_orcamento" class="inline-block text-xs font-bold px-2.5 py-1 rounded-full" :style="{ background: 'var(--color-primary-5, rgba(79,70,229,0.1))', color: 'var(--color-primary, #4f46e5)' }">
@@ -73,71 +73,47 @@
 
         <div class="px-5 py-4 space-y-4">
           <!-- Item list -->
-          <div v-for="(item, idx) in itensOrcamento" :key="item.id" class="border border-gray-100 rounded-xl p-3">
-            <div class="flex items-start justify-between mb-2">
-              <span class="text-xs font-bold text-indigo-500">Item {{ idx + 1 }}</span>
-              <span class="text-sm font-bold text-gray-800">{{ formatCurrency(item.valor_item) }}</span>
+          <div v-for="(item, idx) in itensOrcamento" :key="item.id" class="rounded-xl p-4" :style="{ border: '1px solid var(--color-card-border, rgba(0,0,0,0.08))' }">
+            <div class="flex items-start justify-between mb-3">
+              <span class="text-xs font-bold" :style="{ color: 'var(--color-primary, #4f46e5)' }">Item {{ idx + 1 }}</span>
+              <span class="text-sm font-black" :style="{ color: 'var(--color-card-texto, #1f2937)' }">{{ formatCurrency(item.valor_item) }}</span>
             </div>
-            <p class="text-sm text-gray-800 font-medium">{{ item.descricao || '—' }}</p>
-            <div class="grid grid-cols-3 gap-2 mt-2 text-xs text-gray-500">
+            <p class="text-sm font-semibold mb-3" :style="{ color: 'var(--color-card-texto, #1f2937)' }">{{ item.descricao || '—' }}</p>
+            <div class="grid grid-cols-3 gap-3 text-xs">
               <div>
-                <span class="font-semibold text-gray-400 uppercase">Material</span>
-                <p class="text-gray-700 mt-0.5">{{ item.material_nome || '—' }}</p>
+                <span class="font-bold uppercase tracking-wider" style="color: var(--color-card-texto, #9ca3af); opacity: 0.5; font-size: 10px">Material</span>
+                <p class="mt-0.5 font-medium" :style="{ color: 'var(--color-card-texto, #374151)' }">{{ item.material_nome || '—' }}</p>
               </div>
               <div>
-                <span class="font-semibold text-gray-400 uppercase">Dimensões</span>
-                <p class="text-gray-700 mt-0.5">{{ item.largura_cm }} × {{ item.altura_cm }} cm</p>
+                <span class="font-bold uppercase tracking-wider" style="color: var(--color-card-texto, #9ca3af); opacity: 0.5; font-size: 10px">Dimensões</span>
+                <p class="mt-0.5 font-medium" :style="{ color: 'var(--color-card-texto, #374151)' }">{{ item.largura_cm }} × {{ item.altura_cm }} cm</p>
               </div>
               <div>
-                <span class="font-semibold text-gray-400 uppercase">Qtd</span>
-                <p class="text-gray-700 mt-0.5">{{ item.quantidade }}</p>
+                <span class="font-bold uppercase tracking-wider" style="color: var(--color-card-texto, #9ca3af); opacity: 0.5; font-size: 10px">Qtd</span>
+                <p class="mt-0.5 font-medium" :style="{ color: 'var(--color-card-texto, #374151)' }">{{ item.quantidade }}</p>
               </div>
             </div>
-            <!-- Foto da Arte do Item -->
-            <div v-if="item.foto_arte_url" class="mt-3 pt-2 border-t border-gray-50">
-              <span class="text-xs font-semibold text-gray-400 uppercase block mb-1.5">Arte do Adesivo</span>
-              <a
-                v-if="isPdf(item.foto_arte_url)"
-                :href="item.foto_arte_url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
-              >
-                <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zm-2.5 9.5a1.5 1.5 0 0 1 0 3H9v1.5H7.5v-6H10.5a1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 0 1 0 3H14v1.5h-1.5v-6H15.5a1.5 1.5 0 0 1 0 3z"/>
-                </svg>
-                Ver arte (PDF)
-              </a>
-              <img
-                v-else
-                :src="item.foto_arte_url"
-                alt="Arte do adesivo"
-                class="max-h-32 rounded-lg object-contain cursor-pointer hover:opacity-80 transition-opacity"
-                @click="openLightbox(item.foto_arte_url)"
-              />
-            </div>
-            <!-- Foto do Local de Instalação do Item -->
-            <div v-if="item.foto_local_url" class="mt-3 pt-2 border-t border-gray-50">
-              <span class="text-xs font-semibold text-gray-400 uppercase block mb-1.5">Local de Instalação</span>
-              <a
-                v-if="isPdf(item.foto_local_url)"
-                :href="item.foto_local_url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 text-xs font-medium text-green-600 hover:text-green-800 transition-colors"
-              >
-                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zm-2.5 9.5a1.5 1.5 0 0 1 0 3H9v1.5H7.5v-6H10.5a1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 0 1 0 3H14v1.5h-1.5v-6H15.5a1.5 1.5 0 0 1 0 3z"/>
-                </svg>
-                Ver local de instalação (PDF)
-              </a>
-              <img
-                v-else
-                :src="item.foto_local_url"
-                alt="Local de instalação"
-                class="max-h-32 rounded-lg object-contain cursor-pointer hover:opacity-80 transition-opacity"
-                @click="openLightbox(item.foto_local_url)"
-              />
+
+            <!-- Fotos: Arte e Local lado a lado -->
+            <div v-if="item.foto_arte_url || item.foto_local_url" class="grid grid-cols-2 gap-3 mt-4 pt-3" :style="{ borderTop: '1px solid var(--color-card-border, rgba(0,0,0,0.06))' }">
+              <!-- Arte -->
+              <div v-if="item.foto_arte_url">
+                <span class="text-[10px] font-bold uppercase tracking-wider block mb-1.5" style="color: var(--color-card-texto, #9ca3af); opacity: 0.5">Arte</span>
+                <a v-if="isPdf(item.foto_arte_url)" :href="item.foto_arte_url" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-medium transition-colors" :style="{ color: 'var(--color-primary, #4f46e5)' }">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg>
+                  Ver PDF
+                </a>
+                <img v-else :src="item.foto_arte_url" alt="Arte" class="w-full h-28 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity shadow-sm" @click="openLightbox(item.foto_arte_url)" />
+              </div>
+              <!-- Local -->
+              <div v-if="item.foto_local_url">
+                <span class="text-[10px] font-bold uppercase tracking-wider block mb-1.5" style="color: var(--color-card-texto, #9ca3af); opacity: 0.5">Local</span>
+                <a v-if="isPdf(item.foto_local_url)" :href="item.foto_local_url" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-medium transition-colors" :style="{ color: 'var(--color-primary, #4f46e5)' }">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg>
+                  Ver PDF
+                </a>
+                <img v-else :src="item.foto_local_url" alt="Local" class="w-full h-28 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity shadow-sm" @click="openLightbox(item.foto_local_url)" />
+              </div>
             </div>
           </div>
 
@@ -157,7 +133,7 @@
             </div>
             <div class="flex justify-between text-base font-bold border-t border-gray-100 pt-2 mt-2">
               <span class="text-gray-800">Total</span>
-              <span class="text-indigo-600">{{ formatCurrency(orcamento?.valor_total) }}</span>
+              <span class="text-green-600">{{ formatCurrency(orcamento?.valor_total) }}</span>
             </div>
           </div>
 
@@ -217,7 +193,7 @@
             </div>
             <div class="flex justify-between text-base font-bold border-t border-gray-100 pt-2 mt-2">
               <span class="text-gray-800">Total</span>
-              <span class="text-indigo-600">{{ formatCurrency(orcamento?.valor_total) }}</span>
+              <span class="text-green-600">{{ formatCurrency(orcamento?.valor_total) }}</span>
             </div>
           </div>
 
@@ -666,7 +642,7 @@ async function loadEmpresaInfo(empresaId: number) {
   const data = personalRes.data
   empresa.value = {
     nome: data?.nome_empresa || empresaRes.data?.nome || '',
-    logo_url: data?.logo_url || null,
+    logo_url: data?.logo_orcamento_url || data?.logo_url || null,
   }
 
   // Aplicar tema da empresa na página de aprovação

@@ -105,6 +105,32 @@
 
       <!-- Nome da empresa -->
       <section class="bg-white rounded-2xl border border-pink-100 shadow-sm p-6 space-y-4">
+        <h2 class="text-base font-bold text-gray-800">Logo para Documentos</h2>
+        <p class="text-xs text-gray-500">Versão do logo para fundo claro (orçamentos, links externos). Se não configurado, usa o logo principal.</p>
+
+        <div class="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+          <div class="w-24 h-24 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden shrink-0">
+            <img v-if="form.logo_orcamento_url" :src="form.logo_orcamento_url" alt="Logo docs" class="w-full h-full object-contain p-2" />
+            <svg v-else class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+              {{ uploadingLogoDoc ? 'Enviando…' : 'Enviar logo' }}
+              <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden" :disabled="uploadingLogoDoc" @change="handleLogoDocUpload" />
+            </label>
+            <button v-if="form.logo_orcamento_url" type="button" class="text-sm text-gray-400 hover:text-red-500 transition-colors text-left" @click="form.logo_orcamento_url = null; handleSave()">
+              Remover
+            </button>
+            <p class="text-xs text-gray-400">Use versão colorida/escura para fundos claros.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Nome da empresa -->
+      <section class="bg-white rounded-2xl border border-pink-100 shadow-sm p-6 space-y-4">
         <h2 class="text-base font-bold text-gray-800">Nome Exibido</h2>
         <div class="space-y-1">
           <label class="text-sm font-medium text-gray-700">Nome da empresa no sistema</label>
@@ -801,7 +827,22 @@ async function handleLogoUpload(event: Event) {
   const url = await uploadLogo(file)
   if (url) {
     form.logo_url = url
-    // Salva automaticamente para persistir o logo no banco
+    await handleSave()
+  }
+  input.value = ''
+}
+
+const uploadingLogoDoc = ref(false)
+
+async function handleLogoDocUpload(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  uploadingLogoDoc.value = true
+  const url = await uploadLogo(file)
+  uploadingLogoDoc.value = false
+  if (url) {
+    form.logo_orcamento_url = url
     await handleSave()
   }
   input.value = ''

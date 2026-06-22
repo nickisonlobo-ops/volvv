@@ -1,4 +1,4 @@
-import { useState } from '#app'
+﻿import { useState } from '#app'
 import { ref } from 'vue'
 import { createSupabaseClient } from '~/lib/supabase'
 import { useEmpresa } from './useEmpresa'
@@ -12,6 +12,7 @@ export interface PersonalizacaoConfig {
   cor_card_texto: string
   nome_empresa: string
   logo_url: string | null
+  logo_orcamento_url: string | null
   logo_size: string
   // Gradiente opcional — segunda cor
   cor_primaria_grad: string | null
@@ -35,6 +36,7 @@ const DEFAULTS: PersonalizacaoConfig = {
   cor_card_texto: '#374151',
   nome_empresa: '',
   logo_url: null,
+  logo_orcamento_url: null,
   logo_size: 'md',
   cor_primaria_grad: '#a855f7',
   cor_fundo_grad: null,
@@ -83,6 +85,7 @@ export function usePersonalizacao() {
         cor_card_texto:      data.cor_card_texto      ?? DEFAULTS.cor_card_texto,
         nome_empresa:        data.nome_empresa ?? nomeEmpresaFallback,
         logo_url:            data.logo_url            ?? null,
+        logo_orcamento_url:  data.logo_orcamento_url  ?? null,
         logo_size:           data.logo_size           ?? DEFAULTS.logo_size,
         cor_primaria_grad:   data.cor_primaria_grad   ?? null,
         cor_fundo_grad:      data.cor_fundo_grad      ?? null,
@@ -122,6 +125,7 @@ export function usePersonalizacao() {
       cor_card_texto:      newConfig.cor_card_texto     ?? DEFAULTS.cor_card_texto,
       nome_empresa:        newConfig.nome_empresa,
       logo_url:            newConfig.logo_url,
+      logo_orcamento_url:  newConfig.logo_orcamento_url ?? null,
       logo_size:           newConfig.logo_size          ?? DEFAULTS.logo_size,
       cor_primaria_grad:   newConfig.cor_primaria_grad   ?? null,
       cor_fundo_grad:      newConfig.cor_fundo_grad      ?? null,
@@ -601,6 +605,7 @@ export function usePersonalizacao() {
         cor_card_texto:      data.cor_card_texto      ?? DEFAULTS.cor_card_texto,
         nome_empresa:        data.nome_empresa ?? nomeEmpresaFallback,
         logo_url:            data.logo_url            ?? null,
+        logo_orcamento_url:  data.logo_orcamento_url  ?? null,
         logo_size:           data.logo_size           ?? DEFAULTS.logo_size,
         cor_primaria_grad:   data.cor_primaria_grad   ?? null,
         cor_fundo_grad:      data.cor_fundo_grad      ?? null,
