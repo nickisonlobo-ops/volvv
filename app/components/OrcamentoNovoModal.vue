@@ -147,7 +147,6 @@
                     :key="idx"
                     :item="item"
                     :index="idx"
-                    :materiais="materiais"
                     :empresa-id="empresaId"
                     :orcamento-id="isEditMode && orcamentoParaEditar ? orcamentoParaEditar.id : null"
                     @update:item="onItemUpdate(idx, $event)"

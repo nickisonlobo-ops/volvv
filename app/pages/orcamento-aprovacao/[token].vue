@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
+  <div class="min-h-screen flex items-center justify-center px-4 py-8" :style="{ background: pageBg }">
 
     <!-- ═══ LOADING ═══ -->
     <div v-if="pageState === 'loading'" class="text-center">
-      <div class="w-10 h-10 border-4 border-gray-200 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4"></div>
+      <div class="w-10 h-10 border-4 rounded-full animate-spin mx-auto mb-4" style="border-color: rgba(0,0,0,0.1); border-top-color: var(--color-primary, #4f46e5)"></div>
       <p class="text-sm text-gray-500">Carregando orçamento...</p>
     </div>
 
@@ -55,20 +55,20 @@
 
       <!-- Header with logo/company name -->
       <div class="text-center">
-        <img v-if="empresa.logo_url" :src="empresa.logo_url" :alt="empresa.nome" class="h-14 mx-auto mb-3 object-contain" />
-        <h2 class="text-lg font-bold text-gray-700">{{ empresa.nome || 'Orçamento' }}</h2>
+        <img v-if="empresa.logo_url" :src="empresa.logo_url" :alt="empresa.nome" class="h-20 mx-auto mb-4 object-contain" />
+        <h2 class="text-xl font-bold mb-1" :style="{ color: 'var(--color-primary-text, #ffffff)' }">Orçamento</h2>
         <div class="flex items-center justify-center gap-3 mt-2">
-          <span v-if="orcamento?.numero_orcamento" class="inline-block bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
+          <span v-if="orcamento?.numero_orcamento" class="inline-block text-xs font-bold px-2.5 py-1 rounded-full" :style="{ background: 'var(--color-primary-5, rgba(79,70,229,0.1))', color: 'var(--color-primary, #4f46e5)' }">
             {{ orcamento.numero_orcamento }}
           </span>
-          <span class="text-xs text-gray-400">Emitido em {{ formatDate(orcamento?.created_at) }}</span>
+          <span class="text-xs" :style="{ color: 'var(--color-card-texto, #9ca3af)', opacity: '0.6' }">Emitido em {{ formatDate(orcamento?.created_at) }}</span>
         </div>
       </div>
 
       <!-- Orçamento data card — MULTI-ITEM (new flow) -->
-      <div v-if="!isLegacy" class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-          <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wide">Itens do Orçamento</h3>
+      <div v-if="!isLegacy" class="rounded-2xl shadow-lg border overflow-hidden" :style="{ background: 'var(--color-card, #ffffff)', borderColor: 'var(--color-card-border, rgba(0,0,0,0.06))' }">
+        <div class="px-5 py-4 border-b" :style="{ borderColor: 'var(--color-card-border, rgba(0,0,0,0.06))' }">
+          <h3 class="text-sm font-bold uppercase tracking-wide" :style="{ color: 'var(--color-card-texto, #374151)' }">Itens do Orçamento</h3>
         </div>
 
         <div class="px-5 py-4 space-y-4">
@@ -112,7 +112,8 @@
                 v-else
                 :src="item.foto_arte_url"
                 alt="Arte do adesivo"
-                class="max-h-32 rounded-lg object-contain"
+                class="max-h-32 rounded-lg object-contain cursor-pointer hover:opacity-80 transition-opacity"
+                @click="openLightbox(item.foto_arte_url)"
               />
             </div>
             <!-- Foto do Local de Instalação do Item -->
@@ -134,7 +135,8 @@
                 v-else
                 :src="item.foto_local_url"
                 alt="Local de instalação"
-                class="max-h-32 rounded-lg object-contain"
+                class="max-h-32 rounded-lg object-contain cursor-pointer hover:opacity-80 transition-opacity"
+                @click="openLightbox(item.foto_local_url)"
               />
             </div>
           </div>
@@ -296,21 +298,21 @@
         <div v-else class="flex gap-3">
           <button
             type="button"
-            class="flex-1 py-4 rounded-xl text-base font-bold text-white shadow-lg transition-all disabled:opacity-50"
-            :style="{ background: 'var(--color-primary, #10b981)', boxShadow: '0 10px 25px -5px var(--color-primary, rgba(16,185,129,0.25))' }"
+            class="flex-1 py-4 rounded-xl text-base font-bold bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/25 transition-all disabled:opacity-50"
+            :disabled="actionLoading"
+            @click="handleReject"
+          >
+            <span v-if="actionLoading && actionType === 'reject'" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
+            ✗ Reprovar
+          </button>
+          <button
+            type="button"
+            class="flex-1 py-4 rounded-xl text-base font-bold bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-500/25 transition-all disabled:opacity-50"
             :disabled="actionLoading"
             @click="handleApprove"
           >
             <span v-if="actionLoading && actionType === 'approve'" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
             ✓ Aprovar
-          </button>
-          <button
-            type="button"
-            class="flex-1 py-4 rounded-xl text-base font-bold bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/25 transition-all disabled:opacity-50"
-            :disabled="actionLoading"
-            @click="handleReject"
-          >
-            ✗ Rejeitar
           </button>
         </div>
       </div>
@@ -343,6 +345,31 @@
     </div>
 
   </div>
+
+  <!-- Lightbox para fotos -->
+  <Teleport to="body">
+    <Transition name="fade">
+      <div
+        v-if="lightboxUrl"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+        @click="lightboxUrl = null"
+      >
+        <img
+          :src="lightboxUrl"
+          alt="Foto ampliada"
+          class="max-w-full max-h-[90vh] rounded-xl shadow-2xl object-contain"
+          @click.stop
+        />
+        <button
+          type="button"
+          class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+          @click="lightboxUrl = null"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -363,6 +390,8 @@ const orcamento = ref<any>(null)
 const itensOrcamento = ref<any[]>([])
 const artes = ref<{ id: number; nome_arquivo: string; url: string }[]>([])
 const empresa = ref<{ nome: string; logo_url: string | null }>({ nome: '', logo_url: null })
+const pageBg = ref('var(--color-bg, #f8fafc)')
+const lightboxUrl = ref<string | null>(null)
 const isLegacy = ref(false)
 
 const showRejectReason = ref(false)
@@ -409,6 +438,10 @@ const decisionStatus = computed(() => {
 })
 
 // ─── Helpers ───────────────────────────────────────
+function openLightbox(url: string) {
+  lightboxUrl.value = url
+}
+
 function formatCurrency(value: number | null | undefined): string {
   if (value == null) return 'R$ 0,00'
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -643,14 +676,29 @@ async function loadEmpresaInfo(empresaId: number) {
     const corTexto = data.cor_primaria_texto || '#ffffff'
     const dir = data.grad_direction || '135deg'
     const corGrad = data.cor_primaria_grad || null
+    const corFundo = data.cor_fundo || '#f8fafc'
+    const corFundoGrad = data.cor_fundo_grad || null
+    const corCard = data.cor_card || '#ffffff'
+    const corCardTexto = data.cor_card_texto || '#1e293b'
+    const corCardBorder = data.cor_card_border || 'rgba(0,0,0,0.06)'
 
     const primaryBg = corGrad
       ? `linear-gradient(${dir}, ${cor}, ${corGrad})`
       : cor
 
+    // Background da página
+    const bgValue = corFundoGrad
+      ? `linear-gradient(${dir}, ${corFundo}, ${corFundoGrad})`
+      : corFundo
+    pageBg.value = bgValue
+
     root.setProperty('--color-primary', cor)
     root.setProperty('--color-primary-text', corTexto)
     root.setProperty('--color-primary-bg', primaryBg)
+    root.setProperty('--color-bg', bgValue)
+    root.setProperty('--color-card', corCard)
+    root.setProperty('--color-card-texto', corCardTexto)
+    root.setProperty('--color-card-border', corCardBorder)
 
     // Botão e accent
     root.setProperty('--color-btn', primaryBg)

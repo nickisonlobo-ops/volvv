@@ -1,6 +1,7 @@
 <template>
   <div class="relative rounded-2xl border bg-white transition-all duration-300"
-    :class="expanded ? 'border-indigo-200 shadow-md' : 'border-gray-100 shadow-sm hover:shadow-md'">
+    :class="expanded ? 'shadow-md' : 'shadow-sm hover:shadow-md'"
+    :style="{ borderColor: expanded ? 'var(--color-primary-border, rgba(79,70,229,0.3))' : 'var(--color-card-border, rgba(0,0,0,0.06))' }">
 
     <!-- Header (sempre visível) — clicável para expandir/colapsar -->
     <div
@@ -9,7 +10,8 @@
     >
       <div class="flex items-center gap-2.5 min-w-0">
         <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg text-[10px] font-black flex-shrink-0"
-          :class="expanded ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-500'">{{ index + 1 }}</span>
+          :style="expanded ? { background: 'var(--color-primary-5, rgba(79,70,229,0.1))', color: 'var(--color-primary, #4f46e5)' } : {}"
+          :class="!expanded ? 'bg-gray-100 text-gray-500' : ''">{{ index + 1 }}</span>
         <div class="min-w-0">
           <p class="text-sm font-semibold text-gray-800 truncate">
             {{ materialSelecionado ? materialSelecionado.nome : 'Novo item' }}
@@ -20,7 +22,7 @@
         </div>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0">
-        <span v-if="valorCalculado > 0" class="text-sm font-bold" :class="expanded ? 'text-indigo-600' : 'text-gray-700'">{{ formatCurrency(valorCalculado) }}</span>
+        <span v-if="valorCalculado > 0" class="text-sm font-bold" :style="expanded ? { color: 'var(--color-primary, #4f46e5)' } : {}" :class="!expanded ? 'text-gray-700' : ''">{{ formatCurrency(valorCalculado) }}</span>
         <!-- Chevron -->
         <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -44,8 +46,8 @@
           @click.stop="showMaterialModal = true"
         >
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" :class="materialSelecionado ? 'bg-indigo-50' : 'bg-gray-100'">
-              <svg class="w-4 h-4" :class="materialSelecionado ? 'text-indigo-500' : 'text-gray-400'" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" :style="materialSelecionado ? { background: 'var(--color-primary-5, rgba(79,70,229,0.08))' } : {}" :class="!materialSelecionado ? 'bg-gray-100' : ''">
+              <svg class="w-4 h-4" :style="materialSelecionado ? { color: 'var(--color-primary, #4f46e5)' } : {}" :class="!materialSelecionado ? 'text-gray-400' : ''" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L12 12.75l-5.571-3m11.142 0l4.179 2.25L12 17.25l-9.75-5.25 4.179-2.25" />
               </svg>
             </div>
@@ -94,12 +96,12 @@
       <div class="flex flex-col gap-1.5">
         <div class="flex items-center gap-2">
           <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Preço</label>
-          <div class="flex rounded-md border border-gray-200 overflow-hidden">
+          <div class="flex rounded-md border overflow-hidden" style="border-color: var(--color-card-border, rgba(0,0,0,0.1))">
             <button type="button" class="px-2.5 py-1 text-[10px] font-bold transition-all focus:outline-none"
-              :class="item.modalidade_preco === 'm2' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-500'"
+              :style="item.modalidade_preco === 'm2' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { color: 'var(--color-card-texto, #6b7280)' }"
               @click.stop="onModalidadeChange('m2')">m²</button>
             <button type="button" class="px-2.5 py-1 text-[10px] font-bold transition-all focus:outline-none"
-              :class="item.modalidade_preco === 'unidade' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-500'"
+              :style="item.modalidade_preco === 'unidade' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { color: 'var(--color-card-texto, #6b7280)' }"
               @click.stop="onModalidadeChange('unidade')">Un</button>
           </div>
           <span v-if="item.modalidade_preco === 'm2' && showPrecoOverride"
@@ -122,11 +124,11 @@
       </div>
 
       <!-- Cálculo resumido -->
-      <div v-if="valorCalculado > 0" class="flex items-center justify-between bg-indigo-50/60 rounded-lg px-3 py-2 text-xs">
-        <span class="text-gray-500">
+      <div v-if="valorCalculado > 0" class="flex items-center justify-between rounded-lg px-3 py-2 text-xs" :style="{ background: 'var(--color-primary-5, rgba(79,70,229,0.06))' }">
+        <span :style="{ color: 'var(--color-card-texto, #6b7280)', opacity: '0.7' }">
           {{ item.modalidade_preco === 'm2' ? `${areaCalculada.toFixed(2)} m² × ${formatCurrency(precoM2Atual)}` : `${item.quantidade} un × ${formatCurrency(item.preco_unitario ?? 0)}` }}
         </span>
-        <span class="font-bold text-indigo-700">{{ formatCurrency(valorCalculado) }}</span>
+        <span class="font-bold" :style="{ color: 'var(--color-primary, #4f46e5)' }">{{ formatCurrency(valorCalculado) }}</span>
       </div>
 
       <!-- ═══ ANEXOS: Arte + Foto do local + Arquivo ═══ -->
@@ -171,11 +173,10 @@
       </div>
     </div>
 
-    <!-- Modal de seleção de material -->
+    <!-- Modal de seleção de produto -->
     <MaterialSelectorModal
       :show="showMaterialModal"
-      :materiais="materiais"
-      :current-material-id="item.material_id || null"
+      :current-product-id="item.material_id || null"
       @close="showMaterialModal = false"
       @select="onMaterialSelected"
     />
@@ -187,12 +188,9 @@ import type { ItemOrcamento } from '~/composables/useOrcamentos'
 import FotoUpload from '~/components/FotoUpload.vue'
 import MaterialSelectorModal from '~/components/MaterialSelectorModal.vue'
 
-interface Material { id: number; nome: string; preco_m2?: number }
-
 const props = defineProps<{
   item: ItemOrcamento
   index: number
-  materiais: Material[]
   empresaId?: number | null
   orcamentoId?: number | null
 }>()
@@ -214,12 +212,11 @@ const showMaterialModal = ref(false)
 const expanded = ref(true) // novo item abre expandido
 
 // ─── Computed ────────────────────────────────────────────────────────────────
-const materialSelecionado = computed(() => props.materiais.find(m => m.id === props.item.material_id))
+const materialSelecionado = computed(() => props.item.material_id ? { id: props.item.material_id, nome: props.item.material_nome ?? '' } : null)
 const areaCalculada = computed(() => calcularAreaItem(props.item.largura_cm, props.item.altura_cm, props.item.quantidade))
-const precoM2Atual = computed(() => props.item.preco_m2 ?? materialSelecionado.value?.preco_m2 ?? 0)
+const precoM2Atual = computed(() => props.item.preco_m2 ?? 0)
 const showPrecoOverride = computed(() => {
-  const precoMaterial = materialSelecionado.value?.preco_m2 ?? 0
-  return precoM2Atual.value > 0 && isPrecoOverride(precoM2Atual.value, precoMaterial)
+  return false // Override indicator no longer applicable with product catalog flow
 })
 const valorCalculado = computed(() => calcularValorItem({ ...props.item, preco_m2: precoM2Atual.value }))
 
@@ -258,10 +255,10 @@ function validateField(field: string, value: number | null | undefined): string 
 }
 
 // ─── Handlers ────────────────────────────────────────────────────────────────
-function onMaterialSelected(mat: { id: number; nome: string; preco_m2?: number }) {
+function onMaterialSelected(product: { id: number; nome: string; preco_venda: number }) {
   delete errors.value.material_id
   delete errors.value.preco_m2
-  emitUpdate({ material_id: mat.id, material_nome: mat.nome, preco_m2: mat.preco_m2 ?? 0 })
+  emitUpdate({ material_id: product.id, material_nome: product.nome, preco_m2: product.preco_venda ?? 0 })
 }
 
 function onFieldInput(field: 'largura_cm' | 'altura_cm' | 'espessura_cm' | 'quantidade', event: Event) {
@@ -274,7 +271,7 @@ function onFieldInput(field: 'largura_cm' | 'altura_cm' | 'espessura_cm' | 'quan
 function onModalidadeChange(modalidade: 'm2' | 'unidade') {
   if (modalidade === 'm2') {
     delete errors.value.preco_unitario
-    emitUpdate({ modalidade_preco: modalidade, preco_unitario: undefined, preco_m2: materialSelecionado.value?.preco_m2 ?? 0 })
+    emitUpdate({ modalidade_preco: modalidade, preco_unitario: undefined, preco_m2: props.item.preco_m2 ?? 0 })
   } else {
     delete errors.value.preco_m2
     emitUpdate({ modalidade_preco: modalidade })
