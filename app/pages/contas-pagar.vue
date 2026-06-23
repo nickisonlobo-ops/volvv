@@ -62,9 +62,14 @@
         <!-- Stats cards -->
         <div v-if="!loading" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div class="group flex flex-col gap-1 bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
-            <span class="text-xs font-semibold text-white/70 uppercase tracking-widest">Total Geral</span>
-            <span class="text-xl font-black text-white leading-tight">{{ formatCurrency(totalValor) }}</span>
-            <span class="text-xs text-white/50">{{ contas.length }} conta(s)</span>
+            <span class="text-xs font-semibold text-red-300 uppercase tracking-widest">A Pagar</span>
+            <span class="text-xl font-black text-white leading-tight">{{ formatCurrency(totalDespesas) }}</span>
+            <span class="text-xs text-white/50">{{ contasDespesas }} conta(s)</span>
+          </div>
+          <div class="flex flex-col gap-1 bg-white/10 rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
+            <span class="text-xs font-semibold text-green-300 uppercase tracking-widest">A Receber</span>
+            <span class="text-xl font-black text-white leading-tight">{{ formatCurrency(totalReceitas) }}</span>
+            <span class="text-xs text-white/50">{{ contasReceitas }} conta(s)</span>
           </div>
           <div class="flex flex-col gap-1 bg-white/10 rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
             <div class="flex items-center gap-1.5">
@@ -76,19 +81,11 @@
           </div>
           <div class="flex flex-col gap-1 bg-white/10 rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
             <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-white/70 shadow-sm shadow-red-400/50" />
-              <span class="text-xs font-semibold text-white/70 uppercase tracking-widest">Vencido</span>
-            </div>
-            <span class="text-xl font-black text-white leading-tight">{{ formatCurrency(totalPorStatus('vencido')) }}</span>
-            <span class="text-xs text-white/50">{{ contasPorStatus('vencido') }} conta(s)</span>
-          </div>
-          <div class="flex flex-col gap-1 bg-white/10 rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
-            <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-white/70 shadow-sm shadow-emerald-300/50" />
-              <span class="text-xs font-semibold text-white/70 uppercase tracking-widest">Pago</span>
+              <span class="text-xs font-semibold text-white/70 uppercase tracking-widest">Saldo</span>
             </div>
-            <span class="text-xl font-black text-white leading-tight">{{ formatCurrency(totalPorStatus('pago')) }}</span>
-            <span class="text-xs text-white/50">{{ contasPorStatus('pago') }} conta(s)</span>
+            <span class="text-xl font-black leading-tight" :class="saldoGeral >= 0 ? 'text-green-300' : 'text-red-300'">{{ formatCurrency(saldoGeral) }}</span>
+            <span class="text-xs text-white/50">receitas - despesas</span>
           </div>
         </div>
       </div>
@@ -269,6 +266,7 @@
           <thead>
             <tr class="bg-gray-50 border-b border-gray-100">
               <th class="text-left px-7 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">#</th>
+              <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">Tipo</th>
               <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">Descrição</th>
               <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">Valor</th>
               <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">Status</th>
@@ -300,6 +298,11 @@
               <td class="px-7 py-4">
                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-[#ff46a2] font-black text-xs">
                   {{ conta.id }}
+                </span>
+              </td>
+              <td class="px-5 py-4">
+                <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full" :class="(conta.tipo || 'pagar') === 'receber' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+                  {{ (conta.tipo || 'pagar') === 'receber' ? '↑ Receita' : '↓ Despesa' }}
                 </span>
               </td>
               <td class="px-5 py-4 whitespace-normal">
@@ -650,6 +653,12 @@ const totalValor = computed(() =>
   contas.value.reduce((sum, c) => sum + c.valor, 0)
 )
 
+const totalDespesas = computed(() => contas.value.filter(c => (c.tipo || 'pagar') === 'pagar').reduce((sum, c) => sum + c.valor, 0))
+const totalReceitas = computed(() => contas.value.filter(c => (c.tipo || 'pagar') === 'receber').reduce((sum, c) => sum + c.valor, 0))
+const contasDespesas = computed(() => contas.value.filter(c => (c.tipo || 'pagar') === 'pagar').length)
+const contasReceitas = computed(() => contas.value.filter(c => (c.tipo || 'pagar') === 'receber').length)
+const saldoGeral = computed(() => totalReceitas.value - totalDespesas.value)
+
 function totalPorStatus(status: string): number {
   return contas.value.filter(c => (c.status ?? 'pendente') === status).reduce((sum, c) => sum + c.valor, 0)
 }
@@ -874,7 +883,7 @@ const mesesRestantes = computed(() => {
   return Math.max(0, 12 - mesInicio + 1)
 })
 
-function buildPayload(dataVencimento?: string) {
+function buildPayload(dataVencimento?: string): Record<string, any> {
   return {
     descricao:       form.descricao.trim(),
     valor:           Number(form.valor),
@@ -921,9 +930,12 @@ async function salvarAdicao() {
 async function salvarEdicao() {
   if (!editando.value || !validarForm()) return
   saving.value = true
+  const payload = buildPayload()
+  // Preservar o tipo original da conta (não sobrescrever receber → pagar)
+  payload.tipo = editando.value.tipo || 'pagar'
   const { error: updateError } = await supabase
     .from('contas_pagar')
-    .update(buildPayload())
+    .update(payload)
     .eq('id', editando.value.id)
   saving.value = false
   if (updateError) { modalError.value = updateError.message; return }

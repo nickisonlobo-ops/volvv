@@ -566,6 +566,7 @@ interface ContaPagar {
   data_pagamento: string | null
   status: string | null
   categoria: string | null
+  tipo: string
 }
 
 interface Agendamento {
@@ -671,10 +672,24 @@ const monthlyData = computed(() => {
       })
       .reduce((s, os) => s + (os.valor_total ?? 0), 0)
 
-    const receita = receitaVendas + receitaAgendamentos + receitaOS
+    // Receitas vindas de contas a receber (orçamentos aprovados, etc.)
+    const receitaContas = contas.value
+      .filter(c => {
+        if ((c.tipo ?? 'pagar') !== 'receber') return false
+        if (c.status !== 'pago') return false
+        // Usar data_pagamento se disponível, senão data_vencimento
+        const dateStr = c.data_pagamento ?? c.data_vencimento
+        if (!dateStr) return false
+        const dp = new Date(dateStr + 'T12:00:00')
+        return dp.getFullYear() === year && dp.getMonth() + 1 === month
+      })
+      .reduce((s, c) => s + (c.valor ?? 0), 0)
+
+    const receita = receitaVendas + receitaAgendamentos + receitaOS + receitaContas
 
     const despesas = contas.value
       .filter(c => {
+        if ((c.tipo ?? 'pagar') === 'receber') return false // Não conta recebíveis como despesa
         if (c.status === 'cancelado' || !c.data_vencimento) return false
         const dv = new Date(c.data_vencimento + 'T12:00:00')
         return dv.getFullYear() === year && dv.getMonth() + 1 === month
@@ -722,6 +737,7 @@ const vendasMes = computed(() => {
 const contasMes = computed(() => {
   const now = new Date()
   return contas.value.filter(c => {
+    if ((c.tipo ?? 'pagar') !== 'pagar') return false // Só despesas
     if (c.status === 'cancelado' || !c.data_vencimento) return false
     const d = new Date(c.data_vencimento + 'T12:00:00')
     return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()
@@ -751,13 +767,14 @@ const crescTicketMedio = computed(() => {
   return ((ticketMedioMes.value - ticketMedioMesAnterior.value) / ticketMedioMesAnterior.value) * 100
 })
 
-const contasVencidas = computed(() => contas.value.filter(c => c.status === 'vencido'))
+const contasVencidas = computed(() => contas.value.filter(c => c.status === 'vencido' && (c.tipo ?? 'pagar') === 'pagar'))
 const totalVencidas = computed(() => contasVencidas.value.reduce((s, c) => s + (c.valor ?? 0), 0))
 
 const contasProximos7 = computed(() => {
   const today = new Date(); today.setHours(0, 0, 0, 0)
   const in7 = new Date(today); in7.setDate(in7.getDate() + 7)
   return contas.value.filter(c => {
+    if ((c.tipo ?? 'pagar') !== 'pagar') return false
     if (c.status !== 'pendente' || !c.data_vencimento) return false
     const dv = new Date(c.data_vencimento + 'T12:00:00')
     return dv >= today && dv <= in7
@@ -770,22 +787,23 @@ const mesAtualLabel = computed(() =>
   new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 )
 
-// ── Totais por status (contas_pagar) ──────────────────────────────────────────
+// ── Totais por status (apenas despesas - tipo pagar) ──────────────────────────
 function totalPorStatus(s: string): number {
-  return contas.value.filter(c => (c.status ?? 'pendente') === s).reduce((acc, c) => acc + (c.valor ?? 0), 0)
+  return contas.value.filter(c => (c.tipo ?? 'pagar') === 'pagar' && (c.status ?? 'pendente') === s).reduce((acc, c) => acc + (c.valor ?? 0), 0)
 }
 function qtdPorStatus(s: string): number {
   return contas.value.filter(c => (c.status ?? 'pendente') === s).length
 }
 
-// ── Categorias de despesa ─────────────────────────────────────────────────────
+// ── Categorias de despesa (apenas tipo pagar) ─────────────────────────────────
 const totalDespesasHistorico = computed(() =>
-  contas.value.filter(c => c.status !== 'cancelado').reduce((s, c) => s + (c.valor ?? 0), 0)
+  contas.value.filter(c => (c.tipo ?? 'pagar') === 'pagar' && c.status !== 'cancelado').reduce((s, c) => s + (c.valor ?? 0), 0)
 )
 
 const topCategorias = computed(() => {
   const map: Record<string, number> = {}
   for (const c of contas.value) {
+    if ((c.tipo ?? 'pagar') !== 'pagar') continue // Só despesas
     if (c.status === 'cancelado') continue
     const cat = c.categoria ?? 'Sem categoria'
     map[cat] = (map[cat] ?? 0) + (c.valor ?? 0)
@@ -980,7 +998,7 @@ async function fetchContas() {
   if (!empresaId.value) return
   const { data } = await supabase
     .from('contas_pagar')
-    .select('id, descricao, valor, data_vencimento, data_pagamento, status, categoria')
+    .select('id, descricao, valor, data_vencimento, data_pagamento, status, categoria, tipo')
     .eq('empresa_id', empresaId.value)
     .order('data_vencimento', { ascending: false })
   contas.value = (data ?? []) as ContaPagar[]
