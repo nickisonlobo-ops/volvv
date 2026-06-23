@@ -213,7 +213,7 @@ const showMaterialModal = ref(false)
 const expanded = ref(true) // novo item abre expandido
 
 // ─── Computed ────────────────────────────────────────────────────────────────
-const materialSelecionado = computed(() => props.item.material_id ? { id: props.item.material_id, nome: props.item.material_nome ?? '' } : null)
+const materialSelecionado = computed(() => props.item.material_id ? { id: props.item.material_id, nome: props.item.descricao || props.item.material_nome || '' } : null)
 const areaCalculada = computed(() => calcularAreaItem(props.item.largura_cm, props.item.altura_cm, props.item.quantidade))
 const precoM2Atual = computed(() => props.item.preco_m2 ?? 0)
 const showPrecoOverride = computed(() => {

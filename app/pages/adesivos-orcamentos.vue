@@ -819,7 +819,7 @@ async function fetchOrcamentoCompletoParaEdicao(id: number): Promise<OrcamentoCo
       id: item.id,
       descricao: item.descricao ?? '',
       material_id: item.material_id,
-      material_nome: item.materiais_adesivo?.nome ?? '',
+      material_nome: item.descricao || item.materiais_adesivo?.nome || '',
       largura_cm: item.largura_cm,
       altura_cm: item.altura_cm,
       quantidade: item.quantidade,
