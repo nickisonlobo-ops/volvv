@@ -866,12 +866,26 @@ async function handleLogoDocUpload(event: Event) {
   const file = input.files?.[0]
   if (!file) return
   uploadingLogoDoc.value = true
-  const url = await uploadLogo(file)
+
+  // Upload com path separado (logo-doc) para não sobrescrever o principal
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
+  if (!allowedTypes.includes(file.type)) { uploadingLogoDoc.value = false; return }
+  if (file.size > 2 * 1024 * 1024) { uploadingLogoDoc.value = false; return }
+
+  const ext = file.name.split('.').pop()
+  const path = `logos/${empresaId.value}/logo-doc.${ext}`
+  const { error: uploadErr } = await supabase.storage
+    .from('empresa-assets')
+    .upload(path, file, { upsert: true, contentType: file.type })
+
   uploadingLogoDoc.value = false
-  if (url) {
-    form.logo_orcamento_url = url
-    await handleSave()
-  }
+  if (uploadErr) { console.error('Erro upload logo doc:', uploadErr); return }
+
+  const { data } = supabase.storage.from('empresa-assets').getPublicUrl(path)
+  const url = `${data.publicUrl}?t=${Date.now()}`
+
+  form.logo_orcamento_url = url
+  await handleSave()
   input.value = ''
 }
 
