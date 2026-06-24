@@ -37,14 +37,26 @@
       </div>
     </div>
 
-    <!-- Filtro por processo -->
-    <div class="flex items-center gap-2 flex-wrap">
-      <button type="button" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all" :class="filtroProcesso === '' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" @click="filtroProcesso = ''">Todos</button>
-      <button v-for="t in templatesFiltro" :key="t.id" type="button" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all" :class="filtroProcesso === t.nome ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" @click="filtroProcesso = t.nome">{{ t.nome }}</button>
+    <!-- Toggle Kanban / Cronograma + Filtros -->
+    <div class="flex items-center justify-between gap-3 flex-wrap">
+      <div class="flex items-center gap-2 flex-wrap">
+        <button type="button" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all" :class="filtroProcesso === '' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" @click="filtroProcesso = ''">Todos</button>
+        <button v-for="t in templatesFiltro" :key="t.id" type="button" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all" :class="filtroProcesso === t.nome ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" @click="filtroProcesso = t.nome">{{ t.nome }}</button>
+      </div>
+      <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+        <button type="button" class="px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1.5" :class="viewMode === 'kanban' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 hover:bg-gray-50'" @click="viewMode = 'kanban'">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z" /></svg>
+          Kanban
+        </button>
+        <button type="button" class="px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1.5" :class="viewMode === 'cronograma' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 hover:bg-gray-50'" @click="viewMode = 'cronograma'">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg>
+          Cronograma
+        </button>
+      </div>
     </div>
 
     <!-- Kanban por colunas -->
-    <div class="flex gap-3 overflow-x-auto pb-4">
+    <div v-if="viewMode === 'kanban'" class="flex gap-3 overflow-x-auto pb-4">
       <!-- Coluna: Não Agendados -->
       <div class="kanban-column flex flex-col min-w-[280px] max-w-[320px] rounded-2xl border" style="background: var(--color-card, #ffffff); border-color: var(--color-card-border, rgba(0,0,0,0.06))">
         <div class="flex items-center gap-2 px-4 py-3 border-b" style="border-color: var(--color-card-border, rgba(0,0,0,0.06))">
@@ -127,6 +139,73 @@
           </div>
           <div v-if="instanciasPorDia(dia.iso).length === 0" class="flex items-center justify-center h-full min-h-[80px] text-xs" style="color: var(--color-card-texto, #94a3b8); opacity: 0.5">Nenhum item</div>
         </div>
+      </div>
+    </div>
+
+    <!-- ═══ CRONOGRAMA (Timeline por hora, agrupado por OS) ═══ -->
+    <div v-if="viewMode === 'cronograma'" class="bg-white rounded-2xl border border-gray-100 overflow-x-auto">
+      <!-- Seletor de dia -->
+      <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
+        <span class="text-xs font-bold text-gray-500">Dia:</span>
+        <button v-for="dia in diasSemana" :key="'sel-'+dia.iso" type="button" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all" :class="cronogramaDia === dia.iso ? 'bg-gray-900 text-white' : dia.isHoje ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" @click="cronogramaDia = dia.iso">
+          {{ dia.label }} {{ dia.numero }}
+        </button>
+      </div>
+
+      <!-- Grid -->
+      <div class="min-w-[1100px]">
+        <!-- Header horas -->
+        <div class="grid border-b border-gray-100" :style="{ gridTemplateColumns: '140px repeat(' + horasVisiveis.length + ', 1fr)' }">
+          <div class="px-3 py-2 border-r border-gray-100 text-[10px] font-bold text-gray-400">OS</div>
+          <div v-for="h in horasVisiveis" :key="h" class="px-1 py-2 text-center border-r border-gray-50 last:border-r-0 text-[10px] font-bold text-gray-400">{{ h }}:00</div>
+        </div>
+
+        <!-- Linhas por OS -->
+        <div v-if="cronogramaOSLinhas.length > 0" class="divide-y divide-gray-50">
+          <div v-for="linha in cronogramaOSLinhas" :key="linha.osId" class="grid relative" :style="{ gridTemplateColumns: '140px 1fr', minHeight: (linha.processos.length * 72 + 16) + 'px' }">
+            <!-- Label OS -->
+            <div class="px-3 py-3 border-r border-gray-100 flex flex-col justify-center">
+              <p class="text-xs font-bold text-gray-900">{{ linha.osNumero }}</p>
+              <p class="text-[10px] text-gray-400 truncate">{{ linha.produto }}</p>
+            </div>
+            <!-- Área de barras (cards) -->
+            <div class="relative py-2 px-1">
+              <!-- Grid background -->
+              <div class="absolute inset-0 grid" :style="{ gridTemplateColumns: 'repeat(' + horasVisiveis.length + ', 1fr)' }">
+                <div v-for="h in horasVisiveis" :key="'bg2-'+h" class="border-r border-gray-50 last:border-r-0"></div>
+              </div>
+              <!-- Cards posicionados -->
+              <div
+                v-for="(proc, idx) in linha.processos" :key="proc.id"
+                class="absolute rounded-xl border p-2.5 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow group/bar select-none"
+                :class="isBloqueada(proc) ? 'opacity-50' : ''"
+                :style="{ left: calcBarLeft(proc) + '%', width: calcBarWidth(proc) + '%', top: (idx * 68 + 4) + 'px', height: '60px', background: proc.status === 'concluido' ? '#ecfdf5' : 'var(--color-card, #ffffff)', borderColor: proc.status === 'concluido' ? '#6ee7b7' : 'var(--color-card-border, rgba(0,0,0,0.1))' }"
+                @mousedown.prevent="onCardMouseDown($event, proc)"
+                @click.stop="onCardClick(proc)"
+              >
+                <div v-if="isBloqueada(proc)" class="absolute top-1.5 right-1.5">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                </div>
+                <div class="flex flex-col h-full justify-between overflow-hidden">
+                  <p class="text-[11px] font-bold truncate" :class="proc.status === 'concluido' ? 'line-through text-emerald-700' : 'text-gray-900'">{{ proc.status === 'concluido' ? '✓ ' : '' }}{{ proc.template_nome }} - {{ proc.os_numero ?? '' }}</p>
+                  <p class="text-[9px] text-gray-400 truncate">{{ proc.titulo }}</p>
+                  <div class="flex items-center gap-1">
+                    <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div class="h-full rounded-full" :style="{ width: proc.progresso + '%', background: proc.progresso === 100 ? '#10b981' : 'var(--color-primary, #3b82f6)' }"></div>
+                    </div>
+                    <span class="text-[8px] font-bold text-gray-400">{{ proc.progresso }}%</span>
+                  </div>
+                </div>
+                <!-- Resize handle -->
+                <div data-resize class="absolute right-0 top-0 bottom-0 w-3 cursor-col-resize opacity-0 group-hover/bar:opacity-100 transition-opacity flex items-center justify-center rounded-r-xl" style="background: var(--color-primary-10, rgba(59,130,246,0.1))" @mousedown.stop.prevent="iniciarResizeHora($event, proc)">
+                  <div class="w-0.5 h-5 rounded-full" style="background: var(--color-primary, #3b82f6); opacity: 0.5"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="p-12 text-center text-sm text-gray-400">Nenhum processo agendado neste dia.</div>
       </div>
     </div>
 
@@ -238,6 +317,11 @@ const checklistAtual = ref<ChecklistItem[]>([])
 const itensOS = ref<any[]>([])
 const lightboxUrl = ref<string | null>(null)
 const filtroProcesso = ref('')
+const viewMode = ref<'kanban' | 'cronograma'>('kanban')
+const cronogramaDia = ref(new Date().toISOString().split('T')[0])
+const renderKey = ref(0)
+const widthOverrides = reactive<Record<number, string>>({})
+const leftOverrides = reactive<Record<number, number>>({})
 const semanaOffset = ref(0)
 const dragOverDia = ref<string | null>(null)
 
@@ -266,6 +350,56 @@ function contarPorDia(iso: string) { return instanciasPorDia(iso).length }
 const templatesFiltro = computed(() => {
   return templates.value.filter(t => t.ativo).map(t => ({ id: t.id, nome: t.nome }))
 })
+
+// Cronograma: horas visíveis (7h às 17h)
+const horasVisiveis = computed(() => Array.from({ length: 11 }, (_, i) => i + 7))
+
+// Agrupar por OS no dia selecionado
+const cronogramaOSLinhas = computed(() => {
+  const doDia = instancias.value.filter(i =>
+    i.data_prazo === cronogramaDia.value && i.status !== 'cancelado' &&
+    (!filtroProcesso.value || i.template_nome === filtroProcesso.value)
+  ).sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+
+  const porOS = new Map<number, typeof doDia>()
+  for (const inst of doDia) {
+    if (!inst.os_id) continue
+    const arr = porOS.get(inst.os_id) ?? []
+    arr.push(inst)
+    porOS.set(inst.os_id, arr)
+  }
+
+  return Array.from(porOS.entries()).map(([osId, procs]) => ({
+    osId,
+    osNumero: procs[0]?.os_numero ?? `OS-${osId}`,
+    produto: procs[0]?.titulo ?? '',
+    processos: procs,
+  }))
+})
+
+function calcBarLeft(inst: any): number {
+  // Usar override reativo se existir (durante drag)
+  if (leftOverrides[inst.id] !== undefined) return leftOverrides[inst.id]
+  const h = inst.hora_inicio ? parseInt(inst.hora_inicio.split(':')[0]) : 8
+  const m = inst.hora_inicio ? parseInt(inst.hora_inicio.split(':')[1] ?? '0') : 0
+  const horaDecimal = h + m / 60
+  const inicio = horasVisiveis.value[0]
+  const total = horasVisiveis.value.length
+  return Math.max(0, ((horaDecimal - inicio) / total) * 100)
+}
+
+function calcBarWidth(inst: any): number {
+  // Usar override se existir (durante resize)
+  const override = widthOverrides[inst.id]
+  const horaFim = override || inst.hora_fim
+  const hI = inst.hora_inicio ? parseInt(inst.hora_inicio.split(':')[0]) : 8
+  const mI = inst.hora_inicio ? parseInt(inst.hora_inicio.split(':')[1] ?? '0') : 0
+  const hF = horaFim ? parseInt(horaFim.split(':')[0]) : hI + 1
+  const mF = horaFim ? parseInt(horaFim.split(':')[1] ?? '0') : 0
+  const duracao = (hF + mF / 60) - (hI + mI / 60)
+  const total = horasVisiveis.value.length
+  return Math.max(8, (duracao / total) * 100)
+}
 
 const templates = ref<any[]>([])
 
@@ -335,6 +469,139 @@ async function toggleCheck(item: ChecklistItem) {
 function formatDate(d: string | null): string {
   if (!d) return '—'
   return new Date(d + 'T12:00:00').toLocaleDateString('pt-BR')
+}
+
+// ─── Drag para mover card (altera hora_inicio em tempo real) ──────────────────
+let dragCardInst: any = null
+let dragStartX = 0
+let dragStartLeft = 0
+let isDragging = false
+let wasDragged = false
+
+function onCardClick(proc: any) {
+  if (wasDragged) { wasDragged = false; return }
+  abrirChecklist(proc)
+}
+
+function onCardMouseDown(e: MouseEvent, inst: any) {
+  // Se clicou no resize handle, não iniciar drag
+  const target = e.target as HTMLElement
+  if (target.closest('[data-resize]')) return
+  iniciarDragCard(e, inst)
+}
+
+function iniciarDragCard(e: MouseEvent, inst: any) {
+  dragCardInst = inst
+  dragStartX = e.clientX
+  dragStartLeft = calcBarLeft(inst)
+  isDragging = false
+  wasDragged = false
+  document.addEventListener('mousemove', onDragCardMove)
+  document.addEventListener('mouseup', onDragCardEnd)
+}
+
+function onDragCardMove(e: MouseEvent) {
+  if (!dragCardInst) return
+  if (!isDragging && Math.abs(e.clientX - dragStartX) < 5) return
+  isDragging = true
+  wasDragged = true
+  const containerWidth = window.innerWidth - 200
+  const deltaX = e.clientX - dragStartX
+  const deltaPct = (deltaX / containerWidth) * 100
+  const newLeft = Math.max(0, Math.min(92, dragStartLeft + deltaPct))
+  leftOverrides[dragCardInst.id] = newLeft
+}
+
+async function onDragCardEnd() {
+  document.removeEventListener('mousemove', onDragCardMove)
+  document.removeEventListener('mouseup', onDragCardEnd)
+  if (!dragCardInst || !isDragging) { dragCardInst = null; return }
+
+  // Converter left% para hora (snap 5min ao soltar)
+  const left = leftOverrides[dragCardInst.id] ?? dragStartLeft
+  const total = horasVisiveis.value.length
+  const inicio = horasVisiveis.value[0]
+  const horaDecimal = inicio + (left / 100) * total
+  const h = Math.floor(horaDecimal)
+  const m = Math.round((horaDecimal - h) * 60 / 5) * 5 // snap 5min
+  const novaHoraInicio = `${String(h).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+
+  // Manter duração
+  const hI_old = dragCardInst.hora_inicio ? parseInt(dragCardInst.hora_inicio.split(':')[0]) : 8
+  const mI_old = dragCardInst.hora_inicio ? parseInt(dragCardInst.hora_inicio.split(':')[1] ?? '0') : 0
+  const hF_old = dragCardInst.hora_fim ? parseInt(dragCardInst.hora_fim.split(':')[0]) : hI_old + 1
+  const mF_old = dragCardInst.hora_fim ? parseInt(dragCardInst.hora_fim.split(':')[1] ?? '0') : 0
+  const durMin = ((hF_old * 60 + mF_old) - (hI_old * 60 + mI_old)) || 60
+  const fimMin = h * 60 + (m % 60) + durMin
+  const fH = Math.min(18, Math.floor(fimMin / 60))
+  const fM = fimMin % 60
+  const novaHoraFim = `${String(fH).padStart(2, '0')}:${String(fM).padStart(2, '0')}`
+
+  dragCardInst.hora_inicio = novaHoraInicio
+  dragCardInst.hora_fim = novaHoraFim
+  delete leftOverrides[dragCardInst.id]
+
+  const supabase = (await import('~/lib/supabase')).createSupabaseClient()
+  await supabase.from('processos_instancia').update({ hora_inicio: novaHoraInicio, hora_fim: novaHoraFim }).eq('id', dragCardInst.id)
+  dragCardInst = null
+}
+
+// ─── Resize por hora (tempo real) ─────────────────────────────────────────────
+let resizingInstHora: any = null
+let resizeHoraStartX = 0
+
+function iniciarResizeHora(e: MouseEvent, inst: any) {
+  e.preventDefault()
+  e.stopPropagation()
+  // Definir hora_fim se não existir
+  if (!inst.hora_fim) {
+    const hI = inst.hora_inicio ? parseInt(inst.hora_inicio.split(':')[0]) : 8
+    inst.hora_fim = `${String(hI + 1).padStart(2, '0')}:00`
+  }
+  if (!inst.hora_inicio) {
+    inst.hora_inicio = '08:00'
+  }
+  resizingInstHora = inst
+  resizeHoraStartX = e.clientX
+  wasDragged = true
+  document.addEventListener('mousemove', onResizeMoveHora)
+  document.addEventListener('mouseup', onResizeEndHora)
+}
+
+function onResizeMoveHora(e: MouseEvent) {
+  if (!resizingInstHora) return
+  const containerWidth = window.innerWidth - 200
+  const deltaX = e.clientX - resizeHoraStartX
+  resizeHoraStartX = e.clientX
+
+  // Sem snap durante arraste — suave
+  const deltaHoras = (deltaX / containerWidth) * horasVisiveis.value.length
+  if (Math.abs(deltaHoras) < 0.01) return
+
+  const currentFim = widthOverrides[resizingInstHora.id] || resizingInstHora.hora_fim || '09:00'
+  const hF = parseInt(currentFim.split(':')[0])
+  const mF = parseInt(currentFim.split(':')[1] ?? '0')
+  const fimAtualMin = hF * 60 + mF
+  const deltaMin = deltaHoras * 60
+  const hIMin = resizingInstHora.hora_inicio ? parseInt(resizingInstHora.hora_inicio.split(':')[0]) * 60 + parseInt(resizingInstHora.hora_inicio.split(':')[1] ?? '0') : 480
+  const novoFimMin = Math.max(hIMin + 10, Math.min(1080, fimAtualMin + deltaMin))
+  const hFim = Math.floor(novoFimMin / 60)
+  const mFim = Math.round(novoFimMin % 60)
+  widthOverrides[resizingInstHora.id] = `${String(hFim).padStart(2, '0')}:${String(mFim).padStart(2, '0')}`
+}
+
+async function onResizeEndHora() {
+  document.removeEventListener('mousemove', onResizeMoveHora)
+  document.removeEventListener('mouseup', onResizeEndHora)
+  if (!resizingInstHora) return
+  const horaFim = widthOverrides[resizingInstHora.id]
+  if (horaFim) {
+    resizingInstHora.hora_fim = horaFim
+    const supabase = (await import('~/lib/supabase')).createSupabaseClient()
+    await supabase.from('processos_instancia').update({ hora_fim: horaFim }).eq('id', resizingInstHora.id)
+    delete widthOverrides[resizingInstHora.id]
+  }
+  resizingInstHora = null
 }
 
 onMounted(async () => {
