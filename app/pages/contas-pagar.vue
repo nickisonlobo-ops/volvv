@@ -542,6 +542,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { createSupabaseClient } from '~/lib/supabase'
+import { useRealtime } from '~/composables/useRealtime'
 import { useAdmin } from '~/composables/useAdmin'
 import { useEmpresa } from '~/composables/useEmpresa'
 import AppInput from '~/components/AppInput.vue'
@@ -788,6 +789,9 @@ const columns = [
 ]
 
 onMounted(async () => { await loadEmpresa(); await fetchContas() })
+
+// Realtime
+useRealtime('contas_pagar', async () => { await fetchContas() })
 
 async function fetchContas() {
   loading.value = true

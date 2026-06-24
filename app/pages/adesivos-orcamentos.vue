@@ -316,6 +316,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { createSupabaseClient } from '~/lib/supabase'
+import { useRealtime } from '~/composables/useRealtime'
 import type { StatusOS } from '~/composables/useOrdensServico'
 import type { OrcamentoCompleto } from '~/composables/useOrcamentos'
 import type { KanbanCard } from '~/composables/useKanban'
@@ -566,6 +567,9 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+// Realtime: atualiza orçamentos ao vivo
+useRealtime('orcamentos_adesivo', () => { fetchOrcamentos(); fetchKPIs() })
 
 async function fetchOrcamentos() {
   loading.value = true

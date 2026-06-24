@@ -226,6 +226,7 @@
 
 <script setup lang="ts">
 import { useProcessos, type ProcessoInstancia, type ChecklistItem } from '~/composables/useProcessos'
+import { useRealtimeMulti } from '~/composables/useRealtime'
 
 definePageMeta({ layout: 'default' })
 
@@ -339,5 +340,10 @@ function formatDate(d: string | null): string {
 onMounted(async () => {
   instancias.value = await carregarInstancias(['pendente', 'em_andamento', 'concluido'])
   templates.value = await carregarTemplates()
+})
+
+// Realtime: atualiza ao vivo quando processos mudam
+useRealtimeMulti(['processos_instancia', 'processos_checklist'], async () => {
+  instancias.value = await carregarInstancias(['pendente', 'em_andamento', 'concluido'])
 })
 </script>

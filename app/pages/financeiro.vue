@@ -537,6 +537,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { createSupabaseClient } from '~/lib/supabase'
+import { useRealtimeMulti } from '~/composables/useRealtime'
 import { useAdmin } from '~/composables/useAdmin'
 import { useEmpresa } from '~/composables/useEmpresa'
 
@@ -1030,6 +1031,9 @@ onMounted(async () => {
   await loadEmpresa()
   await fetchAll()
 })
+
+// Realtime: atualiza dashboard ao vivo
+useRealtimeMulti(['contas_pagar', 'vendas', 'agendamentos', 'ordens_servico_adesivo'], () => { fetchAll() })
 </script>
 
 <style scoped>

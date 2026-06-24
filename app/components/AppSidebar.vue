@@ -82,7 +82,6 @@ const allNavSections = [
       { to: '/agendamentos', icon: 'calendar', label: 'Agendamentos', minPerfil: 'all' },
       { to: '/servicos', icon: 'sparkles', label: 'Serviços', minPerfil: 'all' },
       { to: '/clientes', icon: 'identification', label: 'Clientes', minPerfil: 'all' },
-      { to: '/estoque', icon: 'package', label: 'Estoque', minPerfil: 'all' },
     ],
   },
   {
@@ -96,7 +95,7 @@ const allNavSections = [
     title: 'Financeiro',
     items: [
       { to: '/financeiro', icon: 'wallet', label: 'Dashboard Financeiro', minPerfil: 'manager' },
-      { to: '/contas-pagar', icon: 'wallet', label: 'Contas a Pagar', minPerfil: 'manager' },
+      { to: '/contas-pagar', icon: 'wallet', label: 'Pagar / Receber', minPerfil: 'manager' },
       { to: '/conciliacao-bancaria', icon: 'wallet', label: 'Conciliação Bancária', minPerfil: 'manager' },
     ],
   },

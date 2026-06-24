@@ -702,8 +702,54 @@
         </div>
       </div>
 
-        <!-- MÓDULO ESTOQUE -->
+        <!-- MÓDULO PRODUÇÃO -->
         <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+          <button type="button" class="w-full flex items-center justify-between px-5 py-4 transition-colors" @click="openProducao = !openProducao">
+            <div class="flex items-center gap-3.5">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style="background: linear-gradient(135deg,#dbeafe,#bfdbfe)">
+                <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6z" /></svg>
+              </div>
+              <div class="text-left min-w-0">
+                <p class="text-sm font-bold text-gray-800 leading-none">Módulo Produção</p>
+                <p class="text-[11px] text-gray-400 mt-0.5">Processos · Fila · Agendamento · Progresso</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" :class="prodMetrics.score >= 80 ? 'bg-emerald-100 text-emerald-700' : prodMetrics.score >= 60 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'">{{ prodMetrics.statusLabel }}</span>
+              <span class="text-xs text-gray-400 font-medium">Ver análise</span>
+              <svg class="w-4 h-4 text-gray-300 transition-transform" :class="openProducao ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+            </div>
+          </button>
+          <div v-show="openProducao" class="px-5 pb-5 pt-1 border-t border-gray-100 space-y-4">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="bg-gray-50 rounded-xl p-3 text-center">
+                <p class="text-lg font-black text-gray-900">{{ prodMetrics.naoAgendados }}</p>
+                <p class="text-[10px] text-gray-400 font-semibold">Na fila</p>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-3 text-center">
+                <p class="text-lg font-black text-blue-600">{{ prodMetrics.processosAndamento }}</p>
+                <p class="text-[10px] text-gray-400 font-semibold">Em produção</p>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-3 text-center">
+                <p class="text-lg font-black" :class="prodMetrics.atrasados > 0 ? 'text-red-600' : 'text-gray-400'">{{ prodMetrics.atrasados }}</p>
+                <p class="text-[10px] text-gray-400 font-semibold">Atrasados</p>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-3 text-center">
+                <p class="text-lg font-black text-emerald-600">{{ prodMetrics.concluidos }}</p>
+                <p class="text-[10px] text-gray-400 font-semibold">Concluídos</p>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <p v-for="(dica, i) in prodMetrics.dicas" :key="i" class="text-sm text-gray-600 leading-relaxed flex items-start gap-2">
+                <span class="text-base mt-0.5">{{ dica.icon }}</span>
+                <span>{{ dica.texto }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- MÓDULO ESTOQUE (REMOVIDO) -->
+        <div v-if="false" class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
           <button type="button" class="w-full flex items-center justify-between px-5 py-4 transition-colors" @click="openEstoque = !openEstoque">
             <div class="flex items-center gap-3.5">
               <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style="background: linear-gradient(135deg,#ffedd5,#fed7aa)">
@@ -1293,8 +1339,8 @@
         </div>
       </div>
 
-        <!-- ASSISTENTE IA -->
-        <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+        <!-- ASSISTENTE IA (REMOVIDO) -->
+        <div v-if="false" class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
           <button type="button" class="w-full flex items-center justify-between px-5 py-4 transition-colors" @click="openIA = !openIA">
             <div class="flex items-center gap-3.5">
               <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style="background: linear-gradient(135deg, #6366f1, #8b5cf6)">
@@ -1458,6 +1504,7 @@ const openFinanceiro    = ref(false)
 const openVendas        = ref(false)
 const openClientes      = ref(false)
 const openEstoque       = ref(false)
+const openProducao     = ref(false)
 const openOportunidades = ref(false)
 const openPlanoAcao     = ref(false)
 const openIA            = ref(false)
@@ -1468,6 +1515,9 @@ const contasPagar  = ref<any[]>([])
 const clientes     = ref<any[]>([])
 const agendTodos   = ref<any[]>([])   // todos agendamentos (para análise de clientes)
 const produtos     = ref<any[]>([])   // produtos_casa_racao
+const orcamentos   = ref<any[]>([])   // orcamentos_adesivo
+const ordensServico = ref<any[]>([])  // ordens_servico_adesivo
+const processos    = ref<any[]>([])   // processos_instancia
 
 // Clientes contatados — persiste no localStorage
 const clientesContatados = ref<Set<number>>(new Set())
@@ -1513,6 +1563,9 @@ async function fetchAll() {
     { data: clientesData },
     { data: agHistorico },
     { data: produtosData },
+    { data: orcamentosData },
+    { data: osData },
+    { data: processosData },
   ] = await Promise.all([
     supabase
       .from('agendamentos')
@@ -1528,7 +1581,7 @@ async function fetchAll() {
       .lte('data_hora', pmFim),
     supabase
       .from('contas_pagar')
-      .select('id, valor, status, data_vencimento, data_pagamento, descricao')
+      .select('id, valor, status, data_vencimento, data_pagamento, descricao, tipo')
       .eq('empresa_id', empresaId.value),
     supabase
       .from('clientes')
@@ -1544,6 +1597,22 @@ async function fetchAll() {
       .from('produtos_casa_racao')
       .select('id, nome, preco, estoque, ativo, created_at')
       .eq('empresa_id', empresaId.value),
+    supabase
+      .from('orcamentos_adesivo')
+      .select('id, status, valor_total, created_at, data_validade')
+      .eq('empresa_id', empresaId.value)
+      .order('created_at', { ascending: false })
+      .limit(100),
+    supabase
+      .from('ordens_servico_adesivo')
+      .select('id, status, valor_total, data_aprovacao, data_entrega')
+      .eq('empresa_id', empresaId.value)
+      .order('data_aprovacao', { ascending: false })
+      .limit(100),
+    supabase
+      .from('processos_instancia')
+      .select('id, status, progresso, data_prazo, titulo')
+      .eq('empresa_id', empresaId.value),
   ])
 
   agendamentos.value = [
@@ -1554,6 +1623,9 @@ async function fetchAll() {
   clientes.value    = clientesData ?? []
   agendTodos.value  = agHistorico ?? []
   produtos.value    = produtosData ?? []
+  orcamentos.value  = orcamentosData ?? []
+  ordensServico.value = osData ?? []
+  processos.value   = processosData ?? []
 
   loading.value = false
 }
@@ -2061,14 +2133,38 @@ const scoreGeral = computed(() => {
   }
   scoreEstoque = Math.max(0, Math.min(100, scoreEstoque))
 
+  // ── Score Produção (0-100) ────────────────────────────────
+  // Baseado em orçamentos (conversão), OS (andamento), processos (progresso)
+  let scoreProducao = 75
+  const totalOrc = orcamentos.value.length
+  const orcAprovados = orcamentos.value.filter((o: any) => o.status === 'aprovado').length
+  const taxaConversaoOrc = totalOrc > 0 ? (orcAprovados / totalOrc) * 100 : 0
+  if (taxaConversaoOrc >= 50) scoreProducao += 15
+  else if (taxaConversaoOrc >= 30) scoreProducao += 5
+  else if (taxaConversaoOrc < 15 && totalOrc > 3) scoreProducao -= 15
+
+  const totalProcessos = processos.value.length
+  const procConcluidos = processos.value.filter((p: any) => p.status === 'concluido').length
+  const procAtrasados = processos.value.filter((p: any) => p.data_prazo && new Date(p.data_prazo) < new Date() && p.status !== 'concluido').length
+  if (procAtrasados > 0) {
+    const pctAtrasados = totalProcessos > 0 ? (procAtrasados / totalProcessos) * 100 : 0
+    if (pctAtrasados > 30) scoreProducao -= 25
+    else if (pctAtrasados > 15) scoreProducao -= 12
+  }
+  if (totalProcessos > 0 && procConcluidos > 0) {
+    const taxaConclusaoProc = (procConcluidos / totalProcessos) * 100
+    if (taxaConclusaoProc >= 70) scoreProducao += 10
+  }
+  scoreProducao = Math.max(0, Math.min(100, scoreProducao))
+
   // ── Saúde Geral: média ponderada ─────────────────────────
-  // Financeiro 30% | Vendas 20% | Clientes 20% | Operação 15% | Estoque 15%
+  // Financeiro 30% | Vendas 20% | Clientes 15% | Produção 20% | Operação 15%
   const geral = Math.round(
     scoreFinanceiro * 0.30 +
     scoreVendas     * 0.20 +
-    scoreClientes   * 0.20 +
+    scoreClientes   * 0.15 +
     scoreOperacao   * 0.15 +
-    scoreEstoque    * 0.15
+    scoreProducao   * 0.20
   )
 
   const iconPaths: Record<string, string> = {
@@ -2076,7 +2172,7 @@ const scoreGeral = computed(() => {
     Vendas:     'M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941',
     Clientes:   'M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z',
     Operação:   'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5',
-    Estoque:    'M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z',
+    Produção:   'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6z',
   }
 
   return {
@@ -2085,10 +2181,45 @@ const scoreGeral = computed(() => {
       { nome: 'Financeiro', score: scoreFinanceiro, iconPath: iconPaths.Financeiro },
       { nome: 'Vendas',     score: scoreVendas,     iconPath: iconPaths.Vendas     },
       { nome: 'Clientes',   score: scoreClientes,   iconPath: iconPaths.Clientes   },
+      { nome: 'Produção',   score: scoreProducao,   iconPath: iconPaths.Produção   },
       { nome: 'Operação',   score: scoreOperacao,   iconPath: iconPaths.Operação   },
-      { nome: 'Estoque',    score: scoreEstoque,    iconPath: iconPaths.Estoque    },
     ],
   }
+})
+
+// ── métricas de produção ──────────────────────────────────────
+const prodMetrics = computed(() => {
+  const totalOrc = orcamentos.value.length
+  const aprovados = orcamentos.value.filter((o: any) => o.status === 'aprovado').length
+  const taxaConversao = totalOrc > 0 ? Math.round((aprovados / totalOrc) * 100) : 0
+
+  const totalProc = processos.value.length
+  const procAndamento = processos.value.filter((p: any) => p.status === 'em_andamento').length
+  const procConcluidos = processos.value.filter((p: any) => p.status === 'concluido').length
+  const atrasados = processos.value.filter((p: any) => p.data_prazo && new Date(p.data_prazo) < new Date() && p.status !== 'concluido').length
+  const naoAgendados = processos.value.filter((p: any) => !p.data_prazo && p.status !== 'concluido' && p.status !== 'cancelado').length
+  const pendentes = processos.value.filter((p: any) => p.status === 'pendente').length
+
+  const score = totalProc === 0 ? 50 :
+    Math.min(100, Math.max(0, 80 + (atrasados > 0 ? -25 : 0) + (naoAgendados > 3 ? -15 : 0) + (procConcluidos > 0 ? 10 : 0)))
+
+  const statusLabel = score >= 80 ? '✓ Saudável' : score >= 60 ? '⚠ Atenção' : '✗ Crítico'
+
+  const dicas: { icon: string; texto: string }[] = []
+
+  // Dicas sobre fila de produção
+  if (naoAgendados > 0) dicas.push({ icon: '📋', texto: `${naoAgendados} processo(s) na fila sem data agendada. Distribua no kanban semanal.` })
+  if (naoAgendados > 5) dicas.push({ icon: '🚨', texto: `Fila acumulada! ${naoAgendados} processos aguardando. Priorize os de maior urgência.` })
+  if (atrasados > 0) dicas.push({ icon: '⏰', texto: `${atrasados} processo(s) atrasado(s). Verifique gargalos e redistribua a carga.` })
+  if (procAndamento > 5) dicas.push({ icon: '🔥', texto: `${procAndamento} processos em andamento simultâneo. Atenção à capacidade da equipe.` })
+  if (procConcluidos > 0 && totalProc > 0) {
+    const pctConcluido = Math.round((procConcluidos / totalProc) * 100)
+    dicas.push({ icon: '✅', texto: `${procConcluidos} de ${totalProc} processos concluídos (${pctConcluido}%).` })
+  }
+  if (pendentes > 0 && naoAgendados === 0) dicas.push({ icon: '⏳', texto: `${pendentes} processo(s) pendente(s) agendados — acompanhe no kanban.` })
+  if (dicas.length === 0) dicas.push({ icon: '💡', texto: 'Cadastre processos e vincule aos produtos para análises automáticas.' })
+
+  return { processosAndamento: procAndamento, atrasados, naoAgendados, concluidos: procConcluidos, score, statusLabel, dicas }
 })
 
 // ── plano de ação inteligente ─────────────────────────────────
