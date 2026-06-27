@@ -2,7 +2,7 @@
   <!-- FAB de menu -->
   <button
     type="button"
-    class="fab-btn md:hidden"
+    class="fab-btn lg:hidden"
     :class="menuAberto ? 'fab-btn--open' : ''"
     :style="{ background: 'var(--color-primary, #374151)', boxShadow: `0 8px 28px var(--glow-primary, rgba(55,65,81,0.45)), 0 2px 8px rgba(0,0,0,0.25)` }"
     @click="menuAberto = !menuAberto"
@@ -19,7 +19,7 @@
   <Transition name="nav-fade">
     <div
       v-if="menuAberto"
-      class="fixed inset-0 z-30 md:hidden"
+      class="fixed inset-0 z-30 lg:hidden"
       style="background: rgba(0,0,0,0.50); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);"
       @click="menuAberto = false"
     />
@@ -29,7 +29,7 @@
   <Transition name="nav-slide-up">
     <div
       v-if="menuAberto"
-      class="nav-panel md:hidden"
+      class="nav-panel lg:hidden"
       :style="{ background: 'var(--color-sidebar, #1f2937)', borderColor: 'var(--color-primary-border, rgba(255,255,255,0.10))' }"
     >
       <!-- Handle de drag visual -->
@@ -65,22 +65,21 @@ const { isAdminOrGerente } = useAdmin()
 const menuAberto = ref(false)
 
 const allNavItems = [
-  { to: '/',              icon: 'home',           label: 'Início',        minPerfil: 'all' },
-  { to: '/agendamentos',  icon: 'calendar',       label: 'Agenda',        minPerfil: 'all' },
-  { to: '/clientes',      icon: 'identification', label: 'Clientes',      minPerfil: 'all' },
-  { to: '/adesivos-ordens-servico', icon: 'clipboard', label: 'OS',       minPerfil: 'all' },
-  { to: '/adesivos-orcamentos', icon: 'document', label: 'Orçamentos',    minPerfil: 'all' },
-  { to: '/servicos',      icon: 'sparkles',       label: 'Serviços',      minPerfil: 'all' },
-  { to: '/estoque',       icon: 'package',        label: 'Estoque',       minPerfil: 'all' },
-  { to: '/adesivos-catalogo', icon: 'catalog',    label: 'Catálogo',      minPerfil: 'all' },
-  { to: '/adesivos-materiais', icon: 'layers',    label: 'Materiais',     minPerfil: 'all' },
-  { to: '/adesivos-estoque', icon: 'cube',        label: 'Estoque AD',    minPerfil: 'all' },
-  { to: '/atividades',    icon: 'clipboard',      label: 'Atividades',    minPerfil: 'all' },
-  { to: '/funcionarios',  icon: 'users',          label: 'Equipe',        minPerfil: 'manager' },
-  { to: '/financeiro',    icon: 'wallet',         label: 'Financeiro',    minPerfil: 'manager' },
-  { to: '/contas-pagar',  icon: 'wallet',         label: 'Contas',        minPerfil: 'manager' },
-  { to: '/consultor',     icon: 'brain',          label: 'Consultor',     minPerfil: 'manager' },
-  { to: '/configuracoes', icon: 'settings',       label: 'Config',        minPerfil: 'manager' },
+  { to: '/',                         icon: 'home',           label: 'Início',       minPerfil: 'all' },
+  { to: '/adesivos-orcamentos',      icon: 'document',       label: 'Orçamentos',   minPerfil: 'all' },
+  { to: '/adesivos-ordens-servico',  icon: 'clipboard',      label: 'Ordens',       minPerfil: 'all' },
+  { to: '/clientes',                 icon: 'identification', label: 'Clientes',     minPerfil: 'all' },
+  { to: '/adesivos-catalogo',        icon: 'catalog',        label: 'Catálogo',     minPerfil: 'all' },
+  { to: '/adesivos-materiais',       icon: 'layers',         label: 'Materiais',    minPerfil: 'all' },
+  { to: '/adesivos-estoque',         icon: 'cube',           label: 'Estoque',      minPerfil: 'all' },
+  { to: '/processos',                icon: 'sparkles',       label: 'Produção',     minPerfil: 'all' },
+  { to: '/agendamentos',             icon: 'calendar',       label: 'Agenda',       minPerfil: 'all' },
+  { to: '/atividades',               icon: 'clipboard',      label: 'Atividades',   minPerfil: 'all' },
+  { to: '/funcionarios',             icon: 'users',          label: 'Equipa',       minPerfil: 'manager' },
+  { to: '/financeiro',               icon: 'wallet',         label: 'Financeiro',   minPerfil: 'manager' },
+  { to: '/contas-pagar',             icon: 'wallet',         label: 'Contas',       minPerfil: 'manager' },
+  { to: '/consultor',                icon: 'brain',          label: 'Consultor',    minPerfil: 'manager' },
+  { to: '/configuracoes',            icon: 'settings',       label: 'Config',       minPerfil: 'manager' },
 ]
 
 const navItems = computed(() =>

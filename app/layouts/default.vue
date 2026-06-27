@@ -4,7 +4,7 @@
     <AppHeader />
 
     <div class="flex flex-1 min-h-0">
-      <AppSidebar class="hidden md:flex" />
+      <AppSidebar class="hidden lg:flex" />
 
       <main class="flex-1 overflow-y-auto">
         <slot />
