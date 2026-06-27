@@ -1,6 +1,6 @@
 <template>
   <aside
-    class="sidebar"
+    class="sidebar hidden lg:flex"
     :class="expanded ? 'sidebar--expanded' : 'sidebar--collapsed'"
     :style="{ background: 'var(--color-sidebar, #1f2937)' }"
     @mouseenter="expanded = true"
@@ -188,7 +188,6 @@ const navSections = computed(() =>
 <style scoped>
 /* ── Layout ────────────────────────────────────────────────────────── */
 .sidebar {
-  display:        flex;
   flex-direction: column;
   flex-shrink:    0;
   min-height:     0;
