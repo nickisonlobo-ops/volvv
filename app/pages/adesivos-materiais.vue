@@ -405,6 +405,7 @@ interface Material {
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { validarMaterial } = useAdesivos()
+const { formatCurrency } = useLocale()
 
 // ─── State ───────────────────────────────────────────────────────────────────
 const materiais   = ref<Material[]>([])
@@ -432,11 +433,6 @@ const form = reactive({
 const formErrors = reactive({ nome: '', preco_m2: '' })
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return '—'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
 function showSuccess(msg: string) {
   successMsg.value = msg
   setTimeout(() => { successMsg.value = null }, 3000)

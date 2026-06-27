@@ -286,9 +286,9 @@
                 <select v-model="formaPagamentoAprovacao" class="rounded-xl border border-emerald-200 bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-400">
                   <option value="" disabled>Forma de pagamento...</option>
                   <option value="dinheiro">Dinheiro</option>
-                  <option value="pix">PIX</option>
+                  <option value="pix">{{ locale.pais === 'PT' ? 'MB Way' : 'PIX' }}</option>
                   <option value="cartao">Cartão</option>
-                  <option value="boleto">Boleto</option>
+                  <option value="boleto">{{ locale.pais === 'PT' ? 'Ref. Multibanco' : 'Boleto' }}</option>
                   <option value="transferencia">Transferência</option>
                   <option value="parcelado">Parcelado</option>
                 </select>
@@ -356,6 +356,8 @@ import { useContasReceber } from '~/composables/useConciliacao'
 import { useProcessos } from '~/composables/useProcessos'
 import type { StatusOS } from '~/composables/useOrdensServico'
 import OSIndicadorBadge from '~/components/OSIndicadorBadge.vue'
+
+const { formatCurrency, locale } = useLocale()
 
 interface OrcamentoDetalhe {
   id: number
@@ -866,11 +868,6 @@ async function excluirOS() {
   } finally {
     processando.value = false
   }
-}
-
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return 'R$ 0,00'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
 function formatDate(dateStr: string | null | undefined): string {

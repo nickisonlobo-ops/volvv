@@ -526,6 +526,7 @@ useHead({ title: 'Aprovação de Orçamento' })
 
 const route = useRoute()
 const supabase = createSupabaseClient()
+const { formatCurrency, formatDate } = useLocale()
 
 // ─── State ─────────────────────────────────────────
 type PageState = 'loading' | 'not_found' | 'expired' | 'already_decided' | 'active'
@@ -621,16 +622,6 @@ const decisionStatus = computed(() => {
 // ─── Helpers ───────────────────────────────────────
 function openLightbox(url: string) {
   lightboxUrl.value = url
-}
-
-function formatCurrency(value: number | null | undefined): string {
-  if (value == null) return 'R$ 0,00'
-  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
-function formatDate(date: string | null | undefined): string {
-  if (!date) return '—'
-  return new Date(date).toLocaleDateString('pt-BR')
 }
 
 function isPdf(url: string | null | undefined): boolean {

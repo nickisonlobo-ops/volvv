@@ -642,6 +642,7 @@ import AppNavIcon from '~/components/AppNavIcon.vue'
 const supabase = createSupabaseClient()
 const { isAdmin, isAdminOrGerente, adminLoading } = useAdmin()
 const { empresaId, userPerfil, loadEmpresa } = useEmpresa()
+const { formatCurrency } = useLocale()
 
 // �"?�"? ADMIN: resumo �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 const resumoLoading      = ref(true)
@@ -1198,10 +1199,6 @@ onMounted(async () => {
   loadingAtividades.value = false
   await aplicarFiltros()
 })
-
-function formatCurrency(val: number): string {
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 
 const atalhos = [
   { to: '/agendamentos',  icon: 'calendar',       title: 'Agendamentos',  minPerfil: 'all'     },

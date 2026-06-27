@@ -42,6 +42,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+// ─── Composables ─────────────────────────────────────────────────────────────
+const { formatCurrency } = useLocale()
+
 // ─── Props ───────────────────────────────────────────────────────────────────
 const props = withDefaults(
   defineProps<{
@@ -85,9 +88,4 @@ const valorTotalFinal = computed<number>(() => {
   return Math.max(total, 0)
 })
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return 'R$ 0,00'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 </script>

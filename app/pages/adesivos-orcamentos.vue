@@ -356,6 +356,7 @@ interface Material {
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { classificarStatusOrcamentoV2, isStatusEditavel } = useOrcamentos()
+const { formatCurrency, formatDate } = useLocale()
 
 // ─── State ───────────────────────────────────────────────────────────────────
 const orcamentos = ref<OrcamentoListItem[]>([])
@@ -450,17 +451,6 @@ function statusLabel(orc: OrcamentoListItem): string {
 function isVencido(orc: OrcamentoListItem): boolean {
   const display = classificarStatusOrcamentoV2(orc.status as any, orc.data_validade)
   return display.status === 'vencido'
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return 'R$ 0,00'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
-function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString('pt-BR')
 }
 
 // ─── Actions ─────────────────────────────────────────────────────────────────

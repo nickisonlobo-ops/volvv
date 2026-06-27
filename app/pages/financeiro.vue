@@ -590,6 +590,7 @@ interface OrdemServicoFinanceiro {
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { isAdminOrGerente } = useAdmin()
+const { formatCurrency } = useLocale()
 
 const vendas = ref<Venda[]>([])
 const contas = ref<ContaPagar[]>([])
@@ -604,15 +605,12 @@ const CHART_H = 150
 const donutCircumference = 2 * Math.PI * 44
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return '–'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
 function formatCurrencyShort(val: number): string {
-  if (val >= 1_000_000) return `R$${(val / 1_000_000).toFixed(1)}M`
-  if (val >= 1_000) return `R$${(val / 1_000).toFixed(0)}k`
-  return `R$${val.toFixed(0)}`
+  const { locale } = useLocale()
+  const sym = locale.value.simboloMoeda
+  if (val >= 1_000_000) return `${sym}${(val / 1_000_000).toFixed(1)}M`
+  if (val >= 1_000) return `${sym}${(val / 1_000).toFixed(0)}k`
+  return `${sym}${val.toFixed(0)}`
 }
 
 function formatDateShort(iso: string | null): string {

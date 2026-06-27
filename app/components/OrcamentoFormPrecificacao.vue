@@ -29,9 +29,9 @@
 
     <!-- Preço Unitário (visível apenas quando modalidade = 'unidade') -->
     <div v-if="modalidade === 'unidade'" class="flex flex-col gap-1.5">
-      <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Preço Unitário (R$) *</label>
+      <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Preço Unitário ({{ locale.simboloMoeda }}) *</label>
       <div class="relative">
-        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">R$</span>
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">{{ locale.simboloMoeda }}</span>
         <input
           :value="precoUnitario"
           type="number"
@@ -128,6 +128,7 @@ const emit = defineEmits<{
 
 // ─── Composable ──────────────────────────────────────────────────────────────
 const { calcularValorMaterial } = useOrcamentos()
+const { formatCurrency, locale } = useLocale()
 
 // ─── State ───────────────────────────────────────────────────────────────────
 const modalidade = ref<'m2' | 'unidade'>(props.initialModalidade)
@@ -141,10 +142,10 @@ function validarPrecoUnitario(valor: number | null): string {
     return 'Informe o preço unitário'
   }
   if (valor < 0.01) {
-    return 'Preço mínimo: R$ 0,01'
+    return `Preço mínimo: ${locale.value.simboloMoeda} 0,01`
   }
   if (valor > 99999.99) {
-    return 'Preço máximo: R$ 99.999,99'
+    return `Preço máximo: ${locale.value.simboloMoeda} 99.999,99`
   }
   return ''
 }
@@ -188,9 +189,4 @@ watch(valorMaterialCalculado, (newVal) => {
   emit('update:valorMaterial', newVal)
 }, { immediate: true })
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return 'R$ 0,00'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 </script>

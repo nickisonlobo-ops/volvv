@@ -173,7 +173,7 @@
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Valor mínimo</label>
-              <input v-model="filtros.valorMin" type="number" min="0" placeholder="R$ 0,00" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-shadow" />
+              <input v-model="filtros.valorMin" type="number" min="0" :placeholder="locale.simboloMoeda + ' 0,00'" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-shadow" />
             </div>
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Valor máximo</label>
@@ -572,6 +572,7 @@ interface ContaPagar {
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { isAdmin, isAdminOrGerente } = useAdmin()
+const { formatCurrency, formatDate, locale } = useLocale()
 
 const contas = ref<ContaPagar[]>([])
 const loading = ref(true)
@@ -823,14 +824,6 @@ async function mudarStatus(conta: ContaPagar, novoStatus: string) {
   if (!updateError) {
     conta.status = novoStatus
   }
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
-}
-
-function formatDate(date: string): string {
-  return new Date(date + 'T00:00:00').toLocaleDateString('pt-BR')
 }
 
 function formatDateTime(dt: string | null): string {

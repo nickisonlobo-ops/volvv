@@ -380,7 +380,7 @@
                       <div class="flex flex-col gap-1 flex-1 min-w-0">
                         <span class="text-[10px] font-black text-amber-400 uppercase tracking-[0.2em]">Preço negociado</span>
                         <div class="flex items-baseline gap-1.5">
-                          <span class="text-sm font-bold text-gray-500">R$</span>
+                          <span class="text-sm font-bold text-gray-500">{{ locale.simboloMoeda }}</span>
                           <input
                             type="text"
                             inputmode="numeric"
@@ -739,6 +739,7 @@ interface Venda {
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { isAdmin, isAdminOrGerente } = useAdmin()
+const { formatCurrency, formatDate, locale } = useLocale()
 
 const vendas             = ref<Venda[]>([])
 const clientesOpcoes     = ref<ClienteOpcao[]>([])
@@ -812,7 +813,9 @@ const formErrors = reactive({ cliente_id: '', veiculo: '' })
 const filtroAberto = ref(false)
 const filtros = reactive({ busca: '', status: '', formaPagamento: '' })
 
-const formasPagamento = ['Dinheiro', 'Pix', 'Cartão de Débito', 'Cartão de Crédito', 'Boleto', 'Transferência']
+const formasPagamentoBR = ['Dinheiro', 'Pix', 'Cartão de Débito', 'Cartão de Crédito', 'Boleto', 'Transferência']
+const formasPagamentoPT = ['Dinheiro', 'MB Way', 'Cartão de Débito', 'Cartão de Crédito', 'Ref. Multibanco', 'Transferência']
+const formasPagamento = computed(() => locale.value.pais === 'PT' ? formasPagamentoPT : formasPagamentoBR)
 
 const statusOpcoes = [
   { label: 'Finalizada', value: 'finalizada', dotClass: 'bg-green-500', activeClass: 'bg-green-50 border-green-400 text-green-800' },
@@ -919,14 +922,6 @@ const vendasFiltradas = computed(() => {
 function limparFiltros() { filtros.busca = ''; filtros.status = ''; filtros.formaPagamento = '' }
 
 // �"?�"? Helpers �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return '�?"'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-function formatDate(iso: string | null): string {
-  if (!iso) return '�?"'
-  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-}
 function toDatetimeLocal(iso: string | null): string {
   if (!iso) return ''
   return new Date(iso).toISOString().slice(0, 16)

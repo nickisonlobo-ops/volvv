@@ -462,6 +462,7 @@ interface Produto {
 const supabase = createSupabaseClient()
 const { isAdmin, isAdminOrGerente } = useAdmin()
 const { empresaId, loadEmpresa } = useEmpresa()
+const { formatCurrency } = useLocale()
 
 const produtos = ref<Produto[]>([])
 const loading = ref(true)
@@ -571,10 +572,6 @@ async function fetchProdutos() {
   loading.value = false
   if (fetchError) { error.value = fetchError.message; return }
   produtos.value = (data ?? []) as Produto[]
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 }
 
 function abrirAdicionar() {

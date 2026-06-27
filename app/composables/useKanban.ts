@@ -373,8 +373,8 @@ export function useKanban(pipelineTipo: PipelineTipo) {
   }
 
   function formatarValor(valor: number | null): string {
-    if (valor == null) return 'R$ 0,00'
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    const { formatCurrency } = useLocale()
+    return formatCurrency(valor)
   }
 
   return {

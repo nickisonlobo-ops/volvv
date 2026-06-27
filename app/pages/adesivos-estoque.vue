@@ -371,6 +371,7 @@ interface Movimentacao {
 // ─── Composables ─────────────────────────────────────────────────────────────
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
+const { formatCurrency, formatDate } = useLocale()
 
 // ─── State ───────────────────────────────────────────────────────────────────
 const materiais = ref<Material[]>([])
@@ -405,17 +406,6 @@ const entradaErrors = reactive({
 function formatNumber(val: number | null | undefined): string {
   if (val == null) return '0,00'
   return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
-
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return '—'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
-function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '—'
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 function showSuccess(msg: string) {

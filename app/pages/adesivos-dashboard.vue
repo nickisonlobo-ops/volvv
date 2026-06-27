@@ -257,6 +257,7 @@ interface PedidoFila {
 // ─── Composables ─────────────────────────────────────────────────────────────
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
+const { formatCurrency } = useLocale()
 
 // ─── State ───────────────────────────────────────────────────────────────────
 const loading = ref(true)
@@ -299,11 +300,6 @@ const statusTextColors: Record<string, string> = {
 function formatNumber(val: number | null | undefined): string {
   if (val == null) return '0,00'
   return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
-
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null || val === 0) return 'R$ 0,00'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
 function truncate(text: string | null, maxLen: number): string {

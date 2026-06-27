@@ -112,7 +112,7 @@
               <input
                 v-model="busca"
                 type="text"
-                placeholder="Nome, e-mail, CPF ou cargo..."
+                :placeholder="locale.pais === 'PT' ? 'Nome, e-mail, NIF ou cargo...' : 'Nome, e-mail, CPF ou cargo...'"
                 class="w-full rounded-xl border border-gray-200 pl-10 pr-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary,#6b7280)] focus:border-[var(--color-primary,#6b7280)] transition-shadow"
               />
             </div>
@@ -163,12 +163,12 @@
               <th class="text-left px-7 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">#</th>
               <th class="text-left px-5 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">Nome</th>
               <th class="text-left px-5 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">E-mail</th>
-              <th class="text-left px-5 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">CPF</th>
+              <th class="text-left px-5 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">{{ locale.pais === 'PT' ? 'NIF' : 'CPF' }}</th>
               <th class="text-left px-5 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">Idade</th>
               <th class="text-left px-5 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">Cargo</th>
               <th class="text-left px-5 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">Perfil</th>
               <th class="text-left px-5 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">Salário</th>
-              <th class="text-left px-5 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">Endereço</th>
+              <th class="text-left px-5 py-4 text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em]">{{ locale.pais === 'PT' ? 'Morada' : 'Endereço' }}</th>
               <th class="px-7 py-4 text-right text-[11px] font-semibold text-primary-500 uppercase tracking-[0.05em] sm:sticky sm:right-0 bg-gray-50">Ações</th>
             </tr>
           </thead>
@@ -368,10 +368,10 @@
                 <AppInput v-model="form.idade" label="Idade" type="number" placeholder="Ex: 30" />
               </div>
               <div class="grid grid-cols-2 gap-4">
-                <AppInput v-model="form.cpf" label="CPF" placeholder="Ex: 12345678900" />
-                <AppInput v-model="form.salario" label="Salário (R$)" type="number" placeholder="Ex: 3500.00" />
+                <AppInput v-model="form.cpf" :label="locale.pais === 'PT' ? 'NIF' : 'CPF'" placeholder="Ex: 12345678900" />
+                <AppInput v-model="form.salario" :label="locale.pais === 'PT' ? 'Salário (€)' : 'Salário (R$)'" type="number" :placeholder="locale.pais === 'PT' ? 'Ex: 1200.00' : 'Ex: 3500.00'" />
               </div>
-              <AppInput v-model="form.endereco" label="Endereço" placeholder="Rua, número, cidade" />
+              <AppInput v-model="form.endereco" :label="locale.pais === 'PT' ? 'Morada' : 'Endereço'" :placeholder="locale.pais === 'PT' ? 'Rua, nº, localidade' : 'Rua, número, cidade'" />
 
               <!-- Permissão -->
               <div class="flex flex-col gap-1.5">
@@ -487,6 +487,7 @@ interface Funcionario {
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { isAdmin, isAdminOrGerente } = useAdmin()
+const { formatCurrency, locale } = useLocale()
 
 const funcionarios = ref<Funcionario[]>([])
 const loading = ref(true)
@@ -611,16 +612,16 @@ async function lancarFolha() {
   setTimeout(fecharModalFolha, 2500)
 }
 
-const columns = [
+const columns = computed(() => [
   { key: 'id',       label: '#' },
   { key: 'nome',     label: 'Nome' },
   { key: 'email',    label: 'E-mail' },
-  { key: 'cpf',      label: 'CPF' },
+  { key: 'cpf',      label: locale.value.pais === 'PT' ? 'NIF' : 'CPF' },
   { key: 'idade',    label: 'Idade' },
   { key: 'cargo',    label: 'Cargo' },
-  { key: 'salario',  label: 'Salário' },
-  { key: 'endereco', label: 'Endereço' },
-]
+  { key: 'salario',  label: locale.value.pais === 'PT' ? 'Salário (€)' : 'Salário (R$)' },
+  { key: 'endereco', label: locale.value.pais === 'PT' ? 'Morada' : 'Endereço' },
+])
 
 onMounted(async () => {
   await loadEmpresa()
@@ -645,10 +646,6 @@ function initials(nome: string): string {
   const parts = nome.trim().split(' ').filter(Boolean)
   if (parts.length >= 2) return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase()
   return (nome[0] ?? '?').toUpperCase()
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 }
 
 function abrirAdicionar() {

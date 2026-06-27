@@ -280,6 +280,7 @@ interface Proposta {
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { isAdmin } = useAdmin()
+const { formatCurrency, formatDate } = useLocale()
 
 const propostas  = ref<Proposta[]>([])
 const loading    = ref(true)
@@ -334,14 +335,6 @@ const propostasFiltradas = computed(() =>
 function limparFiltros() { filtros.busca = ''; filtros.status = '' }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined) {
-  if (val == null) return '—'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-function formatDate(iso: string | null) {
-  if (!iso) return '—'
-  return new Date(iso).toLocaleDateString('pt-BR')
-}
 function statusLabel(s: string | null) {
   const map: Record<string, string> = { aberta: 'Aberta', negociacao: 'Negociação', aprovada: 'Aprovada', recusada: 'Recusada', cancelada: 'Cancelada' }
   return map[s ?? ''] ?? s ?? '—'

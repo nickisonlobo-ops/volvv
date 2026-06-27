@@ -85,7 +85,7 @@
             </label>
             <input v-model.number="filtros.precoMax" type="range" :min="0" :max="precoMaxTotal" :step="stepPreco" class="w-full accent-amber-500 cursor-pointer" />
             <div class="flex justify-between text-[10px] text-gray-400">
-              <span>R$ 0</span>
+              <span>{{ locale.simboloMoeda }} 0</span>
               <span>{{ formatCurrency(precoMaxTotal) }}</span>
             </div>
           </div>
@@ -204,6 +204,7 @@ interface Veiculo {
 const route = useRoute()
 const supabase = createSupabaseClient()
 const { config: tema, loadPersonalizacaoPublic } = usePersonalizacao()
+const { formatCurrency, locale } = useLocale()
 
 const veiculos = ref<Veiculo[]>([])
 const loading  = ref(true)
@@ -282,10 +283,6 @@ const veiculosFiltrados = computed(() => {
 })
 function limparFiltros() {
   filtros.busca = ''; filtros.tipo = ''; filtros.combustivel = ''; filtros.precoMax = precoMaxTotal.value
-}
-function formatCurrency(val: number | null | undefined) {
-  if (val == null) return '—'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 function statusBadgeClass(s: string | null) {
   if (s === 'disponivel') return 'bg-emerald-500 text-white'

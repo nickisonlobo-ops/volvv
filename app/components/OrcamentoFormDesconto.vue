@@ -58,7 +58,7 @@
             : 'bg-gray-50 text-gray-600 hover:bg-gray-100'"
           @click="setDescontoTipo('fixo')"
         >
-          Valor Fixo (R$)
+          Valor Fixo ({{ locale.simboloMoeda }})
         </button>
       </div>
 
@@ -83,7 +83,7 @@
       <!-- Input: Desconto valor fixo -->
       <div v-if="descontoTipo === 'fixo'" class="flex flex-col gap-1.5">
         <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">R$</span>
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">{{ locale.simboloMoeda }}</span>
           <input
             :value="descontoManualValor"
             type="number"
@@ -155,6 +155,7 @@ const emit = defineEmits<{
 
 // ─── Composable ──────────────────────────────────────────────────────────────
 const { selecionarDescontoVolume, calcularValorFinal } = useOrcamentos()
+const { formatCurrency, locale } = useLocale()
 
 // ─── State ───────────────────────────────────────────────────────────────────
 interface RegraDesconto {
@@ -285,9 +286,4 @@ watch(valorFinalCalculado, (newVal) => {
   emit('update:valorFinal', newVal)
 }, { immediate: true })
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return 'R$ 0,00'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 </script>

@@ -79,6 +79,7 @@ export function usePersonalizacao() {
 
     if (data) {
       config.value = {
+        pais:                data.pais                ?? 'BR',
         cor_primaria:        data.cor_primaria        ?? DEFAULTS.cor_primaria,
         cor_primaria_texto:  data.cor_primaria_texto  ?? DEFAULTS.cor_primaria_texto,
         cor_fundo:           data.cor_fundo           ?? DEFAULTS.cor_fundo,
@@ -628,6 +629,7 @@ export function usePersonalizacao() {
     const data = personalizacaoRes.data
     if (data) {
       config.value = {
+        pais:                data.pais                ?? 'BR',
         cor_primaria:        data.cor_primaria        ?? DEFAULTS.cor_primaria,
         cor_primaria_texto:  data.cor_primaria_texto  ?? DEFAULTS.cor_primaria_texto,
         cor_fundo:           data.cor_fundo           ?? DEFAULTS.cor_fundo,

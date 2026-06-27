@@ -111,7 +111,7 @@
           </span>
         </div>
         <div class="relative">
-          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400">R$</span>
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400">{{ locale.simboloMoeda }}</span>
           <input
             :value="item.modalidade_preco === 'm2' ? precoM2Atual : item.preco_unitario"
             type="number" step="0.01" min="0.01"
@@ -202,6 +202,7 @@ const emit = defineEmits<{
 }>()
 
 const { calcularAreaItem, calcularValorItem, isPrecoOverride, gerarPathFotoArte, gerarPathFotoLocal } = useOrcamentos()
+const { formatCurrency, locale } = useLocale()
 
 // ─── State ───────────────────────────────────────────────────────────────────
 const errors = ref<Record<string, string>>({})
@@ -233,10 +234,6 @@ watch(valorCalculado, (newVal) => {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function emitUpdate(partial: Partial<ItemOrcamento>) { emit('update:item', { ...props.item, ...partial }) }
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return 'R$ 0,00'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 
 function validateField(field: string, value: number | null | undefined): string {
   if (field === 'largura_cm' || field === 'altura_cm' || field === 'espessura_cm') {
@@ -246,11 +243,11 @@ function validateField(field: string, value: number | null | undefined): string 
     if (value == null || isNaN(value) || value < 1) return 'Mín: 1'
     if (value > 99999) return 'Máx: 99999'
   } else if (field === 'preco_unitario') {
-    if (value == null || isNaN(value) || value < 0.01) return 'Mín: R$ 0,01'
-    if (value > 99999.99) return 'Máx: R$ 99.999,99'
+    if (value == null || isNaN(value) || value < 0.01) return `Mín: ${locale.value.simboloMoeda} 0,01`
+    if (value > 99999.99) return `Máx: ${locale.value.simboloMoeda} 99.999,99`
   } else if (field === 'preco_m2') {
-    if (value == null || isNaN(value) || value < 0.01) return 'Mín: R$ 0,01'
-    if (value > 9999.99) return 'Máx: R$ 9.999,99'
+    if (value == null || isNaN(value) || value < 0.01) return `Mín: ${locale.value.simboloMoeda} 0,01`
+    if (value > 9999.99) return `Máx: ${locale.value.simboloMoeda} 9.999,99`
   }
   return ''
 }

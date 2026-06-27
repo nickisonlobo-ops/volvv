@@ -541,26 +541,57 @@
           <p class="text-xs text-gray-500 mt-1">Informações que aparecem nos orçamentos e documentos.</p>
         </div>
 
+        <!-- Seletor de País/Região -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-gray-500">País / Região</label>
+          <div class="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              class="flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all text-left"
+              :class="dadosEmpresa.pais === 'BR' ? 'border-violet-500 bg-violet-50' : 'border-gray-200 hover:border-gray-300'"
+              @click="dadosEmpresa.pais = 'BR'"
+            >
+              <span class="text-xl">🇧🇷</span>
+              <div>
+                <p class="text-sm font-semibold" :class="dadosEmpresa.pais === 'BR' ? 'text-violet-700' : 'text-gray-700'">Brasil</p>
+                <p class="text-[11px] text-gray-400">BRL · CNPJ · PIX</p>
+              </div>
+            </button>
+            <button
+              type="button"
+              class="flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all text-left"
+              :class="dadosEmpresa.pais === 'PT' ? 'border-violet-500 bg-violet-50' : 'border-gray-200 hover:border-gray-300'"
+              @click="dadosEmpresa.pais = 'PT'"
+            >
+              <span class="text-xl">🇵🇹</span>
+              <div>
+                <p class="text-sm font-semibold" :class="dadosEmpresa.pais === 'PT' ? 'text-violet-700' : 'text-gray-700'">Portugal</p>
+                <p class="text-[11px] text-gray-400">EUR · NIF · IBAN</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="space-y-1">
             <label class="text-xs font-bold text-gray-500">Razão Social</label>
             <input v-model="dadosEmpresa.razao_social" type="text" placeholder="Razão Social da empresa" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-bold text-gray-500">CNPJ</label>
-            <input v-model="dadosEmpresa.cnpj" type="text" placeholder="00.000.000/0000-00" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
+            <label class="text-xs font-bold text-gray-500">{{ dadosEmpresa.pais === 'PT' ? 'NIF' : 'CNPJ' }}</label>
+            <input v-model="dadosEmpresa.cnpj" type="text" :placeholder="dadosEmpresa.pais === 'PT' ? '123 456 789' : '00.000.000/0000-00'" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
           </div>
         </div>
 
         <div class="space-y-1">
-          <label class="text-xs font-bold text-gray-500">Endereço Completo</label>
-          <input v-model="dadosEmpresa.endereco" type="text" placeholder="Rua, número, bairro, cidade - UF, CEP" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
+          <label class="text-xs font-bold text-gray-500">{{ dadosEmpresa.pais === 'PT' ? 'Morada Completa' : 'Endereço Completo' }}</label>
+          <input v-model="dadosEmpresa.endereco" type="text" :placeholder="dadosEmpresa.pais === 'PT' ? 'Rua, nº, código postal, localidade' : 'Rua, número, bairro, cidade - UF, CEP'" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="space-y-1">
             <label class="text-xs font-bold text-gray-500">Telefone</label>
-            <input v-model="dadosEmpresa.telefone" type="text" placeholder="(11) 99999-9999" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
+            <input v-model="dadosEmpresa.telefone" type="text" :placeholder="dadosEmpresa.pais === 'PT' ? '+351 912 345 678' : '(11) 99999-9999'" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
           </div>
           <div class="space-y-1">
             <label class="text-xs font-bold text-gray-500">E-mail</label>
@@ -570,21 +601,21 @@
 
         <!-- Dados Bancários -->
         <div class="pt-3 border-t border-gray-100">
-          <h3 class="text-sm font-bold text-gray-700 mb-3">Dados Bancários</h3>
+          <h3 class="text-sm font-bold text-gray-700 mb-3">{{ dadosEmpresa.pais === 'PT' ? 'Dados Bancários / IBAN' : 'Dados Bancários' }}</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
               <label class="text-xs font-bold text-gray-500">Banco</label>
-              <input v-model="dadosEmpresa.banco" type="text" placeholder="Ex: Banco do Brasil" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
+              <input v-model="dadosEmpresa.banco" type="text" :placeholder="dadosEmpresa.pais === 'PT' ? 'Ex: Millennium BCP' : 'Ex: Banco do Brasil'" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
             </div>
-            <div class="space-y-1">
+            <div v-if="dadosEmpresa.pais === 'BR'" class="space-y-1">
               <label class="text-xs font-bold text-gray-500">Agência</label>
               <input v-model="dadosEmpresa.agencia" type="text" placeholder="0000" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
             </div>
-            <div class="space-y-1">
+            <div v-if="dadosEmpresa.pais === 'BR'" class="space-y-1">
               <label class="text-xs font-bold text-gray-500">Conta</label>
               <input v-model="dadosEmpresa.conta" type="text" placeholder="00000-0" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
             </div>
-            <div class="space-y-1">
+            <div v-if="dadosEmpresa.pais === 'BR'" class="space-y-1">
               <label class="text-xs font-bold text-gray-500">Tipo de Conta</label>
               <select v-model="dadosEmpresa.tipo_conta" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
                 <option value="">Selecione</option>
@@ -592,14 +623,22 @@
                 <option value="poupanca">Poupança</option>
               </select>
             </div>
+            <div v-if="dadosEmpresa.pais === 'PT'" class="space-y-1">
+              <label class="text-xs font-bold text-gray-500">Tipo de Conta</label>
+              <select v-model="dadosEmpresa.tipo_conta" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="">Selecione</option>
+                <option value="corrente">Conta à Ordem</option>
+                <option value="poupanca">Conta Poupança</option>
+              </select>
+            </div>
           </div>
           <div class="space-y-1 mt-4">
-            <label class="text-xs font-bold text-gray-500">Chave PIX</label>
-            <input v-model="dadosEmpresa.chave_pix" type="text" placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
+            <label class="text-xs font-bold text-gray-500">{{ dadosEmpresa.pais === 'PT' ? 'IBAN' : 'Chave PIX' }}</label>
+            <input v-model="dadosEmpresa.chave_pix" type="text" :placeholder="dadosEmpresa.pais === 'PT' ? 'PT50 0000 0000 0000 0000 0000 0' : 'CPF, CNPJ, e-mail, telefone ou chave aleatória'" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
           </div>
           <div class="space-y-1 mt-4">
-            <label class="text-xs font-bold text-gray-500">Titular da Conta</label>
-            <input v-model="dadosEmpresa.titular_conta" type="text" placeholder="Nome do titular" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
+            <label class="text-xs font-bold text-gray-500">{{ dadosEmpresa.pais === 'PT' ? 'Titular da Conta' : 'Titular da Conta' }}</label>
+            <input v-model="dadosEmpresa.titular_conta" type="text" :placeholder="dadosEmpresa.pais === 'PT' ? 'Nome do titular da conta' : 'Nome do titular'" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
           </div>
         </div>
 
@@ -872,6 +911,7 @@ const temasProntos = [
 
 // ── Dados da Empresa ──────────────────────────────────────────────────────────
 const dadosEmpresa = reactive({
+  pais: 'BR' as 'BR' | 'PT',
   razao_social: '',
   cnpj: '',
   endereco: '',
@@ -897,6 +937,7 @@ async function carregarDadosEmpresa() {
     .single()
   if (err) { console.error('Erro ao carregar dados empresa:', err); return }
   if (data) {
+    dadosEmpresa.pais = data.pais ?? 'BR'
     dadosEmpresa.razao_social = data.razao_social ?? ''
     dadosEmpresa.cnpj = data.cnpj ?? ''
     dadosEmpresa.endereco = data.endereco ?? ''
@@ -918,6 +959,7 @@ async function salvarDadosEmpresa() {
   const { error: err } = await supabase
     .from('empresa_personalizacao')
     .update({
+      pais: dadosEmpresa.pais || 'BR',
       razao_social: dadosEmpresa.razao_social || null,
       cnpj: dadosEmpresa.cnpj || null,
       endereco: dadosEmpresa.endereco || null,

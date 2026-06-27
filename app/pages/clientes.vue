@@ -101,7 +101,7 @@
             <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Busca</label>
             <div class="relative">
               <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/></svg>
-              <input v-model="filtros.busca" type="text" placeholder="Nome, CPF/CNPJ, telefone ou e-mail..." class="w-full rounded-xl border border-gray-200 pl-10 pr-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary,#6b7280)] focus:border-[var(--color-primary,#6b7280)] transition-shadow" />
+              <input v-model="filtros.busca" type="text" :placeholder="locale.pais === 'PT' ? 'Nome, NIF, telefone ou e-mail...' : 'Nome, CPF/CNPJ, telefone ou e-mail...'" class="w-full rounded-xl border border-gray-200 pl-10 pr-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary,#6b7280)] focus:border-[var(--color-primary,#6b7280)] transition-shadow" />
             </div>
           </div>
           <div class="flex flex-col gap-1.5">
@@ -182,10 +182,10 @@
             <tr class="bg-gray-50 border-b border-gray-100">
               <th class="text-left px-7 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">#</th>
               <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">Nome</th>
-              <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">CPF / CNPJ</th>
+              <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">{{ locale.pais === 'PT' ? 'NIF' : 'CPF / CNPJ' }}</th>
               <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">Telefone</th>
               <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">E-mail</th>
-              <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">Cidade / Estado</th>
+              <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">{{ locale.pais === 'PT' ? 'Cidade / Distrito' : 'Cidade / Estado' }}</th>
               <th class="text-left px-5 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-widest">Status</th>
               <th class="px-7 py-4 text-right text-xs font-extrabold text-gray-400 uppercase tracking-widest sm:sticky sm:right-0 bg-gray-50">Ações</th>
             </tr>
@@ -315,7 +315,7 @@
               <!-- Nome + CPF/CNPJ -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <AppInput v-model="form.nome" label="Nome *" placeholder="Ex: João da Silva" :error="formErrors.nome" required />
-                <AppInput v-model="form.cpf_cnpj" label="CPF / CNPJ" placeholder="Ex: 000.000.000-00" :error="formErrors.cpf_cnpj" />
+                <AppInput v-model="form.cpf_cnpj" :label="locale.pais === 'PT' ? 'NIF' : 'CPF / CNPJ'" :placeholder="locale.pais === 'PT' ? '123 456 789' : '000.000.000-00'" :error="formErrors.cpf_cnpj" />
               </div>
               <!-- Telefone + E-mail -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -325,23 +325,23 @@
               <!-- Endereço + Número -->
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="sm:col-span-2">
-                  <AppInput v-model="form.endereco" label="Endereço" placeholder="Ex: Rua das Flores" />
+                  <AppInput v-model="form.endereco" :label="locale.pais === 'PT' ? 'Morada' : 'Endereço'" :placeholder="locale.pais === 'PT' ? 'Ex: Rua Augusta' : 'Ex: Rua das Flores'" />
                 </div>
                 <AppInput v-model="form.numero" label="Número" placeholder="Ex: 123" />
               </div>
-              <!-- Bairro + CEP -->
+              <!-- Bairro/Localidade + CEP/Código Postal -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <AppInput v-model="form.bairro" label="Bairro" placeholder="Ex: Centro" />
-                <AppInput v-model="form.cep" label="CEP" placeholder="Ex: 00000-000" />
+                <AppInput v-model="form.bairro" :label="locale.pais === 'PT' ? 'Localidade' : 'Bairro'" :placeholder="locale.pais === 'PT' ? 'Ex: Alfama' : 'Ex: Centro'" />
+                <AppInput v-model="form.cep" :label="locale.pais === 'PT' ? 'Código Postal' : 'CEP'" :placeholder="locale.pais === 'PT' ? '1000-001' : '00000-000'" />
               </div>
-              <!-- Cidade + Estado -->
+              <!-- Cidade + Estado/Distrito -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <AppInput v-model="form.cidade" label="Cidade" placeholder="Ex: São Paulo" />
                 <div class="flex flex-col gap-1.5">
-                  <label class="text-sm font-semibold text-gray-700">Estado</label>
+                  <label class="text-sm font-semibold text-gray-700">{{ locale.pais === 'PT' ? 'Distrito' : 'Estado' }}</label>
                   <select v-model="form.estado" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-800 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
                     <option value="">Selecione</option>
-                    <option v-for="uf in ufs" :key="uf" :value="uf">{{ uf }}</option>
+                    <option v-for="uf in locale.pais === 'PT' ? distritosPortugal : ufs" :key="uf" :value="uf">{{ uf }}</option>
                   </select>
                 </div>
               </div>
@@ -465,11 +465,11 @@
                   <p class="text-lg font-bold text-gray-900 mt-2 truncate">{{ clienteSelecionado?.email || '—' }}</p>
                 </div>
                 <div class="bg-gray-50 rounded-2xl p-4">
-                  <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">CPF/CNPJ</span>
+                  <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">{{ locale.pais === 'PT' ? 'NIF' : 'CPF/CNPJ' }}</span>
                   <p class="text-lg font-bold text-gray-900 mt-2">{{ clienteSelecionado?.cpf_cnpj || '—' }}</p>
                 </div>
                 <div class="bg-gray-50 rounded-2xl p-4 sm:col-span-2">
-                  <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Endereço</span>
+                  <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">{{ locale.pais === 'PT' ? 'Morada' : 'Endereço' }}</span>
                   <p class="text-lg font-bold text-gray-900 mt-2">
                     {{ clienteSelecionado ? formatarEndereco(clienteSelecionado) : '—' }}
                   </p>
@@ -671,6 +671,7 @@ const supabase = createSupabaseClient()
 const router = useRouter()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { isAdminOrGerente } = useAdmin()
+const { locale } = useLocale()
 
 const clientes = ref<Cliente[]>([])
 const loading = ref(true)
@@ -714,6 +715,8 @@ const formErrors = reactive({ nome: '', cpf_cnpj: '', email: '' })
 
 const filtroAberto = ref(false)
 const filtros = reactive({ busca: '', cidade: '', ativo: '' })
+
+const distritosPortugal = ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro', 'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo', 'Vila Real', 'Viseu', 'Açores', 'Madeira']
 
 const ufs = [
   'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',

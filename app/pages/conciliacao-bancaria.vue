@@ -218,6 +218,7 @@ const {
   salvarExtrato, conciliarTransacao, ignorarTransacao,
   carregarTransacoes, carregarExtratos, carregarContasPendentes, excluirExtrato,
 } = useConciliacao()
+const { formatCurrency, formatDate } = useLocale()
 
 const loading = ref(false)
 const importando = ref(false)
@@ -379,14 +380,6 @@ async function excluirExtratoAtivo() {
     showToast('Extrato excluído')
     if (extratos.value.length > 0) await selecionarExtrato(extratos.value[0].id!)
   } else { showToast(result.error || 'Erro', 'error') }
-}
-
-function formatCurrency(val: number): string {
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-function formatDate(d: string): string {
-  if (!d) return '—'
-  return new Date(d + 'T12:00:00').toLocaleDateString('pt-BR')
 }
 
 async function carregarDados() {

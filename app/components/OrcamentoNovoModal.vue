@@ -101,7 +101,7 @@
                   <div class="flex flex-col gap-1">
                     <label class="text-[10px] font-bold text-gray-400">M. de obra</label>
                     <div class="relative">
-                      <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">R$</span>
+                      <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">{{ locale.simboloMoeda }}</span>
                       <input v-model.number="form.valor_mao_obra" type="number" step="0.01" min="0" placeholder="0" class="w-full rounded-lg border border-gray-200 pl-7 pr-2 py-2 text-sm text-gray-800 bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all" />
                     </div>
                   </div>
@@ -170,7 +170,7 @@
                 <div class="flex items-center gap-2">
                   <div class="flex rounded-lg border overflow-hidden" style="border-color: var(--color-card-border, rgba(0,0,0,0.1))">
                     <button type="button" class="px-3 py-1.5 text-[11px] font-bold transition-all" :style="descontoTipo === 'percentual' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { background: 'transparent', color: 'var(--color-card-texto, #6b7280)' }" @click="descontoTipo = 'percentual'">%</button>
-                    <button type="button" class="px-3 py-1.5 text-[11px] font-bold transition-all" :style="descontoTipo === 'valor' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { background: 'transparent', color: 'var(--color-card-texto, #6b7280)' }" @click="descontoTipo = 'valor'">R$</button>
+                    <button type="button" class="px-3 py-1.5 text-[11px] font-bold transition-all" :style="descontoTipo === 'valor' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { background: 'transparent', color: 'var(--color-card-texto, #6b7280)' }" @click="descontoTipo = 'valor'">{{ locale.simboloMoeda }}</button>
                   </div>
                   <input v-model.number="descontoManualInput" type="number" step="0.01" min="0" :max="descontoTipo === 'percentual' ? 99.99 : 999999" placeholder="0" class="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all" />
                 </div>
@@ -245,6 +245,7 @@ const emit = defineEmits<{
 // ─── Composables ─────────────────────────────────────────────────────────────
 const supabase = createSupabaseClient()
 const { empresaId } = useEmpresa()
+const { locale } = useLocale()
 const {
   validarOrcamento,
   calcularTotalItens,

@@ -348,6 +348,7 @@ interface Produto {
 const supabase = createSupabaseClient()
 const { isAdminOrGerente } = useAdmin()
 const { empresaId, loadEmpresa } = useEmpresa()
+const { formatCurrency } = useLocale()
 
 const produtos    = ref<Produto[]>([])
 const loading     = ref(true)
@@ -391,10 +392,6 @@ const produtosFiltrados = computed(() => {
   }
   return lista
 })
-
-function formatCurrency(v: number) {
-  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 
 onMounted(async () => {
   await loadEmpresa()

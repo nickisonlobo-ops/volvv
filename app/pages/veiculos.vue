@@ -357,7 +357,7 @@
                 <div class="flex flex-col gap-1.5">
                   <label class="text-sm font-semibold text-gray-700">Preço de Custo</label>
                   <div class="relative">
-                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold pointer-events-none select-none">R$</span>
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold pointer-events-none select-none">{{ locale.simboloMoeda }}</span>
                     <input
                       :value="formDisplay.preco_custo"
                       type="text"
@@ -371,7 +371,7 @@
                 <div class="flex flex-col gap-1.5">
                   <label class="text-sm font-semibold text-gray-700">Preço de Venda <span class="text-red-500 ml-0.5">*</span></label>
                   <div class="relative">
-                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold pointer-events-none select-none">R$</span>
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold pointer-events-none select-none">{{ locale.simboloMoeda }}</span>
                     <input
                       :value="formDisplay.preco_venda"
                       type="text"
@@ -538,6 +538,7 @@ interface Veiculo {
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { isAdmin, isAdminOrGerente } = useAdmin()
+const { formatCurrency, locale } = useLocale()
 
 const veiculos   = ref<Veiculo[]>([])
 const loading    = ref(true)
@@ -680,10 +681,6 @@ function onPrecoVendaInput(e: Event) {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined) {
-  if (val == null) return '—'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 function statusLabel(s: string | null) {
   const map: Record<string, string> = { disponivel: 'Disponível', vendido: 'Vendido', reservado: 'Reservado', manutencao: 'Manutenção' }
   return map[s ?? ''] ?? s ?? '—'

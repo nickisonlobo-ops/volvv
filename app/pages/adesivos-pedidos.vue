@@ -861,9 +861,9 @@
                 >
                   <option value="" disabled>Selecione a forma de pagamento</option>
                   <option value="dinheiro">Dinheiro</option>
-                  <option value="pix">PIX</option>
+                  <option value="pix">{{ locale.pais === 'PT' ? 'MB Way' : 'PIX' }}</option>
                   <option value="cartao">Cartão</option>
-                  <option value="boleto">Boleto</option>
+                  <option value="boleto">{{ locale.pais === 'PT' ? 'Ref. Multibanco' : 'Boleto' }}</option>
                   <option value="parcelado">Parcelado</option>
                 </select>
                 <p v-if="aprovacaoErrors.formaPagamento" class="text-xs text-red-500 font-semibold flex items-center gap-1.5">
@@ -1203,13 +1203,13 @@
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer">
                       <input v-model="formVendaCatalogo.descontoTipo" type="radio" value="fixo" class="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500" />
-                      <span class="text-sm font-medium text-gray-700">R$ Fixo</span>
+                      <span class="text-sm font-medium text-gray-700">{{ locale.simboloMoeda }} Fixo</span>
                     </label>
                   </div>
                 </div>
                 <div class="flex flex-col gap-1.5">
                   <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">
-                    {{ formVendaCatalogo.descontoTipo === 'percentual' ? 'Desconto (%)' : 'Desconto (R$)' }}
+                    {{ formVendaCatalogo.descontoTipo === 'percentual' ? 'Desconto (%)' : `Desconto (${locale.simboloMoeda})` }}
                   </label>
                   <input
                     v-model.number="formVendaCatalogo.descontoValor"
@@ -1235,9 +1235,9 @@
                 >
                   <option value="" disabled>Selecione a forma de pagamento</option>
                   <option value="dinheiro">Dinheiro</option>
-                  <option value="pix">PIX</option>
+                  <option value="pix">{{ locale.pais === 'PT' ? 'MB Way' : 'PIX' }}</option>
                   <option value="cartao">Cartão</option>
-                  <option value="boleto">Boleto</option>
+                  <option value="boleto">{{ locale.pais === 'PT' ? 'Ref. Multibanco' : 'Boleto' }}</option>
                   <option value="parcelado">Parcelado</option>
                 </select>
                 <p v-if="vendaCatalogoErrors.formaPagamento" class="text-xs text-red-500 font-semibold flex items-center gap-1.5">
@@ -1385,6 +1385,7 @@ interface FilaItem {
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { calcularArea, calcularOrcamento, calcularTotalCarrinho, statusLabels, statusColors, validarPedidoEncomenda, validarArquivoArte, podeTransitar, classificarUrgencia } = useAdesivos()
+const { formatCurrency, formatDate, locale } = useLocale()
 
 // ─── State: Listagem ─────────────────────────────────────────────────────────
 const pedidos = ref<Pedido[]>([])
@@ -1475,16 +1476,6 @@ const areaCalculada = computed(() => {
 })
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return '—'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
-function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString('pt-BR')
-}
-
 function formatDateTime(dateStr: string | null): string {
   if (!dateStr) return '—'
   return new Date(dateStr).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })

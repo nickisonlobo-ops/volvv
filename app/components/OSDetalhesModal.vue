@@ -306,6 +306,7 @@ const emit = defineEmits<{
 // ─── Composables ─────────────────────────────────────────────────────────────
 const { atualizarStatusOS } = useOrdensServico()
 const { empresaId } = useEmpresa()
+const { formatCurrency } = useLocale()
 const supabase = createSupabaseClient()
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -597,11 +598,6 @@ async function salvarObservacoes() {
   } finally {
     salvandoObs.value = false
   }
-}
-
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return 'R$ 0,00'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
 function isPdf(url: string | null | undefined): boolean {

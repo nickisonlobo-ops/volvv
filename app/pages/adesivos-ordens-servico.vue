@@ -158,6 +158,7 @@ interface OSListItem {
 
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
+const { formatCurrency, formatDate } = useLocale()
 
 const ordensServico = ref<OSListItem[]>([])
 const loading = ref(true)
@@ -209,16 +210,6 @@ function getEtapaNome(etapaId: number | null): string {
 function getEtapaCor(etapaId: number | null): string {
   if (!etapaId) return '#6b7280'
   return etapasProducao.value.find(e => e.id === etapaId)?.cor ?? '#6b7280'
-}
-
-function formatCurrency(val: number | null): string {
-  if (val == null) return 'R$ 0,00'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
-function formatDate(iso: string | null): string {
-  if (!iso) return '—'
-  return new Date(iso).toLocaleDateString('pt-BR')
 }
 
 async function fetchOS() {

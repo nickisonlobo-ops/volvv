@@ -105,7 +105,7 @@
               class="w-full accent-amber-500 cursor-pointer"
             />
             <div class="flex justify-between text-[10px] text-gray-400">
-              <span>R$ 0</span>
+              <span>{{ locale.simboloMoeda }} 0</span>
               <span>{{ formatCurrency(precoMaxTotal) }}</span>
             </div>
           </div>
@@ -299,6 +299,7 @@ interface Veiculo {
 
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
+const { formatCurrency, locale } = useLocale()
 
 const veiculos = ref<Veiculo[]>([])
 const loading  = ref(true)
@@ -379,10 +380,6 @@ function limparFiltros() {
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined) {
-  if (val == null) return '—'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 function statusLabel(s: string | null) {
   const map: Record<string, string> = { disponivel: 'Disponível', vendido: 'Vendido', reservado: 'Reservado', manutencao: 'Manutenção' }
   return map[s ?? ''] ?? s ?? '—'

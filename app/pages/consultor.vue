@@ -1497,6 +1497,7 @@ defineOptions({ name: 'ConsultorPage' })
 
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
+const { formatCurrency } = useLocale()
 const loading = ref(true)
 
 // ── accordion state ───────────────────────────────────────────
@@ -1536,9 +1537,6 @@ function salvarContatados() {
 }
 
 // ── helpers ───────────────────────────────────────────────────
-function formatCurrency(v: number) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v ?? 0)
-}
 function startOfMonth(d: Date) { return new Date(d.getFullYear(), d.getMonth(), 1) }
 function endOfMonth(d: Date)   { return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59) }
 function startOfPrevMonth(d: Date) { return new Date(d.getFullYear(), d.getMonth() - 1, 1) }

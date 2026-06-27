@@ -72,20 +72,17 @@ const emit = defineEmits<{
   (e: 'drop', etapaId: number): void
 }>()
 
+const { formatCurrency } = useLocale()
 // Soma dos valores dos cards nesta coluna
 const totalValor = computed(() => {
   return props.cards.reduce((sum, card) => {
     const valorStr = card.info_extra?.valor_total
     if (!valorStr) return sum
-    // Parsear valor formatado "R$ 1.234,56" → number
-    const num = parseFloat(valorStr.replace(/[^\d,.-]/g, '').replace('.', '').replace(',', '.'))
+    // Parsear valor formatado (BR: "R$ 1.234,56" ou PT: "1 234,56 €") → number
+    const num = parseFloat(valorStr.replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.'))
     return sum + (isNaN(num) ? 0 : num)
   }, 0)
 })
-
-function formatCurrency(val: number): string {
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 
 function onColumnDragOver(event: DragEvent): void {
   if (event.dataTransfer) {

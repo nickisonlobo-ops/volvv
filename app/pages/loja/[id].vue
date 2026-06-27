@@ -106,6 +106,7 @@ interface Veiculo {
 const route = useRoute()
 const supabase = createSupabaseClient()
 const { config: tema, loadPersonalizacaoPublic } = usePersonalizacao()
+const { formatCurrency } = useLocale()
 
 const eId = computed(() => Number(route.query.e ?? 0))
 const veiculo   = ref<Veiculo | null>(null)
@@ -143,10 +144,6 @@ onMounted(async () => {
   loading.value = false
 })
 
-function formatCurrency(val: number | null | undefined) {
-  if (val == null) return ""
-  return val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-}
 function statusLabel(s: string | null) {
   const map: Record<string, string> = { disponivel: "Disponível", vendido: "Vendido", reservado: "Reservado", manutencao: "Manutenção" }
   return map[s ?? ""] ?? s ?? ""

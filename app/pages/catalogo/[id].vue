@@ -272,6 +272,7 @@ const route = useRoute()
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { isAdminOrGerente } = useAdmin()
+const { formatCurrency } = useLocale()
 
 const veiculo  = ref<Veiculo | null>(null)
 const loading  = ref(true)
@@ -300,11 +301,6 @@ onMounted(async () => {
   veiculo.value = data ?? null
   loading.value = false
 })
-
-function formatCurrency(val: number | null | undefined) {
-  if (val == null) return '—'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 
 function statusLabel(s: string | null) {
   const map: Record<string, string> = { disponivel: 'Disponível', vendido: 'Vendido', reservado: 'Reservado', manutencao: 'Manutenção' }

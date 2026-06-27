@@ -669,6 +669,7 @@ const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { validarProdutoCatalogo, validarImagemProduto } = useAdesivos()
 const { carregarTemplates, vincularProdutoProcessos, desvincularProduto, carregarVinculos } = useProcessos()
+const { formatCurrency } = useLocale()
 const { validarFormula } = useFormulaParser()
 
 const processosDisponiveis = ref<ProcessoTemplate[]>([])
@@ -743,11 +744,6 @@ const categoriasUnicas = computed(() => {
 })
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-function formatCurrency(val: number | null | undefined): string {
-  if (val == null) return 'R$ 0,00'
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
 function showToast(msg: string) {
   toastMsg.value = msg
   setTimeout(() => { toastMsg.value = '' }, 3000)
