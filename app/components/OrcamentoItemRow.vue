@@ -105,23 +105,20 @@
       <!-- Preço: Toggle + Input -->
       <div class="flex flex-col gap-1.5">
         <div class="flex items-center gap-2">
-          <label v-if="item.modalidade_preco === 'unidade'" class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Preço Unitário</label>
-          <template v-else>
-            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Preço</label>
-            <div class="flex rounded-md border overflow-hidden" style="border-color: var(--color-card-border, rgba(0,0,0,0.1))">
-              <button type="button" class="px-2.5 py-1 text-[10px] font-bold transition-all focus:outline-none"
-                :style="item.modalidade_preco === 'm2' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { color: 'var(--color-card-texto, #6b7280)' }"
-                @click.stop="onModalidadeChange('m2')">m²</button>
-              <button type="button" class="px-2.5 py-1 text-[10px] font-bold transition-all focus:outline-none"
-                :style="item.modalidade_preco === 'unidade' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { color: 'var(--color-card-texto, #6b7280)' }"
-                @click.stop="onModalidadeChange('unidade')">Un</button>
-            </div>
-            <span v-if="item.modalidade_preco === 'm2' && showPrecoOverride"
-              class="inline-flex items-center gap-0.5 rounded-full bg-amber-50 border border-amber-200 px-1.5 py-0.5 text-[9px] font-bold text-amber-600">
-              <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
-              Custom
-            </span>
-          </template>
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Preço</label>
+          <div class="flex rounded-md border overflow-hidden" style="border-color: var(--color-card-border, rgba(0,0,0,0.1))">
+            <button type="button" class="px-2.5 py-1 text-[10px] font-bold transition-all focus:outline-none"
+              :style="item.modalidade_preco === 'm2' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { color: 'var(--color-card-texto, #6b7280)' }"
+              @click.stop="onModalidadeChange('m2')">m²</button>
+            <button type="button" class="px-2.5 py-1 text-[10px] font-bold transition-all focus:outline-none"
+              :style="item.modalidade_preco === 'unidade' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { color: 'var(--color-card-texto, #6b7280)' }"
+              @click.stop="onModalidadeChange('unidade')">Un</button>
+          </div>
+          <span v-if="item.modalidade_preco === 'm2' && showPrecoOverride"
+            class="inline-flex items-center gap-0.5 rounded-full bg-amber-50 border border-amber-200 px-1.5 py-0.5 text-[9px] font-bold text-amber-600">
+            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
+            Custom
+          </span>
         </div>
         <div class="relative">
           <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400">{{ locale.simboloMoeda }}</span>
