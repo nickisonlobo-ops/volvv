@@ -151,8 +151,6 @@ async function handleLogout() {
   justify-content: space-between;
   padding:         0 1.25rem;
   flex-shrink:     0;
-  position:        sticky;
-  top:             0;
   z-index:         30;
   border-bottom:   1px solid rgba(255,255,255,0.07);
   backdrop-filter: blur(16px);

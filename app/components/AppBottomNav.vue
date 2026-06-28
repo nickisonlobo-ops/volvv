@@ -65,19 +65,26 @@ const { isAdminOrGerente } = useAdmin()
 const menuAberto = ref(false)
 
 const allNavItems = [
+  // Principal
   { to: '/',                         icon: 'home',           label: 'Início',       minPerfil: 'all' },
+  { to: '/agendamentos',             icon: 'calendar',       label: 'Agenda',       minPerfil: 'all' },
+  { to: '/clientes',                 icon: 'identification', label: 'Clientes',     minPerfil: 'all' },
+  { to: '/servicos',                 icon: 'sparkles',       label: 'Serviços',     minPerfil: 'all' },
+  // Produção
   { to: '/adesivos-orcamentos',      icon: 'document',       label: 'Orçamentos',   minPerfil: 'all' },
   { to: '/adesivos-ordens-servico',  icon: 'clipboard',      label: 'Ordens',       minPerfil: 'all' },
-  { to: '/clientes',                 icon: 'identification', label: 'Clientes',     minPerfil: 'all' },
+  { to: '/processos',                icon: 'clipboard',      label: 'Processos',    minPerfil: 'all' },
   { to: '/adesivos-catalogo',        icon: 'catalog',        label: 'Catálogo',     minPerfil: 'all' },
   { to: '/adesivos-materiais',       icon: 'layers',         label: 'Materiais',    minPerfil: 'all' },
   { to: '/adesivos-estoque',         icon: 'cube',           label: 'Estoque',      minPerfil: 'all' },
-  { to: '/processos',                icon: 'sparkles',       label: 'Produção',     minPerfil: 'all' },
-  { to: '/agendamentos',             icon: 'calendar',       label: 'Agenda',       minPerfil: 'all' },
+  // Equipe
   { to: '/atividades',               icon: 'clipboard',      label: 'Atividades',   minPerfil: 'all' },
   { to: '/funcionarios',             icon: 'users',          label: 'Equipa',       minPerfil: 'manager' },
+  // Financeiro
   { to: '/financeiro',               icon: 'wallet',         label: 'Financeiro',   minPerfil: 'manager' },
   { to: '/contas-pagar',             icon: 'wallet',         label: 'Contas',       minPerfil: 'manager' },
+  { to: '/conciliacao-bancaria',     icon: 'wallet',         label: 'Conciliação',  minPerfil: 'manager' },
+  // Inteligência + Sistema
   { to: '/consultor',                icon: 'brain',          label: 'Consultor',    minPerfil: 'manager' },
   { to: '/configuracoes',            icon: 'settings',       label: 'Config',       minPerfil: 'manager' },
 ]
