@@ -438,6 +438,17 @@
                 </div>
               </div>
 
+              <!-- Tipo de Precificação -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Tipo de Precificação *</label>
+                <select v-model="form.tipo_precificacao" class="w-full rounded-xl border-2 px-4 py-3 text-sm font-semibold text-gray-800 bg-gray-50 focus:outline-none focus:ring-0 transition-all border-gray-200 focus:border-teal-400">
+                  <option value="unidade">Por Unidade (padrão)</option>
+                  <option value="m2">Por m² (largura × altura)</option>
+                  <option value="metro_linear">Por Metro Linear</option>
+                </select>
+                <p class="text-[10px] text-gray-400">Define como o preço é calculado nos orçamentos</p>
+              </div>
+
               <!-- Preço -->
               <div class="flex flex-col gap-1.5">
                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Preço de Venda (R$) *</label>
@@ -719,6 +730,7 @@ const form = reactive({
   descricao: '',
   imagem_url: null as string | null,
   composicoes: [] as ComposicaoRow[],
+  tipo_precificacao: 'unidade' as string,
 })
 
 const formErrors = reactive({
@@ -1004,6 +1016,7 @@ function resetForm() {
   form.descricao = ''
   form.imagem_url = null
   form.composicoes = []
+  form.tipo_precificacao = 'unidade'
   imagemArquivo.value = null
   imagemPreview.value = null
   modalError.value = null
@@ -1027,6 +1040,7 @@ async function abrirEditar(produto: Produto) {
   form.preco_venda = produto.preco_venda
   form.descricao = produto.descricao ?? ''
   form.imagem_url = produto.imagem_url
+  form.tipo_precificacao = (produto as any).tipo_precificacao ?? 'unidade'
 
   // Load compositions for this product
   const { data: comps } = await supabase
@@ -1171,6 +1185,7 @@ async function salvar() {
       descricao: form.descricao?.trim() || null,
       imagem_url: imagemUrl,
       empresa_id: empresaId.value!,
+      tipo_precificacao: form.tipo_precificacao,
     }
 
     let produtoId: number

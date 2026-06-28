@@ -17,7 +17,7 @@
             {{ materialSelecionado ? materialSelecionado.nome : 'Novo item' }}
           </p>
           <p v-if="!expanded && valorCalculado > 0" class="text-[11px] text-gray-400">
-            {{ item.quantidade }}× · {{ item.largura_cm }}×{{ item.altura_cm }}cm
+            {{ item.modalidade_preco === 'm2' ? `${item.quantidade}× · ${item.largura_cm}×${item.altura_cm}cm` : `${item.quantidade}×` }}
           </p>
         </div>
       </div>
@@ -61,7 +61,7 @@
       </div>
 
       <!-- Dimensões + Quantidade -->
-      <div class="grid grid-cols-4 gap-2">
+      <div v-if="item.modalidade_preco === 'm2'" class="grid grid-cols-4 gap-2">
         <div class="flex flex-col gap-1">
           <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Larg. (cm)</label>
           <input :value="item.largura_cm" type="number" step="0.1" min="0.1" placeholder="0"
@@ -90,25 +90,38 @@
             @input="onFieldInput('quantidade', $event)" />
         </div>
       </div>
+      <!-- Quantidade only (para unidade) -->
+      <div v-else class="grid grid-cols-2 gap-2">
+        <div class="flex flex-col gap-1">
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Qtd</label>
+          <input :value="item.quantidade" type="number" step="1" min="1" placeholder="1"
+            class="w-full rounded-lg border px-2.5 py-2 text-sm font-medium text-gray-800 bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all"
+            :class="errors.quantidade ? 'border-red-300' : 'border-gray-200'"
+            @input="onFieldInput('quantidade', $event)" />
+        </div>
+      </div>
       <p v-if="errors.largura_cm || errors.altura_cm || errors.quantidade" class="text-[11px] text-red-500 font-medium -mt-1">{{ errors.largura_cm || errors.altura_cm || errors.quantidade }}</p>
 
       <!-- Preço: Toggle + Input -->
       <div class="flex flex-col gap-1.5">
         <div class="flex items-center gap-2">
-          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Preço</label>
-          <div class="flex rounded-md border overflow-hidden" style="border-color: var(--color-card-border, rgba(0,0,0,0.1))">
-            <button type="button" class="px-2.5 py-1 text-[10px] font-bold transition-all focus:outline-none"
-              :style="item.modalidade_preco === 'm2' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { color: 'var(--color-card-texto, #6b7280)' }"
-              @click.stop="onModalidadeChange('m2')">m²</button>
-            <button type="button" class="px-2.5 py-1 text-[10px] font-bold transition-all focus:outline-none"
-              :style="item.modalidade_preco === 'unidade' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { color: 'var(--color-card-texto, #6b7280)' }"
-              @click.stop="onModalidadeChange('unidade')">Un</button>
-          </div>
-          <span v-if="item.modalidade_preco === 'm2' && showPrecoOverride"
-            class="inline-flex items-center gap-0.5 rounded-full bg-amber-50 border border-amber-200 px-1.5 py-0.5 text-[9px] font-bold text-amber-600">
-            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
-            Custom
-          </span>
+          <label v-if="item.modalidade_preco === 'unidade'" class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Preço Unitário</label>
+          <template v-else>
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Preço</label>
+            <div class="flex rounded-md border overflow-hidden" style="border-color: var(--color-card-border, rgba(0,0,0,0.1))">
+              <button type="button" class="px-2.5 py-1 text-[10px] font-bold transition-all focus:outline-none"
+                :style="item.modalidade_preco === 'm2' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { color: 'var(--color-card-texto, #6b7280)' }"
+                @click.stop="onModalidadeChange('m2')">m²</button>
+              <button type="button" class="px-2.5 py-1 text-[10px] font-bold transition-all focus:outline-none"
+                :style="item.modalidade_preco === 'unidade' ? { background: 'var(--color-primary, #4f46e5)', color: '#ffffff' } : { color: 'var(--color-card-texto, #6b7280)' }"
+                @click.stop="onModalidadeChange('unidade')">Un</button>
+            </div>
+            <span v-if="item.modalidade_preco === 'm2' && showPrecoOverride"
+              class="inline-flex items-center gap-0.5 rounded-full bg-amber-50 border border-amber-200 px-1.5 py-0.5 text-[9px] font-bold text-amber-600">
+              <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
+              Custom
+            </span>
+          </template>
         </div>
         <div class="relative">
           <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400">{{ locale.simboloMoeda }}</span>
@@ -253,7 +266,7 @@ function validateField(field: string, value: number | null | undefined): string 
 }
 
 // ─── Handlers ────────────────────────────────────────────────────────────────
-async function onMaterialSelected(product: { id: number; nome: string; preco_venda: number }) {
+async function onMaterialSelected(product: { id: number; nome: string; preco_venda: number; tipo_precificacao?: string }) {
   delete errors.value.material_id
   delete errors.value.preco_m2
 
@@ -268,7 +281,13 @@ async function onMaterialSelected(product: { id: number; nome: string; preco_ven
     .maybeSingle()
 
   const materialId = matLink?.material_id ?? product.id
-  emitUpdate({ material_id: materialId, material_nome: product.nome, descricao: product.nome, preco_m2: product.preco_venda ?? 0 })
+  const tipoPrecificacao = product.tipo_precificacao ?? 'unidade'
+  const modalidade = tipoPrecificacao === 'unidade' ? 'unidade' : 'm2'
+  if (modalidade === 'unidade') {
+    emitUpdate({ material_id: materialId, material_nome: product.nome, descricao: product.nome, preco_unitario: product.preco_venda ?? 0, modalidade_preco: modalidade })
+  } else {
+    emitUpdate({ material_id: materialId, material_nome: product.nome, descricao: product.nome, preco_m2: product.preco_venda ?? 0, modalidade_preco: modalidade })
+  }
 }
 
 function onFieldInput(field: 'largura_cm' | 'altura_cm' | 'espessura_cm' | 'quantidade', event: Event) {

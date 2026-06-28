@@ -178,6 +178,7 @@ interface Product {
   imagem_url: string | null
   categoria: string | null
   categoria_id: number | null
+  tipo_precificacao?: string
 }
 
 const props = defineProps<{
@@ -187,7 +188,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'select', product: { id: number; nome: string; preco_venda: number }): void
+  (e: 'select', product: { id: number; nome: string; preco_venda: number; tipo_precificacao: string }): void
 }>()
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -249,7 +250,7 @@ async function fetchProducts(category: Category) {
     const supabase = createSupabaseClient()
     const { data, error } = await supabase
       .from('catalogo_adesivos')
-      .select('id, nome, preco_venda, imagem_url, categoria, categoria_id')
+      .select('id, nome, preco_venda, imagem_url, categoria, categoria_id, tipo_precificacao')
       .eq('ativo', true)
       .or(`categoria_id.eq.${category.id},categoria.eq.${category.nome}`)
       .order('nome')
@@ -297,6 +298,7 @@ function confirm() {
       id: product.id,
       nome: product.nome,
       preco_venda: product.preco_venda ?? 0,
+      tipo_precificacao: product.tipo_precificacao ?? 'unidade',
     })
     emit('close')
   }
