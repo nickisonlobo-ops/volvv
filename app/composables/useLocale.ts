@@ -74,6 +74,18 @@ export function useLocale() {
     }).format(value)
   }
 
+  // Aplica IVA 23% ao valor se empresa PT (para exibição de totais ao cliente)
+  function valorComIva(value: number | null | undefined): number {
+    if (value == null) return 0
+    return pais.value === 'PT' ? value * 1.23 : value
+  }
+
+  // Calcula valor do IVA
+  function ivaValor(value: number | null | undefined): number {
+    if (value == null) return 0
+    return pais.value === 'PT' ? value * 0.23 : 0
+  }
+
   function formatDate(date: string | null | undefined): string {
     if (!date) return '—'
     return new Intl.DateTimeFormat(locale.value.localeDate, {
@@ -88,5 +100,7 @@ export function useLocale() {
     locale,
     formatCurrency,
     formatDate,
+    valorComIva,
+    ivaValor,
   }
 }

@@ -246,7 +246,7 @@
                 <span class="text-gray-600 font-medium">{{ orc.quantidade_total_itens ?? '—' }}</span>
               </td>
               <td class="px-5 py-4 text-right">
-                <span class="font-semibold text-gray-800">{{ formatCurrency(orc.valor_total) }}</span>
+                <span class="font-semibold text-gray-800">{{ formatCurrency(valorComIva(orc.valor_total)) }}</span>
               </td>
               <td class="px-5 py-4 text-center">
                 <span class="text-gray-500 text-xs">{{ formatDate(orc.created_at) }}</span>
@@ -356,7 +356,7 @@ interface Material {
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
 const { classificarStatusOrcamentoV2, isStatusEditavel } = useOrcamentos()
-const { formatCurrency, formatDate } = useLocale()
+const { formatCurrency, formatDate, valorComIva } = useLocale()
 
 // ─── State ───────────────────────────────────────────────────────────────────
 const orcamentos = ref<OrcamentoListItem[]>([])
@@ -492,8 +492,7 @@ function onOrcamentoCriado(_data: any) {
 }
 
 function onOrcamentoAtualizado(data: any) {
-  fecharModal()
-  // Update the listing item in-place if possible
+  // Não fecha o modal — atualiza a listagem em background
   const idx = orcamentos.value.findIndex(o => o.id === data.id)
   if (idx !== -1) {
     orcamentos.value[idx] = {
@@ -665,7 +664,7 @@ async function fetchKPIs() {
         totalMes++
         if (statusDisplay.status === 'aprovado') {
           aprovadosMes++
-          valorAprovadosMes += o.valor_total
+          valorAprovadosMes += valorComIva(o.valor_total)
         }
       }
     }
@@ -681,7 +680,7 @@ async function fetchClientes() {
   try {
     const { data } = await supabase
       .from('clientes')
-      .select('id, nome')
+      .select('id, nome, cpf_cnpj, email, telefone')
       .order('nome', { ascending: true })
 
     clientes.value = data ?? []

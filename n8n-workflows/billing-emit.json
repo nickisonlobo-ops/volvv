@@ -18,65 +18,11 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://gshlqlzvqbwalqzpubag.supabase.co/rest/v1/billing_accounts?empresa_id=eq.{{ $json.body.empresa_id }}&provider=eq.invoicexpress&status=eq.connected&select=account_name,api_key_encrypted",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "COLOCA_SERVICE_ROLE_KEY_AQUI" },
-            { "name": "Authorization", "value": "Bearer COLOCA_SERVICE_ROLE_KEY_AQUI" }
-          ]
-        },
-        "options": {}
-      },
-      "id": "node-get-creds",
-      "name": "Buscar Credenciais",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [420, 300]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
-          "conditions": [
-            {
-              "id": "cond-has-creds",
-              "leftValue": "={{ $json.length }}",
-              "rightValue": 0,
-              "operator": { "type": "number", "operation": "gt" }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "node-if-creds",
-      "name": "Tem credenciais?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [640, 300]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={ \"error\": \"Empresa sem conta de faturação configurada\" }",
-        "options": { "responseCode": 412 }
-      },
-      "id": "node-no-creds",
-      "name": "Sem Credenciais",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [860, 450]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "=https://{{ $('Buscar Credenciais').item.json[0].account_name }}.app.invoicexpress.com/clients/find-by-code.json?client_code={{ $('Webhook').item.json.body.client.nif }}&api_key={{ $('Buscar Credenciais').item.json[0].api_key_encrypted }}",
+        "url": "=https://{{ $json.body.account_name }}.app.invoicexpress.com/clients/find-by-code.json?client_code={{ $json.body.client.nif }}&api_key={{ $json.body.api_key }}",
         "options": { "timeout": 10000 },
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Content-Type", "value": "application/json" },
             { "name": "Accept", "value": "application/json" }
           ]
         }
@@ -85,7 +31,7 @@
       "name": "Buscar Cliente IX",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [860, 200],
+      "position": [420, 300],
       "continueOnFail": true
     },
     {
@@ -94,7 +40,7 @@
           "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
           "conditions": [
             {
-              "id": "cond-client-404",
+              "id": "cond-client-not-found",
               "leftValue": "={{ $json.statusCode }}",
               "rightValue": 404,
               "operator": { "type": "number", "operation": "equals" }
@@ -108,12 +54,12 @@
       "name": "Cliente existe?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [1080, 200]
+      "position": [640, 300]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://{{ $('Buscar Credenciais').item.json[0].account_name }}.app.invoicexpress.com/clients.json?api_key={{ $('Buscar Credenciais').item.json[0].api_key_encrypted }}",
+        "url": "=https://{{ $('Webhook').item.json.body.account_name }}.app.invoicexpress.com/clients.json?api_key={{ $('Webhook').item.json.body.api_key }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -130,12 +76,12 @@
       "name": "Criar Cliente IX",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1300, 120]
+      "position": [860, 200]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://{{ $('Buscar Credenciais').item.json[0].account_name }}.app.invoicexpress.com/invoice_receipts.json?api_key={{ $('Buscar Credenciais').item.json[0].api_key_encrypted }}",
+        "url": "=https://{{ $('Webhook').item.json.body.account_name }}.app.invoicexpress.com/invoice_receipts.json?api_key={{ $('Webhook').item.json.body.api_key }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -145,19 +91,19 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ invoice_receipt: { date: new Date().toLocaleDateString('pt-PT', {day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\\//g,'/'), due_date: new Date().toLocaleDateString('pt-PT', {day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\\//g,'/'), client: { name: $('Webhook').item.json.body.client.name, code: $('Webhook').item.json.body.client.nif }, items: $('Webhook').item.json.body.items.map(i => ({ name: i.name, unit_price: i.unitPrice, quantity: i.quantity, tax: { name: i.taxName || 'IVA23' } })) } }) }}",
+        "jsonBody": "={{ JSON.stringify({ invoice_receipt: { date: new Date().toLocaleDateString('pt-PT', {day:'2-digit',month:'2-digit',year:'numeric'}), due_date: new Date().toLocaleDateString('pt-PT', {day:'2-digit',month:'2-digit',year:'numeric'}), client: { name: $('Webhook').item.json.body.client.name, code: $('Webhook').item.json.body.client.nif }, items: $('Webhook').item.json.body.items.map(i => ({ name: i.name, unit_price: i.unitPrice, quantity: i.quantity, tax: { name: i.taxName || 'IVA23' } })) } }) }}",
         "options": {}
       },
       "id": "node-create-draft",
       "name": "Criar Rascunho",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1520, 200]
+      "position": [1080, 300]
     },
     {
       "parameters": {
         "method": "PUT",
-        "url": "=https://{{ $('Buscar Credenciais').item.json[0].account_name }}.app.invoicexpress.com/invoice_receipts/{{ $json.invoice_receipt.id }}/change-state.json?api_key={{ $('Buscar Credenciais').item.json[0].api_key_encrypted }}",
+        "url": "=https://{{ $('Webhook').item.json.body.account_name }}.app.invoicexpress.com/invoice_receipts/{{ $json.invoice_receipt.id }}/change-state.json?api_key={{ $('Webhook').item.json.body.api_key }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -174,57 +120,54 @@
       "name": "Finalizar (ATCUD)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1740, 200]
+      "position": [1300, 300]
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://gshlqlzvqbwalqzpubag.supabase.co/rest/v1/invoices",
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "id": "node-wait",
+      "name": "Esperar 2s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1520, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://{{ $('Webhook').item.json.body.account_name }}.app.invoicexpress.com/api/pdf/{{ $('Finalizar (ATCUD)').item.json.invoice_receipt.id }}.json?api_key={{ $('Webhook').item.json.body.api_key }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "COLOCA_SERVICE_ROLE_KEY_AQUI" },
-            { "name": "Authorization", "value": "Bearer COLOCA_SERVICE_ROLE_KEY_AQUI" },
-            { "name": "Content-Type", "value": "application/json" },
-            { "name": "Prefer", "value": "resolution=merge-duplicates,return=representation" }
+            { "name": "Accept", "value": "application/json" }
           ]
         },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ empresa_id: $('Webhook').item.json.body.empresa_id, order_id: $('Webhook').item.json.body.order_id, order_type: $('Webhook').item.json.body.order_type || 'orcamento', provider: 'invoicexpress', provider_invoice_id: String($json.invoice_receipt?.id || ''), document_type: 'invoice_receipt', state: 'finalized', atcud: $json.invoice_receipt?.atcud || null, sequence_number: $json.invoice_receipt?.sequence_number || null, permalink: $json.invoice_receipt?.permalink || null, total: $json.invoice_receipt?.total || null, client_name: $('Webhook').item.json.body.client.name, client_nif: $('Webhook').item.json.body.client.nif, updated_at: new Date().toISOString() }) }}",
         "options": {}
       },
-      "id": "node-save-invoice",
-      "name": "Guardar no Supabase",
+      "id": "node-get-pdf",
+      "name": "Obter PDF",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1960, 200]
+      "position": [1740, 300],
+      "continueOnFail": true
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ status: 'finalized', invoice: $json[0] || $json }) }}",
+        "responseBody": "={{ JSON.stringify({ status: 'finalized', invoice: { provider_invoice_id: $('Finalizar (ATCUD)').item.json.invoice_receipt?.id, atcud: $('Finalizar (ATCUD)').item.json.invoice_receipt?.atcud, sequence_number: $('Finalizar (ATCUD)').item.json.invoice_receipt?.sequence_number, permalink: $('Finalizar (ATCUD)').item.json.invoice_receipt?.permalink, total: $('Finalizar (ATCUD)').item.json.invoice_receipt?.total, pdf_url: $json?.output?.pdfUrl || $('Finalizar (ATCUD)').item.json.invoice_receipt?.permalink || null } }) }}",
         "options": { "responseCode": 200 }
       },
       "id": "node-respond-ok",
       "name": "Responder OK",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [2180, 200]
+      "position": [1960, 300]
     }
   ],
   "connections": {
     "Webhook": {
-      "main": [[{ "node": "Buscar Credenciais", "type": "main", "index": 0 }]]
-    },
-    "Buscar Credenciais": {
-      "main": [[{ "node": "Tem credenciais?", "type": "main", "index": 0 }]]
-    },
-    "Tem credenciais?": {
-      "main": [
-        [{ "node": "Buscar Cliente IX", "type": "main", "index": 0 }],
-        [{ "node": "Sem Credenciais", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Buscar Cliente IX", "type": "main", "index": 0 }]]
     },
     "Buscar Cliente IX": {
       "main": [[{ "node": "Cliente existe?", "type": "main", "index": 0 }]]
@@ -242,9 +185,12 @@
       "main": [[{ "node": "Finalizar (ATCUD)", "type": "main", "index": 0 }]]
     },
     "Finalizar (ATCUD)": {
-      "main": [[{ "node": "Guardar no Supabase", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Esperar 2s", "type": "main", "index": 0 }]]
     },
-    "Guardar no Supabase": {
+    "Esperar 2s": {
+      "main": [[{ "node": "Obter PDF", "type": "main", "index": 0 }]]
+    },
+    "Obter PDF": {
       "main": [[{ "node": "Responder OK", "type": "main", "index": 0 }]]
     }
   },

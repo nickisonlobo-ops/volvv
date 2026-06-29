@@ -167,7 +167,7 @@
               </div>
               <div class="flex justify-between items-center pt-3 mt-2 border-t border-gray-200">
                 <span class="text-sm font-semibold text-gray-900">Total</span>
-                <span class="text-xl font-bold text-gray-900 tabular-nums">{{ formatCurrency(orcamento?.valor_total) }}</span>
+                <span class="text-xl font-bold text-gray-900 tabular-nums">{{ formatCurrency(valorComIva(orcamento?.valor_total)) }}</span>
               </div>
             </div>
           </div>
@@ -234,7 +234,7 @@
             </div>
             <div class="flex justify-between text-base font-bold border-t border-gray-100 pt-2 mt-2">
               <span class="text-gray-800">Total</span>
-              <span class="text-green-600">{{ formatCurrency(orcamento?.valor_total) }}</span>
+              <span class="text-green-600">{{ formatCurrency(valorComIva(orcamento?.valor_total)) }}</span>
             </div>
           </div>
 
@@ -526,7 +526,7 @@ useHead({ title: 'Aprovação de Orçamento' })
 
 const route = useRoute()
 const supabase = createSupabaseClient()
-const { formatCurrency, formatDate } = useLocale()
+const { formatCurrency, formatDate, valorComIva } = useLocale()
 
 // ─── State ─────────────────────────────────────────
 type PageState = 'loading' | 'not_found' | 'expired' | 'already_decided' | 'active'
@@ -1240,7 +1240,7 @@ async function gerarPdfOrcamento() {
     doc.setTextColor(30)
     doc.text('Total', marginL + 2, y)
     doc.setTextColor(34, 139, 34)
-    doc.text(formatCurrency(orcamento.value.valor_total), marginR - 2, y, { align: 'right' })
+    doc.text(formatCurrency(valorComIva(orcamento.value.valor_total)), marginR - 2, y, { align: 'right' })
     y += 8
 
     // ─── PRAZO + VALIDADE ───

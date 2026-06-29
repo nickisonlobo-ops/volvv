@@ -1497,7 +1497,7 @@ defineOptions({ name: 'ConsultorPage' })
 
 const supabase = createSupabaseClient()
 const { empresaId, loadEmpresa } = useEmpresa()
-const { formatCurrency } = useLocale()
+const { formatCurrency, valorComIva } = useLocale()
 const loading = ref(true)
 
 // ── accordion state ───────────────────────────────────────────
@@ -1684,7 +1684,7 @@ const fin = computed(() => {
     const d = new Date(o.created_at)
     return d >= mIni && d <= mFim
   })
-  const receitaOrcamentos = orcAprovadosMes.reduce((s, o) => s + (Number(o.valor_total) || 0), 0)
+  const receitaOrcamentos = orcAprovadosMes.reduce((s, o) => s + valorComIva(Number(o.valor_total) || 0), 0)
 
   // Orçamentos aprovados mês anterior (para comparativo)
   const pmIni = startOfPrevMonth(now)
@@ -1694,7 +1694,7 @@ const fin = computed(() => {
     const d = new Date(o.created_at)
     return d >= pmIni && d <= pmFim
   })
-  const receitaOrcPrev = orcAprovadosPrev.reduce((s, o) => s + (Number(o.valor_total) || 0), 0)
+  const receitaOrcPrev = orcAprovadosPrev.reduce((s, o) => s + valorComIva(Number(o.valor_total) || 0), 0)
 
   // 3) Receita de contas a receber pagas no mês
   const contasRecebidasMes = contasPagar.value.filter(c => {

@@ -8,7 +8,7 @@
             {{ card.info_extra?.numero ?? card.titulo }}
           </p>
           <span class="text-xs font-bold whitespace-nowrap" :style="{ color: 'var(--color-primary, #1f7f1f)' }">
-            {{ card.info_extra?.valor_total ?? '—' }}
+            {{ formatCurrency(valorComIva(Number(card.info_extra?.valor_total_raw ?? 0))) }}
           </span>
         </div>
 
@@ -27,6 +27,14 @@
           </svg>
           <span>{{ card.info_extra?.data_criacao ?? '—' }}</span>
         </div>
+
+        <!-- Badge Faturado -->
+        <div v-if="card.info_extra?.faturado === 'sim'" class="flex items-center gap-1 mt-1">
+          <span class="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 border border-violet-200">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+            Faturado
+          </span>
+        </div>
       </div>
     </template>
   </KanbanCard>
@@ -37,6 +45,8 @@ import type { KanbanCard as KanbanCardType } from '~/composables/useKanban'
 import KanbanCard from './KanbanCard.vue'
 
 defineOptions({ name: 'KanbanCardOrcamento' })
+
+const { formatCurrency, valorComIva } = useLocale()
 
 defineProps<{
   card: KanbanCardType

@@ -37,6 +37,12 @@
               </div>
 
               <form id="orcamento-form" class="space-y-8" @submit.prevent="salvarRascunho">
+                <!-- Bloqueio de edição quando fatura emitida -->
+                <div v-if="orcamentoBloqueado" class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
+                  <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+                  <p class="text-xs text-amber-700 font-medium">Este orçamento possui fatura emitida e não pode ser editado.</p>
+                </div>
+                <fieldset :disabled="orcamentoBloqueado" :class="{ 'opacity-60 pointer-events-none': orcamentoBloqueado }">
                 <!-- Section 1: Dados gerais -->
                 <section>
                   <h3 class="flex items-center gap-2 text-sm font-bold text-gray-800 mb-4">
@@ -158,6 +164,7 @@
                     <input v-model.number="descontoManualInput" type="number" step="0.01" min="0" :max="descontoTipo === 'percentual' ? 99.99 : 999999" placeholder="0" class="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" />
                   </div>
                 </section>
+                </fieldset>
               </form>
             </div>
 
@@ -174,10 +181,11 @@
                     <div class="flex justify-between"><span class="text-gray-500">Subtotal dos itens</span><span class="font-medium text-gray-800">{{ formatCurrency(subtotalItens) }}</span></div>
                     <div class="flex justify-between"><span class="text-gray-500">Desconto</span><span class="font-medium text-gray-800">{{ formatCurrency(descontoTotal) }}</span></div>
                     <div class="flex justify-between"><span class="text-gray-500">Mão de obra</span><span class="font-medium text-gray-800">{{ formatCurrency(form.valor_mao_obra ?? 0) }}</span></div>
+                    <div v-if="locale.pais === 'PT'" class="flex justify-between"><span class="text-gray-500">IVA (23%)</span><span class="font-medium text-gray-800">{{ formatCurrency(valorTotalFinal * 0.23) }}</span></div>
                   </div>
                   <div class="border-t border-gray-100 pt-3">
-                    <p class="text-xs text-gray-400 mb-1">Total final</p>
-                    <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(valorTotalFinal) }}</p>
+                    <p class="text-xs text-gray-400 mb-1">{{ locale.pais === 'PT' ? 'Total c/ IVA' : 'Total final' }}</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(locale.pais === 'PT' ? valorTotalFinal * 1.23 : valorTotalFinal) }}</p>
                   </div>
                   <!-- Validade info -->
                   <div class="flex items-center gap-2 text-xs text-orange-600 bg-orange-50 rounded-lg px-3 py-2 border border-orange-100">
@@ -188,8 +196,8 @@
 
                 <!-- Action buttons -->
                 <div class="space-y-2.5">
-                  <!-- Salvar (não fecha modal) -->
-                  <button type="submit" form="orcamento-form" class="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white bg-gray-900 hover:bg-gray-800 transition-colors disabled:opacity-50" :disabled="salvando">
+                  <!-- Salvar (não fecha modal) — oculto quando bloqueado -->
+                  <button v-if="!orcamentoBloqueado" type="submit" form="orcamento-form" class="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white bg-gray-900 hover:bg-gray-800 transition-colors disabled:opacity-50" :disabled="salvando">
                     <svg v-if="!salvando" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"/></svg>
                     <span v-if="salvando" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
                     {{ actionButtonLabel }}
@@ -218,31 +226,75 @@
                     </button>
 
                     <!-- Aprovar / Reprovar -->
-                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100">
-                      <button type="button" class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 transition-colors" @click="aprovarOrcamento">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                        Aprovar
-                      </button>
-                      <button type="button" class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-colors" @click="reprovarOrcamento">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        Reprovar
-                      </button>
+                    <template v-if="!orcamentoBloqueado && props.orcamentoParaEditar?.status !== 'aprovado' && props.orcamentoParaEditar?.status !== 'rejeitado'">
+                      <!-- Forma de pagamento (necessário para aprovar) -->
+                      <div class="space-y-2 pt-2 border-t border-gray-100">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pagamento</label>
+                        <select v-model="formaPagamento" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                          <option value="">Selecione...</option>
+                          <template v-if="locale.pais === 'PT'">
+                            <option value="mbway">MB Way</option>
+                            <option value="multibanco">Multibanco</option>
+                            <option value="transferencia">Transferência</option>
+                            <option value="cartao">Cartão</option>
+                            <option value="dinheiro">Dinheiro</option>
+                            <option value="cheque">Cheque</option>
+                          </template>
+                          <template v-else>
+                            <option value="pix">PIX</option>
+                            <option value="dinheiro">Dinheiro</option>
+                            <option value="cartao_credito">Cartão Crédito</option>
+                            <option value="cartao_debito">Cartão Débito</option>
+                            <option value="boleto">Boleto</option>
+                            <option value="transferencia">Transferência</option>
+                          </template>
+                        </select>
+                        <div v-if="formaPagamento" class="flex items-center gap-2">
+                          <input v-model.number="parcelasQtd" type="number" min="1" max="24" class="w-16 rounded-lg border border-gray-200 px-2 py-1.5 text-xs text-center" />
+                          <span class="text-[10px] text-gray-400">parcela(s)</span>
+                        </div>
+                      </div>
+                      <div class="grid grid-cols-2 gap-2">
+                        <button type="button" class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 transition-colors disabled:opacity-50" :disabled="!formaPagamento" @click="aprovarOrcamento">
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                          Aprovar
+                        </button>
+                        <button type="button" class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-colors" @click="reprovarOrcamento">
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                          Reprovar
+                        </button>
+                      </div>
+                    </template>
+
+                    <!-- Status badge (quando já decidido) -->
+                    <div v-if="props.orcamentoParaEditar?.status === 'aprovado'" class="flex items-center justify-between py-2.5 px-3 rounded-xl bg-green-50 border border-green-200">
+                      <span class="text-xs font-bold text-green-700">✓ Aprovado</span>
+                      <button v-if="!orcamentoBloqueado" type="button" class="text-[10px] font-bold text-orange-600 hover:text-orange-700 underline" @click="reverterAprovacao">Reverter</button>
+                    </div>
+                    <div v-else-if="props.orcamentoParaEditar?.status === 'rejeitado'" class="py-2.5 px-3 rounded-xl bg-red-50 border border-red-200 text-center">
+                      <span class="text-xs font-bold text-red-700">✗ Reprovado</span>
                     </div>
 
                     <!-- Emitir Fatura (só Portugal + aprovado) -->
                     <button
-                      v-if="locale.pais === 'PT' && props.orcamentoParaEditar?.status === 'aprovado'"
+                      v-if="locale.pais === 'PT' && props.orcamentoParaEditar?.status === 'aprovado' && !faturaEmitida"
                       type="button"
                       class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold border transition-colors"
-                      :class="faturaEmitida ? 'border-green-200 bg-green-50 text-green-700' : emitindoFatura ? 'border-orange-200 bg-orange-50 text-orange-600' : 'border-violet-200 text-violet-700 bg-violet-50 hover:bg-violet-100'"
-                      :disabled="emitindoFatura || faturaEmitida"
+                      :class="emitindoFatura ? 'border-orange-200 bg-orange-50 text-orange-600' : 'border-violet-200 text-violet-700 bg-violet-50 hover:bg-violet-100'"
+                      :disabled="emitindoFatura"
                       @click="emitirFatura"
                     >
                       <span v-if="emitindoFatura" class="w-4 h-4 border-2 border-violet-300 border-t-violet-700 rounded-full animate-spin"></span>
-                      <svg v-else-if="faturaEmitida" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                       <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                      {{ faturaEmitida ? 'Fatura emitida ✓' : emitindoFatura ? 'Emitindo...' : 'Emitir Fatura' }}
+                      {{ emitindoFatura ? 'Emitindo...' : 'Emitir Fatura' }}
                     </button>
+
+                    <!-- Fatura já emitida — ver PDF -->
+                    <div v-if="locale.pais === 'PT' && faturaEmitida" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold border border-green-200 bg-green-50 text-green-700">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                      Fatura emitida
+                      <a v-if="faturaPdfUrl" :href="faturaPdfUrl" target="_blank" class="ml-2 text-xs underline text-green-800 hover:text-green-900">Ver PDF</a>
+                    </div>
                   </template>
 
                   <!-- Cancelar -->
@@ -263,6 +315,66 @@
             <button type="submit" form="orcamento-form" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold text-white bg-gray-900" :disabled="salvando">
               <span v-if="salvando" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
               {{ actionButtonLabel }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </Teleport>
+
+  <!-- Modal Confirmação Emissão de Fatura -->
+  <Teleport to="body">
+    <transition name="modal">
+      <div v-if="showConfirmFatura" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" @click.self="showConfirmFatura = false">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5">
+          <!-- Ícone -->
+          <div class="flex justify-center">
+            <div class="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center">
+              <svg class="w-8 h-8 text-violet-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Título -->
+          <div class="text-center">
+            <h3 class="text-lg font-bold text-gray-900">Emitir Fatura Certificada</h3>
+            <p class="text-sm text-gray-500 mt-2 leading-relaxed">
+              Tem a certeza que deseja emitir a fatura para este orçamento?
+            </p>
+          </div>
+
+          <!-- Alerta -->
+          <div class="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+            <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+            </svg>
+            <div>
+              <p class="text-xs font-bold text-red-700">Ação irreversível</p>
+              <p class="text-xs text-red-600 mt-1">Após a emissão, o orçamento ficará bloqueado para edição. A fatura será comunicada à AT e não poderá ser anulada por aqui.</p>
+            </div>
+          </div>
+
+          <!-- Resumo -->
+          <div class="bg-gray-50 rounded-xl p-4 space-y-2">
+            <div class="flex justify-between text-xs">
+              <span class="text-gray-500">Orçamento</span>
+              <span class="font-bold text-gray-800">{{ props.orcamentoParaEditar?.numero_orcamento }}</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-gray-500">Valor c/ IVA</span>
+              <span class="font-bold text-gray-800">{{ formatCurrency(valorComIva(valorTotalFinal)) }}</span>
+            </div>
+          </div>
+
+          <!-- Botões -->
+          <div class="flex gap-3">
+            <button type="button" class="flex-1 py-3 rounded-xl text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors" @click="showConfirmFatura = false">
+              Cancelar
+            </button>
+            <button type="button" class="flex-1 py-3 rounded-xl text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 transition-colors" @click="confirmarEmissaoFatura">
+              Confirmar Emissão
             </button>
           </div>
         </div>
@@ -310,7 +422,7 @@ const emit = defineEmits<{
 // ─── Composables ─────────────────────────────────────────────────────────────
 const supabase = createSupabaseClient()
 const { empresaId } = useEmpresa()
-const { locale, formatCurrency } = useLocale()
+const { locale, formatCurrency, valorComIva } = useLocale()
 const {
   validarOrcamento,
   calcularTotalItens,
@@ -356,6 +468,7 @@ const form = ref<{
 
 // ─── Computed ────────────────────────────────────────────────────────────────
 const isEditMode = computed(() => props.mode === 'edit')
+const orcamentoBloqueado = computed(() => faturaEmitida.value)
 
 const modalTitle = computed(() => {
   if (isEditMode.value && props.orcamentoParaEditar) {
@@ -413,18 +526,24 @@ const valorTotalFinal = computed<number>(() => {
 
 const descontoTotal = computed<number>(() => {
   const sub = subtotalItens.value + (form.value.valor_mao_obra ?? 0)
-  return sub - valorTotalFinal.value + (form.value.valor_mao_obra ?? 0)
+  return Math.max(0, sub - valorTotalFinal.value)
 })
 
 // ─── Watchers ────────────────────────────────────────────────────────────────
 watch(() => props.show, async (newVal) => {
   if (newVal) {
     resetForm()
+    faturaEmitida.value = false
+    faturaPdfUrl.value = null
     await fetchRegrasDesconto()
 
     // Pre-fill form for edit mode
     if (isEditMode.value && props.orcamentoParaEditar) {
       preencherFormEdicao(props.orcamentoParaEditar)
+      // Verificar se já existe fatura emitida
+      if (props.orcamentoParaEditar.status === 'aprovado') {
+        checkFaturaExistente()
+      }
     }
   }
 })
@@ -823,19 +942,80 @@ async function enviarOrcamento() {
 
 async function aprovarOrcamento() {
   if (!props.orcamentoParaEditar) return
+
+  // Pedir forma de pagamento
+  if (!formaPagamento.value) {
+    showFeedback('Selecione a forma de pagamento', 'error')
+    return
+  }
+
   try {
-    await supabase.from('orcamentos_adesivo').update({ status: 'aprovado' }).eq('id', props.orcamentoParaEditar.id)
-    showFeedback('Orçamento aprovado!')
+    // 1. Gerar OS via RPC (valida, cria OS, atualiza status)
+    const { error: rpcError } = await supabase.rpc('gerar_ordem_servico', {
+      p_orcamento_id: props.orcamentoParaEditar.id,
+      p_token: null,
+      p_forma_pagamento: formaPagamento.value,
+      p_origem: 'interno',
+    })
+
+    if (rpcError) {
+      showFeedback(`Erro: ${rpcError.message}`, 'error')
+      return
+    }
+
+    // 2. Atualizar etapa do kanban para "Aprovado"
+    try {
+      const { data: etapaData } = await supabase
+        .from('pipeline_etapas')
+        .select('id')
+        .eq('pipeline_tipo', 'orcamentos')
+        .eq('nome', 'Aprovado')
+        .limit(1)
+        .maybeSingle()
+      if (etapaData?.id) {
+        await supabase.from('orcamentos_adesivo').update({ etapa_id: etapaData.id }).eq('id', props.orcamentoParaEditar.id)
+      }
+    } catch {}
+
+    // 3. Gerar contas a receber
+    const cliente = props.clientes.find(c => c.id === props.orcamentoParaEditar!.cliente_id)
+    const { gerarRecebiveisOrcamento } = useContasReceber()
+    await gerarRecebiveisOrcamento({
+      orcamentoId: props.orcamentoParaEditar.id,
+      valorTotal: valorTotalFinal.value,
+      clienteNome: cliente?.nome ?? 'Cliente',
+      descricao: `${props.orcamentoParaEditar.numero_orcamento} - ${cliente?.nome ?? 'Cliente'}`,
+      formaPagamento: formaPagamento.value,
+      parcelas: parcelasQtd.value,
+    })
+
+    showFeedback('Orçamento aprovado! OS gerada.')
     emit('updated', { id: props.orcamentoParaEditar.id, status: 'aprovado' })
-  } catch (e) {
-    showFeedback('Erro ao aprovar', 'error')
+  } catch (e: any) {
+    showFeedback('Erro ao aprovar: ' + (e.message || ''), 'error')
   }
 }
 
 async function reprovarOrcamento() {
   if (!props.orcamentoParaEditar) return
   try {
-    await supabase.from('orcamentos_adesivo').update({ status: 'rejeitado' }).eq('id', props.orcamentoParaEditar.id)
+    // Atualizar etapa do kanban para "Rejeitado"
+    let etapaId: number | null = null
+    try {
+      const { data: etapaData } = await supabase
+        .from('pipeline_etapas')
+        .select('id')
+        .eq('pipeline_tipo', 'orcamentos')
+        .eq('nome', 'Rejeitado')
+        .limit(1)
+        .maybeSingle()
+      if (etapaData?.id) etapaId = etapaData.id
+    } catch {}
+
+    const updatePayload: Record<string, unknown> = { status: 'rejeitado' }
+    if (etapaId) updatePayload.etapa_id = etapaId
+
+    await supabase.from('orcamentos_adesivo').update(updatePayload).eq('id', props.orcamentoParaEditar.id)
     showFeedback('Orçamento reprovado.')
     emit('updated', { id: props.orcamentoParaEditar.id, status: 'rejeitado' })
   } catch (e) {
@@ -843,14 +1023,101 @@ async function reprovarOrcamento() {
   }
 }
 
+// ─── Reverter aprovação (voltar etapa) ───────────────────────────────────────
+async function reverterAprovacao() {
+  if (!props.orcamentoParaEditar) return
+  if (!confirm('Reverter aprovação? A OS e contas a receber serão removidas.')) return
+
+  try {
+    const orcId = props.orcamentoParaEditar.id
+
+    // 1. Remover OS vinculada
+    const { data: osData } = await supabase
+      .from('ordens_servico_adesivo')
+      .select('id')
+      .eq('orcamento_id', orcId)
+
+    if (osData && osData.length > 0) {
+      for (const os of osData) {
+        await supabase.from('itens_ordem_servico').delete().eq('ordem_servico_id', os.id)
+        await supabase.from('processos_instancia').delete().eq('ordem_servico_id', os.id)
+      }
+      await supabase.from('ordens_servico_adesivo').delete().eq('orcamento_id', orcId)
+    }
+
+    // 2. Remover contas a receber vinculadas
+    await supabase.from('contas_pagar').delete().eq('orcamento_id', orcId).eq('tipo', 'receber')
+
+    // 3. Voltar status para 'enviado' e etapa
+    let etapaEnviadoId: number | null = null
+    try {
+      const { data: etapaData } = await supabase
+        .from('pipeline_etapas')
+        .select('id')
+        .eq('pipeline_tipo', 'orcamentos')
+        .eq('nome', 'Enviado')
+        .limit(1)
+        .maybeSingle()
+      if (etapaData?.id) etapaEnviadoId = etapaData.id
+    } catch {}
+
+    const revertPayload: Record<string, unknown> = { status: 'enviado' }
+    if (etapaEnviadoId) revertPayload.etapa_id = etapaEnviadoId
+
+    await supabase.from('orcamentos_adesivo').update(revertPayload).eq('id', orcId)
+
+    showFeedback('Aprovação revertida. OS e contas removidas.')
+    emit('updated', { id: orcId, status: 'enviado' })
+  } catch (e: any) {
+    showFeedback('Erro ao reverter: ' + (e.message || ''), 'error')
+  }
+}
+
+// Forma de pagamento e parcelas para aprovação
+const formaPagamento = ref('')
+const parcelasQtd = ref(1)
+
 // ─── Emitir Fatura (InvoiceXpress — só Portugal) ─────────────────────────────
-const { emitInvoice } = useBilling()
+const { emitInvoice, loadBillingStatus, billingStatus } = useBilling()
 const emitindoFatura = ref(false)
 const faturaEmitida = ref(false)
+const faturaPdfUrl = ref<string | null>(null)
+
+// Verificar se já existe fatura emitida para este orçamento
+async function checkFaturaExistente() {
+  if (!props.orcamentoParaEditar) return
+  const { data } = await supabase
+    .from('invoices')
+    .select('id, state, pdf_url, permalink')
+    .eq('empresa_id', empresaId.value)
+    .eq('order_id', props.orcamentoParaEditar.id)
+    .eq('order_type', 'orcamento')
+    .eq('state', 'finalized')
+    .maybeSingle()
+
+  if (data) {
+    faturaEmitida.value = true
+    faturaPdfUrl.value = data.pdf_url || data.permalink || null
+  }
+}
 
 async function emitirFatura() {
   if (!props.orcamentoParaEditar) return
-  const orc = props.orcamentoParaEditar
+  if (faturaEmitida.value) {
+    showFeedback('Fatura já foi emitida para este orçamento', 'error')
+    return
+  }
+
+  // Mostrar modal de confirmação
+  showConfirmFatura.value = true
+}
+
+// Modal de confirmação de emissão
+const showConfirmFatura = ref(false)
+
+async function confirmarEmissaoFatura() {
+  showConfirmFatura.value = false
+  const orc = props.orcamentoParaEditar!
 
   // Buscar dados do cliente
   const cliente = props.clientes.find(c => c.id === orc.cliente_id)
@@ -888,7 +1155,7 @@ async function emitirFatura() {
   }
 
   emitindoFatura.value = true
-  const { ok, error } = await emitInvoice({
+  const { ok, invoice, error } = await emitInvoice({
     orderId: orc.id,
     orderType: 'orcamento',
     client: {
@@ -902,6 +1169,27 @@ async function emitirFatura() {
 
   if (ok) {
     faturaEmitida.value = true
+    faturaPdfUrl.value = invoice?.pdf_url || invoice?.permalink || null
+
+    // Guardar na tabela invoices (idempotência)
+    await supabase.from('invoices').upsert({
+      empresa_id: empresaId.value,
+      order_id: orc.id,
+      order_type: 'orcamento',
+      provider: 'invoicexpress',
+      provider_invoice_id: invoice?.provider_invoice_id ? String(invoice.provider_invoice_id) : null,
+      document_type: 'invoice_receipt',
+      state: 'finalized',
+      atcud: invoice?.atcud || null,
+      sequence_number: invoice?.sequence_number || null,
+      permalink: invoice?.permalink || null,
+      pdf_url: invoice?.pdf_url || null,
+      total: invoice?.total || null,
+      client_name: cliente.nome,
+      client_nif: nif,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'empresa_id,order_id,order_type' })
+
     showFeedback('Fatura emitida com sucesso!')
   } else {
     showFeedback(error || 'Erro ao emitir fatura', 'error')

@@ -29,10 +29,28 @@
     <!-- Divider -->
     <div style="border-color: var(--color-card-border, rgba(0,0,0,0.1))" class="border-t my-1" />
 
-    <!-- Valor Total Final -->
-    <div class="rounded-xl p-4" style="background: var(--color-primary-5, rgba(79,70,229,0.05)); border: 1px solid var(--color-primary-border, rgba(79,70,229,0.2))">
+    <!-- IVA (só Portugal) -->
+    <template v-if="isPT">
+      <div class="flex items-center justify-between text-sm">
+        <span style="color: var(--color-card-texto, #6b7280); opacity: 0.7" class="font-medium">Subtotal s/ IVA</span>
+        <span style="color: var(--color-card-texto, #374151)" class="font-semibold">{{ formatCurrency(valorTotalFinal) }}</span>
+      </div>
+      <div class="flex items-center justify-between text-sm">
+        <span style="color: var(--color-card-texto, #6b7280); opacity: 0.7" class="font-medium">IVA (23%)</span>
+        <span style="color: var(--color-card-texto, #374151)" class="font-semibold">{{ formatCurrency(ivaValor) }}</span>
+      </div>
+      <div class="rounded-xl p-4" style="background: var(--color-primary-5, rgba(79,70,229,0.05)); border: 1px solid var(--color-primary-border, rgba(79,70,229,0.2))">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-bold" style="color: var(--color-primary, #4f46e5)">Total c/ IVA</span>
+          <span class="text-xl font-black" style="color: var(--color-primary, #4f46e5)">{{ formatCurrency(valorTotalComIva) }}</span>
+        </div>
+      </div>
+    </template>
+
+    <!-- Total sem IVA (Brasil ou sem IVA) -->
+    <div v-else class="rounded-xl p-4" style="background: var(--color-primary-5, rgba(79,70,229,0.05)); border: 1px solid var(--color-primary-border, rgba(79,70,229,0.2))">
       <div class="flex items-center justify-between">
-        <span class="text-sm font-bold" style="color: var(--color-primary, #4f46e5)">Valor Total Final</span>
+        <span class="text-sm font-bold" style="color: var(--color-primary, #4f46e5)">Total final</span>
         <span class="text-xl font-black" style="color: var(--color-primary, #4f46e5)">{{ formatCurrency(valorTotalFinal) }}</span>
       </div>
     </div>
@@ -43,7 +61,7 @@
 import { computed } from 'vue'
 
 // ─── Composables ─────────────────────────────────────────────────────────────
-const { formatCurrency } = useLocale()
+const { formatCurrency, locale } = useLocale()
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 const props = withDefaults(
@@ -68,7 +86,9 @@ const props = withDefaults(
   }
 )
 
-// ─── Computed: Valores derivados ─────────────────────────────────────────────
+// ─── Computed ────────────────────────────────────────────────────────────────
+const isPT = computed(() => locale.value.pais === 'PT')
+
 const descontoVolumeValor = computed<number>(() => {
   return props.subtotalItens * (props.descontoVolumePercentual / 100)
 })
@@ -88,4 +108,7 @@ const valorTotalFinal = computed<number>(() => {
   return Math.max(total, 0)
 })
 
+const ivaValor = computed<number>(() => valorTotalFinal.value * 0.23)
+
+const valorTotalComIva = computed<number>(() => valorTotalFinal.value + ivaValor.value)
 </script>

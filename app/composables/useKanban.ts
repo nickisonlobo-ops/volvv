@@ -28,6 +28,7 @@ export function useKanban(pipelineTipo: PipelineTipo) {
   const supabase = createSupabaseClient()
   const { carregarEtapas } = useEtapas()
   const { empresaId, loadEmpresa } = useEmpresa()
+  const { formatCurrency, valorComIva } = useLocale()
 
   // ─── Estado reativo ─────────────────────────────────────
   const state = ref<KanbanState>({
@@ -197,6 +198,19 @@ export function useKanban(pipelineTipo: PipelineTipo) {
       throw new Error(`Erro ao carregar orçamentos: ${error.message}`)
     }
 
+    // Buscar IDs de orçamentos que já possuem fatura emitida
+    const orcIds = (data ?? []).map((o: any) => o.id)
+    let faturadosSet = new Set<number>()
+    if (orcIds.length > 0) {
+      const { data: faturas } = await supabase
+        .from('invoices')
+        .select('order_id')
+        .in('order_id', orcIds)
+        .eq('order_type', 'orcamento')
+        .eq('state', 'finalized')
+      if (faturas) faturadosSet = new Set(faturas.map((f: any) => f.order_id))
+    }
+
     // Atribuir primeira etapa aos itens sem etapa_id
     const primeiraEtapaId = state.value.etapas[0]?.id ?? null
     const itensParaAtualizar: number[] = []
@@ -207,6 +221,7 @@ export function useKanban(pipelineTipo: PipelineTipo) {
         etapaId = primeiraEtapaId
         itensParaAtualizar.push(orc.id)
       }
+      const faturado = faturadosSet.has(orc.id)
       return {
         id: orc.id,
         etapa_id: etapaId,
@@ -216,7 +231,9 @@ export function useKanban(pipelineTipo: PipelineTipo) {
           numero: orc.numero_orcamento ?? '—',
           cliente: orc.clientes?.nome ?? '—',
           valor_total: formatarValor(orc.valor_total),
+          valor_total_raw: String(orc.valor_total ?? 0),
           data_criacao: formatarData(orc.created_at),
+          faturado: faturado ? 'sim' : '',
         },
       }
     }).filter((c: any) => c.etapa_id != null)
@@ -244,6 +261,12 @@ export function useKanban(pipelineTipo: PipelineTipo) {
     }
 
     const card = state.value.cards[cardIndex]
+
+    // Bloquear cards faturados (não pode mover)
+    if (card.info_extra?.faturado === 'sim') {
+      throw new Error('Orçamento faturado não pode ser movido.')
+    }
+
     const etapaAnteriorId = card.etapa_id
 
     // Se a etapa não mudou, nada a fazer
@@ -373,8 +396,7 @@ export function useKanban(pipelineTipo: PipelineTipo) {
   }
 
   function formatarValor(valor: number | null): string {
-    const { formatCurrency } = useLocale()
-    return formatCurrency(valor)
+    return formatCurrency(valorComIva(valor))
   }
 
   return {

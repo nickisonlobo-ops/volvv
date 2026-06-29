@@ -7,6 +7,7 @@ const N8N_BASE = 'https://n8n-n8n-start.arepen.easypanel.host/webhook'
 export interface BillingStatus {
   connected: boolean
   account_name: string | null
+  api_key_encrypted: string | null
   status: string | null
   default_tax_name: string | null
   default_doc_type: string | null
@@ -48,7 +49,7 @@ export function useBilling() {
     try {
       const { data, error } = await supabase
         .from('billing_accounts')
-        .select('account_name, status, default_tax_name, default_doc_type')
+        .select('account_name, api_key_encrypted, status, default_tax_name, default_doc_type')
         .eq('empresa_id', empresaId.value)
         .eq('provider', 'invoicexpress')
         .maybeSingle()
@@ -113,7 +114,7 @@ export function useBilling() {
     return true
   }
 
-  // Emitir fatura (chama webhook n8n — ele busca credenciais do banco)
+  // Emitir fatura (chama webhook n8n — envia credenciais junto)
   async function emitInvoice(params: {
     orderId: number
     orderType?: 'orcamento' | 'os'
@@ -122,11 +123,21 @@ export function useBilling() {
     items: { name: string; unitPrice: number; quantity: number; taxName?: string }[]
   }): Promise<{ ok: boolean; invoice?: Invoice; error?: string }> {
     try {
+      // Buscar credenciais da conta de faturação
+      if (!billingStatus.value?.account_name || !billingStatus.value?.api_key_encrypted) {
+        await loadBillingStatus()
+      }
+      if (!billingStatus.value?.account_name || !billingStatus.value?.api_key_encrypted) {
+        return { ok: false, error: 'Conta de faturação não configurada' }
+      }
+
       const res = await fetch(`${N8N_BASE}/billing-emit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           empresa_id: empresaId.value,
+          account_name: billingStatus.value.account_name,
+          api_key: billingStatus.value.api_key_encrypted,
           order_id: params.orderId,
           order_type: params.orderType ?? 'orcamento',
           document_type: params.documentType ?? 'invoice_receipt',

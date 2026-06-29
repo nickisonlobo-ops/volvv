@@ -1,10 +1,11 @@
 <template>
   <div
     :data-card-id="card.id"
-    draggable="true"
-    class="kanban-card group relative rounded-xl border p-3 shadow-sm transition-all duration-150 cursor-pointer select-none hover:shadow-md active:scale-[0.98]"
+    :draggable="card.info_extra?.faturado !== 'sim'"
+    class="kanban-card group relative rounded-xl border p-3 shadow-sm transition-all duration-150 select-none hover:shadow-md active:scale-[0.98]"
+    :class="card.info_extra?.faturado === 'sim' ? 'cursor-default' : 'cursor-pointer'"
     @click="emit('click', card)"
-    @dragstart="emit('dragstart', $event)"
+    @dragstart="card.info_extra?.faturado === 'sim' ? $event.preventDefault() : emit('dragstart', $event)"
   >
     <slot :card="card" />
   </div>

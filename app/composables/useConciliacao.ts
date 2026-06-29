@@ -368,6 +368,7 @@ export function useConciliacao() {
 export function useContasReceber() {
   const supabase = createSupabaseClient()
   const { empresaId, loadEmpresa } = useEmpresa()
+  const { valorComIva } = useLocale()
 
   async function gerarRecebiveisOrcamento(params: {
     orcamentoId: number
@@ -380,7 +381,9 @@ export function useContasReceber() {
     await loadEmpresa()
     if (!empresaId.value) return { success: false, error: 'Empresa não identificada' }
 
-    const { orcamentoId, valorTotal, clienteNome, descricao, formaPagamento, parcelas } = params
+    const { orcamentoId, clienteNome, descricao, formaPagamento, parcelas } = params
+    // Aplica IVA ao valor total (se PT, cliente paga com IVA)
+    const valorTotal = valorComIva(params.valorTotal)
     const valorParcela = Math.round((valorTotal / parcelas) * 100) / 100
 
     const rows = []
