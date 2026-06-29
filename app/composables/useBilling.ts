@@ -2,6 +2,8 @@ import { ref } from 'vue'
 import { createSupabaseClient } from '~/lib/supabase'
 import { useEmpresa } from './useEmpresa'
 
+const N8N_BASE = 'https://n8n-n8n-start.arepen.easypanel.host/webhook'
+
 export interface BillingStatus {
   connected: boolean
   account_name: string | null
@@ -61,7 +63,7 @@ export function useBilling() {
     }
   }
 
-  // Ligar conta InvoiceXpress (chama server route)
+  // Ligar conta InvoiceXpress (chama webhook n8n)
   async function connectAccount(accountName: string, apiKey: string): Promise<{ ok: boolean; error?: string }> {
     billingLoading.value = true
     billingError.value = null
@@ -69,23 +71,24 @@ export function useBilling() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) return { ok: false, error: 'Não autenticado' }
 
-      const res = await fetch('/api/billing/connect', {
+      const res = await fetch(`${N8N_BASE}/billing-connect`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ account_name: accountName, api_key: apiKey }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          empresa_id: empresaId.value,
+          account_name: accountName,
+          api_key: apiKey,
+          user_id: session.user.id,
+        }),
       })
 
       const result = await res.json()
-      if (!res.ok) {
-        const msg = result.statusMessage || result.error || 'Erro ao conectar'
+      if (!res.ok || result.error) {
+        const msg = result.error || result.message || 'Erro ao conectar'
         billingError.value = msg
         return { ok: false, error: msg }
       }
 
-      // Recarregar status
       await loadBillingStatus()
       return { ok: true }
     } catch (e: any) {
@@ -96,7 +99,7 @@ export function useBilling() {
     }
   }
 
-  // Desconectar conta (marca como disconnected)
+  // Desconectar conta
   async function disconnectAccount(): Promise<boolean> {
     if (!empresaId.value) return false
     const { error } = await supabase
@@ -108,7 +111,7 @@ export function useBilling() {
     return true
   }
 
-  // Emitir fatura (chama server route)
+  // Emitir fatura (chama webhook n8n)
   async function emitInvoice(params: {
     orderId: number
     orderType?: 'orcamento' | 'os'
@@ -120,12 +123,9 @@ export function useBilling() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) return { ok: false, error: 'Não autenticado' }
 
-      const res = await fetch('/api/billing/emit', {
+      const res = await fetch(`${N8N_BASE}/billing-emit`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           empresa_id: empresaId.value,
           order_id: params.orderId,
@@ -138,11 +138,14 @@ export function useBilling() {
             quantity: i.quantity,
             taxName: i.taxName ?? 'IVA23',
           })),
+          user_id: session.user.id,
         }),
       })
 
       const result = await res.json()
-      if (!res.ok) return { ok: false, error: result.statusMessage || result.error || 'Erro ao emitir fatura' }
+      if (!res.ok || result.error) {
+        return { ok: false, error: result.error || result.message || 'Erro ao emitir fatura' }
+      }
       return { ok: true, invoice: result.invoice }
     } catch (e: any) {
       return { ok: false, error: e.message }
