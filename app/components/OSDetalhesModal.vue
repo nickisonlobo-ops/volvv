@@ -6,19 +6,19 @@
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="emit('close')" />
 
         <!-- Modal container -->
-        <div class="relative z-10 flex flex-col w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:mx-auto sm:my-auto sm:rounded-2xl bg-white overflow-hidden shadow-2xl">
+        <div class="relative z-10 flex flex-col w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:mx-auto sm:my-auto sm:rounded-2xl bg-theme-card overflow-hidden shadow-2xl" style="color: var(--color-card-texto)">
 
           <!-- ═══ CLEAN WHITE HEADER ═══ -->
-          <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white">
+          <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-primary-10 bg-theme-card">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center">
-                <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.67-5.67a8 8 0 1111.31 0l-5.64 5.67zM12 10h.01" />
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center border border-primary-20">
+                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                 </svg>
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <h2 class="text-lg font-bold text-gray-900">{{ ordemServico.numero_os }}</h2>
+                  <h2 class="text-lg font-bold" style="color: var(--color-card-texto)">{{ ordemServico.numero_os }}</h2>
                   <span
                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap"
                     :class="statusBadgeClasses"
@@ -32,7 +32,7 @@
             </div>
             <button
               type="button"
-              class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+              class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-primary-5 text-gray-400 hover:text-gray-500 transition-colors"
               @click="emit('close')"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -47,18 +47,18 @@
             <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
 
               <!-- TRABALHO (orange left border card) -->
-              <div v-if="ordemServico.nome_trabalho" class="border-l-4 border-orange-400 bg-orange-50/60 rounded-r-xl px-4 py-3">
-                <p class="text-[10px] font-bold text-orange-500 uppercase tracking-wider mb-0.5">Trabalho</p>
-                <p class="text-base sm:text-lg font-bold text-gray-800">{{ ordemServico.nome_trabalho }}</p>
+              <div v-if="ordemServico.nome_trabalho" class="border-l-4 border-primary rounded-r-xl bg-primary-5 px-4 py-3">
+                <p class="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">Trabalho</p>
+                <p class="text-base sm:text-lg font-bold text-[color:var(--color-card-texto)]">{{ ordemServico.nome_trabalho }}</p>
               </div>
 
               <!-- CLIENTE INFO -->
               <section>
-                <h3 class="flex items-center gap-2 text-sm font-bold text-gray-800 mb-3">
-                  <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">1</span>
+                <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-3">
+                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border border-primary-20" style="color: var(--color-card-texto)">1</span>
                   Cliente
                 </h3>
-                <div class="bg-gray-50 rounded-xl p-4">
+                <div class="rounded-xl p-4 border border-primary-10">
                   <div class="flex items-center justify-between gap-3">
                     <div class="min-w-0">
                       <p class="text-sm font-bold text-gray-800 truncate">{{ ordemServico.cliente_nome || 'Cliente' }}</p>
@@ -83,35 +83,35 @@
 
               <!-- ENDEREÇO DE INSTALAÇÃO -->
               <section v-if="ordemServico.endereco_instalacao">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-gray-800 mb-3">
-                  <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">2</span>
+                <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-3">
+                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border border-primary-20" style="color: var(--color-card-texto)">2</span>
                   Endereço de Instalação
                 </h3>
-                <div class="bg-gray-50 rounded-xl p-4 flex items-start gap-3">
+                <div class="rounded-xl p-4 border border-primary-10 flex items-start gap-3">
                   <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                   </svg>
-                  <p class="text-sm text-gray-700">{{ ordemServico.endereco_instalacao }}</p>
+                  <p class="text-sm text-[color:var(--color-card-texto)]">{{ ordemServico.endereco_instalacao }}</p>
                 </div>
               </section>
 
               <!-- DATA DE ENTREGA -->
               <section v-if="ordemServico?.data_entrega">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-gray-800 mb-3">
-                  <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">3</span>
+                <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-3">
+                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border border-primary-20" style="color: var(--color-card-texto)">3</span>
                   Data de Entrega
                 </h3>
-                <div class="bg-orange-50/60 border border-orange-100 rounded-xl px-4 py-3 flex items-center gap-3">
-                  <svg class="w-5 h-5 text-orange-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
-                  <p class="text-sm font-bold text-orange-700">{{ formatDataEntrega(ordemServico.data_entrega) }}</p>
+                <div class="border border-primary-20 rounded-xl px-4 py-3 flex items-center gap-3">
+                  <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
+                  <p class="text-sm font-bold text-primary">{{ formatDataEntrega(ordemServico.data_entrega) }}</p>
                 </div>
               </section>
 
               <!-- ITENS DA OS -->
               <section>
-                <h3 class="flex items-center gap-2 text-sm font-bold text-gray-800 mb-3">
-                  <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">4</span>
+                <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-3">
+                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border border-primary-20" style="color: var(--color-card-texto)">4</span>
                   Itens da OS
                 </h3>
                 <div v-if="itensOS.length === 0" class="text-center py-8">
@@ -121,26 +121,26 @@
                   <div
                     v-for="(item, idx) in itensOS"
                     :key="item.id"
-                    class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm"
+                    class="border border-primary-10 rounded-xl overflow-hidden shadow-sm"
                   >
                     <!-- Card Header -->
                     <div class="flex items-center gap-3 px-4 py-3">
-                      <span class="w-6 h-6 rounded-lg bg-orange-100 text-orange-600 text-[10px] font-black flex items-center justify-center flex-shrink-0">{{ idx + 1 }}</span>
-                      <span class="text-sm font-semibold text-gray-800 truncate">{{ item.descricao }}</span>
+                      <span class="w-6 h-6 rounded-lg text-[10px] font-black flex items-center justify-center flex-shrink-0 border border-primary-20" style="color: var(--color-card-texto)">{{ idx + 1 }}</span>
+                      <span class="text-sm font-semibold truncate" style="color: var(--color-card-texto)">{{ item.descricao }}</span>
                     </div>
 
                     <!-- Card Body -->
                     <div class="px-4 pb-4 border-t border-gray-100 pt-3 space-y-3">
                       <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                        <div class="bg-gray-50 rounded-lg px-3 py-2">
+                        <div class="rounded-lg px-3 py-2 border border-primary-10">
                           <span class="text-[10px] font-bold text-gray-400 uppercase block">Material</span>
                           <span class="text-gray-700 font-semibold">{{ item.material_id }}</span>
                         </div>
-                        <div class="bg-gray-50 rounded-lg px-3 py-2">
+                        <div class="rounded-lg px-3 py-2 border border-primary-10">
                           <span class="text-[10px] font-bold text-gray-400 uppercase block">Dimensões</span>
                           <span class="text-gray-700 font-semibold">{{ item.largura_cm }} × {{ item.altura_cm }} cm</span>
                         </div>
-                        <div class="bg-gray-50 rounded-lg px-3 py-2">
+                        <div class="rounded-lg px-3 py-2 border border-primary-10">
                           <span class="text-[10px] font-bold text-gray-400 uppercase block">Quantidade</span>
                           <span class="text-gray-700 font-semibold">{{ item.quantidade }}</span>
                         </div>
@@ -208,7 +208,7 @@
                             </button>
                           </div>
                           <!-- Botão adicionar foto -->
-                          <label class="w-20 h-20 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-colors">
+                          <label class="w-20 h-20 rounded-lg border-2 border-dashed border-primary-10 bg-transparent flex flex-col items-center justify-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-colors">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                             <span class="text-[9px] text-gray-400 font-bold mt-0.5">Foto</span>
                             <input type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="onAddFotoInstalacao(item.id, $event)" />
@@ -222,26 +222,26 @@
 
               <!-- OBSERVAÇÕES -->
               <section>
-                <h3 class="flex items-center gap-2 text-sm font-bold text-gray-800 mb-3">
-                  <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">5</span>
+                <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-3">
+                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border border-primary-20" style="color: var(--color-card-texto)">5</span>
                   Observações / Comentários
                 </h3>
                 <textarea
                   v-model="observacoes"
                   rows="3"
                   placeholder="Adicione notas ou comentários sobre esta OS..."
-                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-800 placeholder:text-gray-400 bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all resize-none"
+                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-800 placeholder:text-gray-400 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
                 />
               </section>
 
             </div>
 
             <!-- RIGHT SIDEBAR -->
-            <div class="hidden sm:flex flex-col w-[320px] border-l border-gray-100 bg-gray-50/50 overflow-y-auto">
+            <div class="hidden sm:flex flex-col w-[320px] border-l border-primary-10 overflow-y-auto">
               <div class="sticky top-0 p-5 space-y-5">
 
                 <!-- Resumo da OS -->
-                <div class="bg-white rounded-xl border border-gray-100 p-4 space-y-3 shadow-sm">
+                <div class="rounded-xl border border-primary-10 p-4 space-y-3 shadow-sm">
                   <h4 class="text-xs font-black text-gray-500 uppercase tracking-wider">Resumo da OS</h4>
                   <div class="space-y-2.5">
                     <div class="flex items-center justify-between">
@@ -250,7 +250,7 @@
                     </div>
                     <div class="flex items-center justify-between">
                       <span class="text-xs text-gray-500">Itens</span>
-                      <span class="text-xs font-bold text-gray-800">{{ itensOS.length }}</span>
+                      <span class="text-xs font-bold text-[color:var(--color-card-texto)]">{{ itensOS.length }}</span>
                     </div>
                     <div class="flex items-center justify-between">
                       <span class="text-xs text-gray-500">Status</span>
@@ -264,15 +264,15 @@
                     </div>
                     <div v-if="etapaAtual" class="flex items-center justify-between">
                       <span class="text-xs text-gray-500">Etapa atual</span>
-                      <span class="text-xs font-bold text-gray-800">{{ etapaAtual.nome }}</span>
+                      <span class="text-xs font-bold text-[color:var(--color-card-texto)]">{{ etapaAtual.nome }}</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- Próxima Etapa info box -->
-                <div v-if="nextEtapa" class="bg-orange-50 border border-orange-100 rounded-xl p-4">
-                  <p class="text-[10px] font-bold text-orange-500 uppercase tracking-wider mb-1">Próxima etapa</p>
-                  <p class="text-sm font-bold text-orange-700">{{ nextEtapa.nome }}</p>
+                <div v-if="nextEtapa" class="border border-primary-20 rounded-xl p-4">
+                  <p class="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">Próxima etapa</p>
+                  <p class="text-sm font-bold text-primary">{{ nextEtapa.nome }}</p>
                 </div>
 
                 <!-- Action Buttons -->
@@ -298,7 +298,7 @@
                   <button
                     type="button"
                     :disabled="salvandoObs"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-gray-700 border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[color:var(--color-card-texto)] border border-primary-10 hover:bg-primary-5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     @click="salvarObservacoes"
                   >
                     <span v-if="salvandoObs" class="w-3.5 h-3.5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
@@ -311,7 +311,8 @@
                   <!-- Gerar PDF -->
                   <button
                     type="button"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
+                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[color:var(--color-card-texto)] border border-primary-10 hover:bg-primary-5 transition-colors"
+                    @click="gerarOsPdf"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
@@ -325,7 +326,7 @@
           </div>
 
           <!-- ═══ MOBILE FOOTER (sm:hidden) ═══ -->
-          <div class="sm:hidden flex-shrink-0 border-t border-gray-100 bg-white px-4 py-3 space-y-2">
+          <div class="sm:hidden flex-shrink-0 border-t border-primary-10 bg-theme-card px-4 py-3 space-y-2">
             <button
               v-if="nextEtapa"
               type="button"
@@ -344,7 +345,7 @@
             <button
               type="button"
               :disabled="salvandoObs"
-              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-gray-700 border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[color:var(--color-card-texto)] border border-primary-10 hover:bg-primary-5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               @click="salvarObservacoes"
             >
               <span v-if="salvandoObs" class="w-3.5 h-3.5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
@@ -405,6 +406,7 @@ const emit = defineEmits<{
 const { atualizarStatusOS } = useOrdensServico()
 const { empresaId } = useEmpresa()
 const { formatCurrency } = useLocale()
+const { config: personalizacao } = usePersonalizacao()
 const supabase = createSupabaseClient()
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -439,11 +441,11 @@ watch(() => props.ordemServico, (os) => {
 
 // ─── Status config ───────────────────────────────────────────────────────────
 const statusConfig: Record<StatusOS, { bg: string; text: string; dot: string; label: string }> = {
-  aguardando_producao: { bg: 'bg-amber-50 border border-amber-200', text: 'text-amber-700', dot: 'bg-amber-400', label: 'Aguardando Produção' },
-  em_producao: { bg: 'bg-blue-50 border border-blue-200', text: 'text-blue-700', dot: 'bg-blue-400', label: 'Em Produção' },
-  pronto: { bg: 'bg-green-50 border border-green-200', text: 'text-green-700', dot: 'bg-green-400', label: 'Pronto' },
-  entregue: { bg: 'bg-emerald-50 border border-emerald-200', text: 'text-emerald-700', dot: 'bg-emerald-400', label: 'Entregue' },
-  cancelado: { bg: 'bg-red-50 border border-red-200', text: 'text-red-700', dot: 'bg-red-400', label: 'Cancelado' },
+  aguardando_producao: { bg: 'bg-amber-500/10 border border-amber-500/30', text: 'text-amber-500', dot: 'bg-amber-400', label: 'Aguardando Produção' },
+  em_producao: { bg: 'bg-primary text-primary-text', text: 'text-primary-text', dot: 'bg-primary-text', label: 'Em Produção' },
+  pronto: { bg: 'bg-green-600/10 border border-green-600/30', text: 'text-green-500', dot: 'bg-green-400', label: 'Pronto' },
+  entregue: { bg: 'bg-emerald-600/10 border border-emerald-600/30', text: 'text-emerald-500', dot: 'bg-emerald-400', label: 'Entregue' },
+  cancelado: { bg: 'bg-red-600/10 border border-red-600/30', text: 'text-red-500', dot: 'bg-red-400', label: 'Cancelado' },
 }
 
 // ─── Computed ────────────────────────────────────────────────────────────────
@@ -701,6 +703,261 @@ async function salvarObservacoes() {
 function isPdf(url: string | null | undefined): boolean {
   if (!url) return false
   return url.toLowerCase().endsWith('.pdf')
+}
+
+// ─── Gerar PDF da OS ─────────────────────────────────────────────────────────
+async function loadImageAsBase64(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url)
+    const blob = await response.blob()
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result as string)
+      reader.readAsDataURL(blob)
+    })
+  } catch {
+    return null
+  }
+}
+
+function hexToRgb(hex: string): [number, number, number] {
+  hex = hex.replace('#', '')
+  return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)]
+}
+
+async function gerarOsPdf() {
+  if (!props.ordemServico) return
+
+  // Abre a página de impressão premium em nova aba
+  const url = `/os-print?id=${props.ordemServico.id}`
+  window.open(url, '_blank')
+  return
+
+  // Legacy jsPDF code below (kept for reference)
+  const { jsPDF } = await import('jspdf')
+  const { default: autoTable } = await import('jspdf-autotable')
+
+  const doc = new jsPDF('p', 'mm', 'a4')
+  const pw = doc.internal.pageSize.getWidth()
+  const ph = doc.internal.pageSize.getHeight()
+  const m = 20 // margem generosa
+  let y = 0
+
+  // Cor primária do tema
+  const primaryHex = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#ea580c'
+  const rgb = hexToRgb(primaryHex)
+  const lightRgb: [number, number, number] = [Math.min(255, rgb[0] + 180), Math.min(255, rgb[1] + 180), Math.min(255, rgb[2] + 180)]
+
+  const os = props.ordemServico
+  const nomeEmpresa = personalizacao.value.nome_empresa || 'SignPRO'
+
+  // ═══ HEADER PREMIUM ═══════════════════════════════════════════════════════
+  // Fundo do header: retângulo com cor primária suave
+  doc.setFillColor(rgb[0], rgb[1], rgb[2])
+  doc.rect(0, 0, pw, 42, 'F')
+
+  // Logo
+  const logoUrl = personalizacao.value.logo_url
+  if (logoUrl) {
+    const logoBase64 = await loadImageAsBase64(logoUrl)
+    if (logoBase64) {
+      try { doc.addImage(logoBase64, 'PNG', m, 8, 28, 28) } catch {}
+    }
+  }
+
+  // Texto no header (direita, sobre fundo colorido)
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(11)
+  doc.setFont('helvetica', 'normal')
+  doc.text(nomeEmpresa, pw - m, 16, { align: 'right' })
+
+  doc.setFontSize(22)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Ordem de Serviço', pw - m, 26, { align: 'right' })
+
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`${os.numero_os}`, pw - m, 34, { align: 'right' })
+
+  y = 52
+
+  // ═══ INFO GRID (OS + Status + Data) ═══════════════════════════════════════
+  doc.setFillColor(lightRgb[0], lightRgb[1], lightRgb[2])
+  doc.roundedRect(m, y, pw - m * 2, 18, 3, 3, 'F')
+
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(rgb[0], rgb[1], rgb[2])
+
+  const colW = (pw - m * 2) / 4
+  const infoY = y + 6
+  const valY = y + 12
+
+  // Col 1: Status
+  doc.text('STATUS', m + 5, infoY)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(50, 50, 50)
+  doc.setFontSize(10)
+  doc.text(statusLabel.value || os.status, m + 5, valY)
+
+  // Col 2: Trabalho
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(rgb[0], rgb[1], rgb[2])
+  doc.text('TRABALHO', m + colW + 5, infoY)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(50, 50, 50)
+  doc.setFontSize(10)
+  doc.text(os.nome_trabalho || '—', m + colW + 5, valY)
+
+  // Col 3: Data
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(rgb[0], rgb[1], rgb[2])
+  doc.text('DATA', m + colW * 2 + 5, infoY)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(50, 50, 50)
+  doc.setFontSize(10)
+  doc.text(os.created_at ? new Date(os.created_at).toLocaleDateString('pt-BR') : '—', m + colW * 2 + 5, valY)
+
+  // Col 4: Entrega
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(rgb[0], rgb[1], rgb[2])
+  doc.text('ENTREGA', m + colW * 3 + 5, infoY)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(50, 50, 50)
+  doc.setFontSize(10)
+  doc.text(os.data_entrega ? formatDataEntrega(os.data_entrega) : '—', m + colW * 3 + 5, valY)
+
+  y += 28
+
+  // ═══ HELPER: Section title ═══
+  function sectionTitle(num: string, title: string) {
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(rgb[0], rgb[1], rgb[2])
+    // Número circular
+    doc.setFillColor(rgb[0], rgb[1], rgb[2])
+    doc.circle(m + 3.5, y + 1, 3.5, 'F')
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(7)
+    doc.text(num, m + 3.5, y + 2, { align: 'center' })
+    // Título
+    doc.setTextColor(rgb[0], rgb[1], rgb[2])
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'bold')
+    doc.text(title, m + 10, y + 2)
+    // Linha
+    doc.setDrawColor(lightRgb[0], lightRgb[1], lightRgb[2])
+    doc.setLineWidth(0.5)
+    const titleWidth = doc.getTextWidth(title)
+    doc.line(m + 12 + titleWidth, y + 2, pw - m, y + 2)
+    y += 8
+  }
+
+  // ═══ 1. CLIENTE ════════════════════════════════════════════════════════════
+  sectionTitle('1', 'Cliente')
+  doc.setFontSize(11)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(30, 30, 30)
+  doc.text(os.cliente_nome || '—', m + 2, y)
+  y += 5
+  if (os.cliente_telefone) {
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(100, 100, 100)
+    doc.text(os.cliente_telefone, m + 2, y)
+    y += 5
+  }
+  y += 5
+
+  // ═══ 2. ENDEREÇO ══════════════════════════════════════════════════════════
+  if (os.endereco_instalacao) {
+    sectionTitle('2', 'Endereço de Instalação')
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(50, 50, 50)
+    doc.text(os.endereco_instalacao, m + 2, y)
+    y += 10
+  }
+
+  // ═══ 3. ITENS ═════════════════════════════════════════════════════════════
+  const itens = props.itensOS
+  if (itens.length > 0) {
+    sectionTitle(os.endereco_instalacao ? '3' : '2', 'Itens da Ordem de Serviço')
+
+    const tableBody = itens.map((item, idx) => [
+      String(idx + 1),
+      item.descricao || '—',
+      item.material_id ? String(item.material_id) : '—',
+      `${item.largura_cm || 0} × ${item.altura_cm || 0} cm`,
+      String(item.quantidade || 1),
+    ])
+
+    autoTable(doc, {
+      startY: y,
+      margin: { left: m, right: m },
+      head: [['#', 'Descrição', 'Material', 'Dimensões', 'Qtd']],
+      body: tableBody,
+      headStyles: {
+        fillColor: rgb,
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 9,
+        cellPadding: 4,
+      },
+      bodyStyles: {
+        fontSize: 9,
+        textColor: [50, 50, 50],
+        cellPadding: 3.5,
+      },
+      alternateRowStyles: {
+        fillColor: [lightRgb[0], lightRgb[1], lightRgb[2]],
+      },
+      columnStyles: {
+        0: { cellWidth: 12, halign: 'center' },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 30 },
+        3: { cellWidth: 35, halign: 'center' },
+        4: { cellWidth: 18, halign: 'center' },
+      },
+      styles: {
+        lineColor: [220, 220, 220],
+        lineWidth: 0.1,
+      },
+      theme: 'grid',
+    })
+
+    y = (doc as any).lastAutoTable.finalY + 10
+  }
+
+  // ═══ 4. OBSERVAÇÕES ═══════════════════════════════════════════════════════
+  if (observacoes.value) {
+    if (y > 240) { doc.addPage(); y = 20 }
+    const obsNum = os.endereco_instalacao ? '4' : '3'
+    sectionTitle(obsNum, 'Observações')
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(60, 60, 60)
+    const splitObs = doc.splitTextToSize(observacoes.value, pw - m * 2 - 4)
+    doc.text(splitObs, m + 2, y)
+    y += splitObs.length * 4.5 + 8
+  }
+
+  // ═══ FOOTER ═══════════════════════════════════════════════════════════════
+  // Barra de cor no rodapé
+  doc.setFillColor(rgb[0], rgb[1], rgb[2])
+  doc.rect(0, ph - 8, pw, 8, 'F')
+
+  doc.setFontSize(7)
+  doc.setTextColor(255, 255, 255)
+  doc.setFont('helvetica', 'normal')
+  const dataGerado = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  doc.text(`Gerado em ${dataGerado}  •  ${nomeEmpresa}  •  SignPRO`, pw / 2, ph - 3, { align: 'center' })
+
+  // ─── Salvar ────────────────────────────────────────────────────────────────
+  doc.save(`OS-${os.numero_os}.pdf`)
 }
 </script>
 

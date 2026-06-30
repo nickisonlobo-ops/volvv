@@ -46,7 +46,7 @@
                 <!-- Section 1: Dados gerais -->
                 <section>
                   <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-4">
-                    <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">1</span>
+                    <span class="w-6 h-6 rounded-full text-orange-500 flex items-center justify-center text-xs font-bold border border-orange-500/30">1</span>
                     Dados gerais
                   </h3>
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -58,7 +58,7 @@
                           v-model="clienteSearch"
                           type="text"
                           placeholder="Buscar por nome..."
-                          class="w-full rounded-xl border px-4 py-2.5 text-sm text-theme-card-text bg-primary-5 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
+                          class="w-full rounded-xl border px-4 py-2.5 text-sm text-theme-card-text bg-transparent placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
                           :class="validationErrors.cliente_id ? 'border-red-300' : 'border-primary-10'"
                           @focus="showClienteDropdown = true"
                           @input="showClienteDropdown = true"
@@ -78,7 +78,7 @@
                         v-model="form.nome_trabalho"
                         type="text"
                         placeholder="Ex: Fachada Loja Centro, Frota ABC..."
-                        class="w-full rounded-xl border border-primary-10 px-4 py-2.5 text-sm font-semibold text-theme-card-text bg-primary-5 placeholder:text-gray-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
+                        class="w-full rounded-xl border border-primary-10 px-4 py-2.5 text-sm font-semibold text-theme-card-text bg-transparent placeholder:text-gray-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
                       />
                     </div>
                   </div>
@@ -90,19 +90,19 @@
                         v-model="form.endereco_instalacao"
                         type="text"
                         placeholder="Endereço..."
-                        class="w-full rounded-lg border border-primary-10 px-3 py-2.5 text-sm text-theme-card-text bg-primary-5 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
+                        class="w-full rounded-lg border border-primary-10 px-3 py-2.5 text-sm text-theme-card-text bg-transparent placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
                       />
                     </div>
                     <!-- Data de entrega -->
                     <div class="flex flex-col gap-1.5">
                       <label class="text-xs font-semibold text-gray-600">Data de entrega</label>
-                      <input v-model="form.data_entrega" type="date" class="w-full rounded-lg border border-primary-10 px-3 py-2.5 text-sm text-theme-card-text bg-primary-5 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" />
+                      <input v-model="form.data_entrega" type="date" class="w-full rounded-lg border border-primary-10 px-3 py-2.5 text-sm text-theme-card-text bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
                     </div>
                     <!-- Validade -->
                     <div class="flex flex-col gap-1.5">
                       <label class="text-xs font-semibold text-gray-600">Validade</label>
                       <div class="relative">
-                        <input v-model.number="form.validade_dias" type="number" min="1" max="365" placeholder="30" class="w-full rounded-lg border border-primary-10 px-3 py-2.5 text-sm text-theme-card-text bg-primary-5 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" :class="validationErrors.validade_dias ? 'border-red-300' : ''" />
+                        <input v-model.number="form.validade_dias" type="number" min="1" max="365" placeholder="30" class="w-full rounded-lg border border-primary-10 px-3 py-2.5 text-sm text-theme-card-text bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" :class="validationErrors.validade_dias ? 'border-red-300' : ''" />
                         <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-gray-400">dias</span>
                       </div>
                     </div>
@@ -111,17 +111,18 @@
                       <label class="text-xs font-semibold text-gray-600">Mão de obra</label>
                       <div class="relative">
                         <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">{{ locale.simboloMoeda }}</span>
-                        <input v-model.number="form.valor_mao_obra" type="number" step="0.01" min="0" placeholder="0" class="w-full rounded-lg border border-primary-10 pl-7 pr-2 py-2.5 text-sm text-theme-card-text bg-primary-5 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" />
+                        <input v-model.number="form.valor_mao_obra" type="number" step="0.01" min="0" placeholder="0" class="w-full rounded-lg border border-primary-10 pl-7 pr-2 py-2.5 text-sm text-theme-card-text bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
                       </div>
                     </div>
                   </div>
                 </section>
 
                 <!-- Section 2: Itens do orçamento -->
+                <div class="h-px bg-primary-10 my-6"></div>
                 <section>
                   <div class="flex items-center justify-between mb-4">
                     <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text">
-                      <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">2</span>
+                      <span class="w-6 h-6 rounded-full text-orange-500 flex items-center justify-center text-xs font-bold border border-orange-500/30">2</span>
                       Itens do orçamento
                       <span class="text-[10px] text-gray-400 font-normal">({{ form.itens.length }})</span>
                     </h3>
@@ -151,9 +152,10 @@
                 </section>
 
                 <!-- Section 3: Desconto -->
+                <div class="h-px bg-primary-10 my-6"></div>
                 <section>
                   <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-4">
-                    <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">3</span>
+                    <span class="w-6 h-6 rounded-full text-orange-500 flex items-center justify-center text-xs font-bold border border-orange-500/30">3</span>
                     Desconto
                   </h3>
                   <div class="flex items-center gap-2">
@@ -161,7 +163,7 @@
                       <button type="button" class="px-3 py-1.5 text-[11px] font-bold transition-all" :class="descontoTipo === 'percentual' ? 'bg-gray-900 text-white' : 'bg-transparent text-gray-500'" @click="descontoTipo = 'percentual'">%</button>
                       <button type="button" class="px-3 py-1.5 text-[11px] font-bold transition-all" :class="descontoTipo === 'valor' ? 'bg-gray-900 text-white' : 'bg-transparent text-gray-500'" @click="descontoTipo = 'valor'">{{ locale.simboloMoeda }}</button>
                     </div>
-                    <input v-model.number="descontoManualInput" type="number" step="0.01" min="0" :max="descontoTipo === 'percentual' ? 99.99 : 999999" placeholder="0" class="flex-1 rounded-lg border border-primary-10 px-3 py-2 text-sm text-theme-card-text bg-primary-5 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" />
+                    <input v-model.number="descontoManualInput" type="number" step="0.01" min="0" :max="descontoTipo === 'percentual' ? 99.99 : 999999" placeholder="0" class="flex-1 rounded-lg border border-primary-10 px-3 py-2 text-sm text-theme-card-text bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
                   </div>
                 </section>
                 </fieldset>
@@ -196,13 +198,13 @@
                       </template>
                     </select>
                     <div class="grid grid-cols-2 gap-2">
-                      <button type="button" class="py-2.5 rounded-xl text-xs font-bold text-green-700 bg-green-50 border border-green-200 disabled:opacity-50" :disabled="!formaPagamento" @click="aprovarOrcamento">✓ Aprovar</button>
-                      <button type="button" class="py-2.5 rounded-xl text-xs font-bold text-red-700 bg-red-50 border border-red-200" @click="reprovarOrcamento">✗ Reprovar</button>
+                      <button type="button" class="py-2.5 rounded-xl text-xs font-bold text-white bg-green-600 border border-green-700 disabled:opacity-50" :disabled="!formaPagamento" @click="aprovarOrcamento">✓ Aprovar</button>
+                      <button type="button" class="py-2.5 rounded-xl text-xs font-bold text-white bg-red-600 border border-red-700" @click="reprovarOrcamento">✗ Reprovar</button>
                     </div>
                   </template>
 
                   <!-- Status -->
-                  <div v-if="props.orcamentoParaEditar?.status === 'aprovado' && !orcamentoBloqueado" class="flex items-center justify-between py-2.5 px-3 rounded-xl bg-green-50 border border-green-200">
+                  <div v-if="props.orcamentoParaEditar?.status === 'aprovado' && !orcamentoBloqueado" class="flex items-center justify-between py-2.5 px-3 rounded-xl bg-green-600/10 border border-green-600/30">
                     <span class="text-xs font-bold text-green-700">✓ Aprovado</span>
                     <button type="button" class="text-[10px] font-bold text-orange-600 underline" @click="reverterAprovacao">Reverter</button>
                   </div>
@@ -214,13 +216,13 @@
                   <button
                     v-if="!orcamentoBloqueado && locale.pais === 'PT' && props.orcamentoParaEditar?.status === 'aprovado' && !faturaEmitida"
                     type="button"
-                    class="w-full py-3 rounded-xl text-sm font-bold text-violet-700 bg-violet-50 border border-violet-200"
+                    class="w-full py-3 rounded-xl text-sm font-bold text-[var(--color-btn-text,#fff)] bg-[var(--color-btn,#ea580c)] border border-[var(--color-btn,#ea580c)]"
                     :disabled="emitindoFatura"
                     @click="emitirFatura"
                   >{{ emitindoFatura ? 'Emitindo...' : '📄 Emitir Fatura' }}</button>
 
                   <!-- Fatura emitida -->
-                  <div v-if="faturaEmitida" class="py-2.5 px-3 rounded-xl bg-green-50 border border-green-200 text-center text-xs font-bold text-green-700">
+                  <div v-if="faturaEmitida" class="py-2.5 px-3 rounded-xl bg-green-600/10 border border-green-600/30 text-center text-xs font-bold text-green-700">
                     ✓ Fatura emitida <a v-if="faturaPdfUrl" :href="faturaPdfUrl" target="_blank" class="ml-1 underline">Ver PDF</a>
                   </div>
 
@@ -230,14 +232,14 @@
                   </div>
 
                   <!-- Feedback -->
-                  <p v-if="actionFeedback" class="text-xs font-medium text-center py-2 rounded-lg" :class="actionFeedback.type === 'success' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'">{{ actionFeedback.msg }}</p>
+                  <p v-if="actionFeedback" class="text-xs font-medium text-center py-2 rounded-lg" :class="actionFeedback.type === 'success' ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10'">{{ actionFeedback.msg }}</p>
                 </section>
 
               </form>
             </div>
 
             <!-- Right: sticky summary panel (hidden on mobile, shown sm+) -->
-            <div class="hidden sm:block w-[320px] border-l border-primary-10 bg-primary-5 p-5 overflow-y-auto">
+            <div class="hidden sm:block w-[320px] border-l border-primary-10 p-5 overflow-y-auto">
               <div class="sticky top-0 space-y-5">
                 <!-- Resumo do orçamento card -->
                 <div class="bg-theme-card rounded-xl border border-primary-10 p-5 space-y-4">
@@ -256,7 +258,7 @@
                     <p class="text-3xl font-bold text-theme-card-text">{{ formatCurrency(locale.pais === 'PT' ? valorTotalFinal * 1.23 : valorTotalFinal) }}</p>
                   </div>
                   <!-- Validade info -->
-                  <div class="flex items-center gap-2 text-xs text-orange-600 bg-orange-50 rounded-lg px-3 py-2 border border-orange-100">
+                  <div class="flex items-center gap-2 text-xs text-primary rounded-lg px-3 py-2 border border-primary-20">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>Este orçamento é válido por <b>{{ form.validade_dias ?? 30 }} dias</b></span>
                   </div>
@@ -274,21 +276,21 @@
                   <!-- Ações extras (só em modo edição) -->
                   <template v-if="isEditMode">
                     <!-- Copiar Link -->
-                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border transition-colors" :class="linkCopiado ? 'border-green-200 bg-green-50 text-green-700' : 'border-primary-10 text-gray-600 hover:bg-primary-5'" @click="copiarLinkAprovacao">
+                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border transition-colors" :class="linkCopiado ? 'border-green-600 bg-green-600 text-white' : 'border-primary-border text-primary hover:bg-primary-5'" @click="copiarLinkAprovacao">
                       <svg v-if="!linkCopiado" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-2.06a4.5 4.5 0 00-1.242-7.244l-4.5-4.5a4.5 4.5 0 00-6.364 6.364L4.34 8.374"/></svg>
                       <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                       {{ linkCopiado ? 'Link copiado!' : 'Copiar link de aprovação' }}
                     </button>
 
                     <!-- Gerar PDF -->
-                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border border-primary-10 text-gray-600 hover:bg-primary-5 transition-colors disabled:opacity-50" :disabled="gerandoPdf" @click="gerarPdf">
+                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border border-primary-border text-primary hover:bg-primary-5 transition-colors disabled:opacity-50" :disabled="gerandoPdf" @click="gerarPdf">
                       <span v-if="gerandoPdf" class="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"/>
                       <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                       {{ gerandoPdf ? 'Gerando...' : 'Gerar PDF' }}
                     </button>
 
                     <!-- Enviar orçamento (WhatsApp) -->
-                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border border-primary-10 text-gray-600 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors" @click="enviarOrcamento">
+                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border border-primary-border text-primary hover:bg-primary-5 transition-colors" @click="enviarOrcamento">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
                       Enviar orçamento
                     </button>
@@ -323,11 +325,11 @@
                         </div>
                       </div>
                       <div class="grid grid-cols-2 gap-2">
-                        <button type="button" class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 transition-colors disabled:opacity-50" :disabled="!formaPagamento" @click="aprovarOrcamento">
+                        <button type="button" class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-white bg-green-600 border border-green-700 hover:bg-green-700 transition-colors disabled:opacity-50" :disabled="!formaPagamento" @click="aprovarOrcamento">
                           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                           Aprovar
                         </button>
-                        <button type="button" class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-colors" @click="reprovarOrcamento">
+                        <button type="button" class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-white bg-red-600 border border-red-700 hover:bg-red-700 transition-colors" @click="reprovarOrcamento">
                           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                           Reprovar
                         </button>
@@ -335,7 +337,7 @@
                     </template>
 
                     <!-- Status badge (quando já decidido) -->
-                    <div v-if="props.orcamentoParaEditar?.status === 'aprovado'" class="flex items-center justify-between py-2.5 px-3 rounded-xl bg-green-50 border border-green-200">
+                    <div v-if="props.orcamentoParaEditar?.status === 'aprovado'" class="flex items-center justify-between py-2.5 px-3 rounded-xl bg-green-600/10 border border-green-600/30">
                       <span class="text-xs font-bold text-green-700">✓ Aprovado</span>
                       <button v-if="!orcamentoBloqueado" type="button" class="text-[10px] font-bold text-orange-600 hover:text-orange-700 underline" @click="reverterAprovacao">Reverter</button>
                     </div>
@@ -348,11 +350,11 @@
                       v-if="locale.pais === 'PT' && props.orcamentoParaEditar?.status === 'aprovado' && !faturaEmitida"
                       type="button"
                       class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold border transition-colors"
-                      :class="emitindoFatura ? 'border-orange-200 bg-orange-50 text-orange-600' : 'border-violet-200 text-violet-700 bg-violet-50 hover:bg-violet-100'"
+                      :class="emitindoFatura ? 'border-[var(--color-btn,#ea580c)] bg-[var(--color-btn,#ea580c)] text-[var(--color-btn-text,#fff)]' : 'border-[var(--color-btn,#ea580c)] text-[var(--color-btn-text,#fff)] bg-[var(--color-btn,#ea580c)] hover:opacity-90'"
                       :disabled="emitindoFatura"
                       @click="emitirFatura"
                     >
-                      <span v-if="emitindoFatura" class="w-4 h-4 border-2 border-violet-300 border-t-violet-700 rounded-full animate-spin"></span>
+                      <span v-if="emitindoFatura" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                       <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                       {{ emitindoFatura ? 'Emitindo...' : 'Emitir Fatura' }}
                     </button>
@@ -371,7 +373,7 @@
                   </button>
 
                   <!-- Toast feedback -->
-                  <p v-if="actionFeedback" class="text-xs font-medium text-center py-2 rounded-lg" :class="actionFeedback.type === 'success' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'">{{ actionFeedback.msg }}</p>
+                  <p v-if="actionFeedback" class="text-xs font-medium text-center py-2 rounded-lg" :class="actionFeedback.type === 'success' ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10'">{{ actionFeedback.msg }}</p>
                 </div>
               </div>
             </div>
@@ -425,7 +427,7 @@
           </div>
 
           <!-- Resumo -->
-          <div class="bg-primary-5 rounded-xl p-4 space-y-2">
+          <div class="bg-primary-10 rounded-xl p-4 space-y-2">
             <div class="flex justify-between text-xs">
               <span class="text-gray-500">Orçamento</span>
               <span class="font-bold text-theme-card-text">{{ props.orcamentoParaEditar?.numero_orcamento }}</span>

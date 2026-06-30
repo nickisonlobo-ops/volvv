@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="flex flex-col gap-2 w-full">
     <!-- Label -->
     <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">
@@ -21,10 +21,10 @@
     <!-- Estado: Arquivo selecionado (preview) -->
     <div
       v-else-if="previewUrl || modelValue || selectedFile"
-      class="relative rounded-xl border-2 border-gray-200 bg-white overflow-hidden"
+      class="relative rounded-xl border-2 border-primary-10 bg-theme-card overflow-hidden"
     >
       <!-- Preview de imagem -->
-      <div v-if="isImagePreview" class="flex items-center justify-center p-3 bg-gray-50">
+      <div v-if="isImagePreview" class="flex items-center justify-center p-3 bg-transparent">
         <img
           :src="previewUrl || modelValue!"
           :alt="label"
@@ -32,15 +32,15 @@
         />
       </div>
 
-      <!-- Preview de PDF (Ã­cone) -->
-      <div v-else class="flex items-center justify-center gap-3 p-4 bg-gray-50">
+      <!-- Preview de PDF (ícone) -->
+      <div v-else class="flex items-center justify-center gap-3 p-4 bg-transparent">
         <svg class="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 24 24">
           <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zm-2.5 10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5.67-1.5 1.5-1.5 1.5.67 1.5 1.5zm5 0c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5.67-1.5 1.5-1.5 1.5.67 1.5 1.5z" />
         </svg>
         <span class="text-sm font-semibold text-gray-700">{{ selectedFileName || 'Arquivo PDF' }}</span>
       </div>
 
-      <!-- BotÃµes de aÃ§Ã£o: substituir / remover -->
+      <!-- Botões de ação: substituir / remover -->
       <div class="flex border-t border-gray-200">
         <button
           type="button"
@@ -82,7 +82,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
       <span class="text-sm font-semibold text-gray-500">Clique ou arraste para enviar</span>
-      <span class="text-[10px] text-gray-400">{{ acceptLabel }} â€¢ MÃ¡x. {{ maxSizeMb }} MB</span>
+      <span class="text-[10px] text-gray-400">{{ acceptLabel }} • Máx. {{ maxSizeMb }} MB</span>
     </div>
 
     <!-- Input file oculto -->
@@ -127,10 +127,10 @@ const emit = defineEmits<{
   (e: 'error', msg: string): void
 }>()
 
-// â”€â”€â”€ Composable â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Composable ──────────────────────────────────────────────────────────────
 const { validarArquivoUpload } = useOrcamentos()
 
-// â”€â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── State ───────────────────────────────────────────────────────────────────
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const selectedFile = ref<File | null>(null)
 const previewUrl = ref<string | null>(null)
@@ -141,7 +141,7 @@ const selectedFileName = ref<string | null>(null)
 /** Tracks the storage path of a file that was uploaded (staged) but not yet saved */
 const uploadedStagedPath = ref<string | null>(null)
 
-// â”€â”€â”€ Computed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Computed ────────────────────────────────────────────────────────────────
 const acceptedTypes = computed(() =>
   props.accept.split(',').map(t => t.trim())
 )
@@ -151,7 +151,7 @@ const isImagePreview = computed(() => {
     return selectedFile.value.type.startsWith('image/')
   }
   if (props.modelValue) {
-    // Determina pelo URL se Ã© imagem (nÃ£o Ã© PDF)
+    // Determina pelo URL se é imagem (não é PDF)
     return !props.modelValue.toLowerCase().endsWith('.pdf')
   }
   return false
@@ -167,7 +167,7 @@ const acceptLabel = computed(() => {
   return labels.join(', ')
 })
 
-// â”€â”€â”€ Methods â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Methods ─────────────────────────────────────────────────────────────────
 function triggerFileInput() {
   fileInputRef.value?.click()
 }
@@ -199,7 +199,7 @@ function processFile(file: File) {
   // Limpar erro anterior
   errorMessage.value = null
 
-  // ValidaÃ§Ã£o client-side
+  // Validação client-side
   const maxSizeBytes = props.maxSizeMb * 1024 * 1024
   const validacao = validarArquivoUpload(
     { type: file.type, size: file.size },
@@ -208,7 +208,7 @@ function processFile(file: File) {
   )
 
   if (!validacao.valido) {
-    const mensagem = validacao.erro || 'Arquivo invÃ¡lido'
+    const mensagem = validacao.erro || 'Arquivo inválido'
     errorMessage.value = mensagem
     emit('error', mensagem)
     return
@@ -226,13 +226,13 @@ function processFile(file: File) {
     }
     reader.readAsDataURL(file)
   } else {
-    // Para PDF, nÃ£o temos preview de imagem
+    // Para PDF, não temos preview de imagem
     previewUrl.value = null
   }
 
   emit('file-selected', file)
 
-  // Upload imediato (staged) â€” faz upload ao selecionar para ter a URL disponÃ­vel no save
+  // Upload imediato (staged) — faz upload ao selecionar para ter a URL disponível no save
   uploadImediato(file)
 }
 
@@ -258,7 +258,7 @@ async function uploadImediato(file: File) {
       return
     }
 
-    // Obter URL pÃºblica
+    // Obter URL pública
     const { data: urlData } = supabase.storage
       .from('orcamentos')
       .getPublicUrl(data.path)
@@ -297,7 +297,7 @@ async function removeFile() {
   emit('file-removed')
 }
 
-/** Upload para Supabase Storage â€” chamado pelo componente pai no momento do save */
+/** Upload para Supabase Storage — chamado pelo componente pai no momento do save */
 async function upload(): Promise<string | null> {
   if (!selectedFile.value) return props.modelValue
 
@@ -326,7 +326,7 @@ async function upload(): Promise<string | null> {
       return null
     }
 
-    // Obter URL pÃºblica
+    // Obter URL pública
     const { data: urlData } = supabase.storage
       .from('orcamentos')
       .getPublicUrl(data.path)
@@ -346,7 +346,7 @@ async function upload(): Promise<string | null> {
   }
 }
 
-/** Verifica se hÃ¡ um arquivo selecionado para upload pendente */
+/** Verifica se há um arquivo selecionado para upload pendente */
 function hasPendingUpload(): boolean {
   return selectedFile.value !== null
 }
@@ -371,7 +371,7 @@ async function cleanup(): Promise<void> {
   errorMessage.value = null
 }
 
-// â”€â”€â”€ Expose â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Expose ──────────────────────────────────────────────────────────────────
 defineExpose({
   upload,
   hasPendingUpload,

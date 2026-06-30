@@ -104,7 +104,7 @@ const inputId = useId()
 const errorId = `${inputId}-error`
 
 const baseClasses =
-  'w-full rounded-lg border bg-theme-card px-3.5 text-sm placeholder:text-primary-400 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
+  'w-full rounded-lg border bg-transparent px-3.5 text-sm placeholder:text-primary-400 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
 
 const sizeClasses = computed(() =>
   props.size === 'lg' ? 'h-11' : 'h-10'

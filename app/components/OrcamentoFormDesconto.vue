@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-4">
     <!-- Card: Discriminação de valores com desconto -->
-    <div class="bg-gray-50 rounded-xl border border-gray-200 p-4">
+    <div class="bg-transparent rounded-xl border border-primary-10 p-4">
       <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] mb-3">Descontos</h4>
 
       <!-- Subtotal (material + mão de obra) -->
@@ -44,8 +44,8 @@
           type="button"
           class="flex-1 py-2.5 text-sm font-bold transition-colors duration-200 focus:outline-none"
           :class="descontoTipo === 'percentual'
-            ? 'bg-indigo-600 text-white shadow-sm'
-            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'"
+            ? 'bg-primary text-primary-text shadow-sm'
+            : 'bg-transparent text-gray-500 hover:bg-primary-5'"
           @click="setDescontoTipo('percentual')"
         >
           Percentual (%)
@@ -54,8 +54,8 @@
           type="button"
           class="flex-1 py-2.5 text-sm font-bold transition-colors duration-200 focus:outline-none"
           :class="descontoTipo === 'fixo'
-            ? 'bg-indigo-600 text-white shadow-sm'
-            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'"
+            ? 'bg-primary text-primary-text shadow-sm'
+            : 'bg-transparent text-gray-500 hover:bg-primary-5'"
           @click="setDescontoTipo('fixo')"
         >
           Valor Fixo ({{ locale.simboloMoeda }})
@@ -72,8 +72,8 @@
             min="0"
             max="100"
             placeholder="0"
-            class="w-full rounded-xl border-2 px-4 py-3 pr-10 text-sm font-semibold text-gray-800 bg-gray-50 focus:outline-none focus:ring-0 transition-all"
-            :class="erroValorFinal ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-indigo-400'"
+            class="w-full rounded-xl border-2 px-4 py-3 pr-10 text-sm font-semibold text-theme-card-text bg-transparent focus:outline-none focus:ring-0 transition-all"
+            :class="erroValorFinal ? 'border-red-400 bg-red-50' : 'border-primary-10 focus:border-primary'"
             @input="onDescontoPercentualInput"
           />
           <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">%</span>
@@ -90,8 +90,8 @@
             step="0.01"
             min="0"
             placeholder="0,00"
-            class="w-full rounded-xl border-2 pl-10 pr-4 py-3 text-sm font-semibold text-gray-800 bg-gray-50 focus:outline-none focus:ring-0 transition-all"
-            :class="erroValorFinal ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-indigo-400'"
+            class="w-full rounded-xl border-2 pl-10 pr-4 py-3 text-sm font-semibold text-theme-card-text bg-transparent focus:outline-none focus:ring-0 transition-all"
+            :class="erroValorFinal ? 'border-red-400 bg-red-50' : 'border-primary-10 focus:border-primary'"
             @input="onDescontoValorInput"
           />
         </div>
