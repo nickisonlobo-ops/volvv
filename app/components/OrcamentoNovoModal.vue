@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <Teleport to="body">
     <transition name="modal">
       <div v-if="show" class="fixed inset-0 z-50 flex flex-col" @click.self="fechar">
@@ -6,20 +6,20 @@
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="fechar" />
 
         <!-- Modal container -->
-        <div class="relative z-10 flex flex-col w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:mx-auto sm:my-auto sm:rounded-2xl bg-white overflow-hidden shadow-2xl">
+        <div class="relative z-10 flex flex-col w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:mx-auto sm:my-auto sm:rounded-2xl bg-theme-card overflow-hidden shadow-2xl" style="color: var(--color-card-texto)">
 
           <!-- Clean white header -->
-          <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white">
+          <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-primary-10 bg-theme-card">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-xl bg-primary-5 flex items-center justify-center">
                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
               </div>
               <div>
-                <h2 class="text-lg font-bold text-gray-900">{{ modalTitle }}</h2>
+                <h2 class="text-lg font-bold text-theme-card-text">{{ modalTitle }}</h2>
                 <p class="text-xs text-gray-400">{{ isEditMode ? `${orcamentoParaEditar?.numero_orcamento} · ${clienteSelecionadoNome || 'Sem cliente'}` : 'Novo orçamento multi-itens' }}</p>
               </div>
             </div>
-            <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors" @click="fechar">
+            <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-primary-5 text-gray-400 hover:text-gray-600 transition-colors" @click="fechar">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
@@ -45,7 +45,7 @@
                 <fieldset :disabled="orcamentoBloqueado" :class="{ 'opacity-60 pointer-events-none': orcamentoBloqueado }">
                 <!-- Section 1: Dados gerais -->
                 <section>
-                  <h3 class="flex items-center gap-2 text-sm font-bold text-gray-800 mb-4">
+                  <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-4">
                     <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">1</span>
                     Dados gerais
                   </h3>
@@ -58,16 +58,16 @@
                           v-model="clienteSearch"
                           type="text"
                           placeholder="Buscar por nome..."
-                          class="w-full rounded-xl border px-4 py-2.5 text-sm text-gray-800 bg-gray-50/80 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
-                          :class="validationErrors.cliente_id ? 'border-red-300' : 'border-gray-200'"
+                          class="w-full rounded-xl border px-4 py-2.5 text-sm text-theme-card-text bg-primary-5 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
+                          :class="validationErrors.cliente_id ? 'border-red-300' : 'border-primary-10'"
                           @focus="showClienteDropdown = true"
                           @input="showClienteDropdown = true"
                         />
                         <div v-if="form.cliente_id" class="absolute right-3 top-1/2 -translate-y-1/2">
                           <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
                         </div>
-                        <div v-if="showClienteDropdown && clientesFiltrados.length > 0" class="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl max-h-44 overflow-y-auto">
-                          <button v-for="cli in clientesFiltrados" :key="cli.id" type="button" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors" @click="selecionarCliente(cli)">{{ cli.nome }}</button>
+                        <div v-if="showClienteDropdown && clientesFiltrados.length > 0" class="absolute z-20 mt-1 w-full bg-theme-card border border-primary-10 rounded-xl shadow-xl max-h-44 overflow-y-auto">
+                          <button v-for="cli in clientesFiltrados" :key="cli.id" type="button" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-5 hover:text-primary transition-colors" @click="selecionarCliente(cli)">{{ cli.nome }}</button>
                         </div>
                       </div>
                     </div>
@@ -78,7 +78,7 @@
                         v-model="form.nome_trabalho"
                         type="text"
                         placeholder="Ex: Fachada Loja Centro, Frota ABC..."
-                        class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-800 bg-gray-50/80 placeholder:text-gray-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
+                        class="w-full rounded-xl border border-primary-10 px-4 py-2.5 text-sm font-semibold text-theme-card-text bg-primary-5 placeholder:text-gray-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
                       />
                     </div>
                   </div>
@@ -90,19 +90,19 @@
                         v-model="form.endereco_instalacao"
                         type="text"
                         placeholder="Endereço..."
-                        class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 bg-gray-50/80 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
+                        class="w-full rounded-lg border border-primary-10 px-3 py-2.5 text-sm text-theme-card-text bg-primary-5 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all"
                       />
                     </div>
                     <!-- Data de entrega -->
                     <div class="flex flex-col gap-1.5">
                       <label class="text-xs font-semibold text-gray-600">Data de entrega</label>
-                      <input v-model="form.data_entrega" type="date" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" />
+                      <input v-model="form.data_entrega" type="date" class="w-full rounded-lg border border-primary-10 px-3 py-2.5 text-sm text-theme-card-text bg-primary-5 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" />
                     </div>
                     <!-- Validade -->
                     <div class="flex flex-col gap-1.5">
                       <label class="text-xs font-semibold text-gray-600">Validade</label>
                       <div class="relative">
-                        <input v-model.number="form.validade_dias" type="number" min="1" max="365" placeholder="30" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" :class="validationErrors.validade_dias ? 'border-red-300' : ''" />
+                        <input v-model.number="form.validade_dias" type="number" min="1" max="365" placeholder="30" class="w-full rounded-lg border border-primary-10 px-3 py-2.5 text-sm text-theme-card-text bg-primary-5 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" :class="validationErrors.validade_dias ? 'border-red-300' : ''" />
                         <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-gray-400">dias</span>
                       </div>
                     </div>
@@ -111,7 +111,7 @@
                       <label class="text-xs font-semibold text-gray-600">Mão de obra</label>
                       <div class="relative">
                         <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">{{ locale.simboloMoeda }}</span>
-                        <input v-model.number="form.valor_mao_obra" type="number" step="0.01" min="0" placeholder="0" class="w-full rounded-lg border border-gray-200 pl-7 pr-2 py-2.5 text-sm text-gray-800 bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" />
+                        <input v-model.number="form.valor_mao_obra" type="number" step="0.01" min="0" placeholder="0" class="w-full rounded-lg border border-primary-10 pl-7 pr-2 py-2.5 text-sm text-theme-card-text bg-primary-5 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" />
                       </div>
                     </div>
                   </div>
@@ -120,7 +120,7 @@
                 <!-- Section 2: Itens do orçamento -->
                 <section>
                   <div class="flex items-center justify-between mb-4">
-                    <h3 class="flex items-center gap-2 text-sm font-bold text-gray-800">
+                    <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text">
                       <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">2</span>
                       Itens do orçamento
                       <span class="text-[10px] text-gray-400 font-normal">({{ form.itens.length }})</span>
@@ -144,40 +144,40 @@
                     />
                   </div>
 
-                  <div v-if="form.itens.length === 0" class="flex flex-col items-center gap-2 py-8 border border-dashed border-gray-200 rounded-xl">
+                  <div v-if="form.itens.length === 0" class="flex flex-col items-center gap-2 py-8 border border-dashed border-primary-10 rounded-xl">
                     <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.25" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                    <p class="text-xs text-gray-400">Toque em <span class="font-bold text-gray-900">Adicionar item</span> para incluir itens</p>
+                    <p class="text-xs text-gray-400">Toque em <span class="font-bold text-theme-card-text">Adicionar item</span> para incluir itens</p>
                   </div>
                 </section>
 
                 <!-- Section 3: Desconto -->
                 <section>
-                  <h3 class="flex items-center gap-2 text-sm font-bold text-gray-800 mb-4">
+                  <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-4">
                     <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">3</span>
                     Desconto
                   </h3>
                   <div class="flex items-center gap-2">
-                    <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+                    <div class="flex rounded-lg border border-primary-10 overflow-hidden">
                       <button type="button" class="px-3 py-1.5 text-[11px] font-bold transition-all" :class="descontoTipo === 'percentual' ? 'bg-gray-900 text-white' : 'bg-transparent text-gray-500'" @click="descontoTipo = 'percentual'">%</button>
                       <button type="button" class="px-3 py-1.5 text-[11px] font-bold transition-all" :class="descontoTipo === 'valor' ? 'bg-gray-900 text-white' : 'bg-transparent text-gray-500'" @click="descontoTipo = 'valor'">{{ locale.simboloMoeda }}</button>
                     </div>
-                    <input v-model.number="descontoManualInput" type="number" step="0.01" min="0" :max="descontoTipo === 'percentual' ? 99.99 : 999999" placeholder="0" class="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" />
+                    <input v-model.number="descontoManualInput" type="number" step="0.01" min="0" :max="descontoTipo === 'percentual' ? 99.99 : 999999" placeholder="0" class="flex-1 rounded-lg border border-primary-10 px-3 py-2 text-sm text-theme-card-text bg-primary-5 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all" />
                   </div>
                 </section>
                 </fieldset>
 
                 <!-- Ações mobile (aparecem no final do scroll, só mobile) -->
-                <section v-if="isEditMode" class="sm:hidden space-y-3 pt-4 border-t border-gray-100">
+                <section v-if="isEditMode" class="sm:hidden space-y-3 pt-4 border-t border-primary-10">
                   <!-- Ações rápidas -->
                   <div v-if="!orcamentoBloqueado" class="flex flex-wrap gap-2">
-                    <button type="button" class="flex-1 min-w-[80px] py-2.5 rounded-xl text-[11px] font-bold border border-gray-200 text-gray-600 text-center" @click="copiarLinkAprovacao">🔗 Link</button>
-                    <button type="button" class="flex-1 min-w-[80px] py-2.5 rounded-xl text-[11px] font-bold border border-gray-200 text-gray-600 text-center" @click="enviarOrcamento">📤 Enviar</button>
-                    <button type="button" class="flex-1 min-w-[80px] py-2.5 rounded-xl text-[11px] font-bold border border-gray-200 text-gray-600 text-center" :disabled="gerandoPdf" @click="gerarPdf">📄 PDF</button>
+                    <button type="button" class="flex-1 min-w-[80px] py-2.5 rounded-xl text-[11px] font-bold border border-primary-10 text-gray-600 text-center" @click="copiarLinkAprovacao">🔗 Link</button>
+                    <button type="button" class="flex-1 min-w-[80px] py-2.5 rounded-xl text-[11px] font-bold border border-primary-10 text-gray-600 text-center" @click="enviarOrcamento">📤 Enviar</button>
+                    <button type="button" class="flex-1 min-w-[80px] py-2.5 rounded-xl text-[11px] font-bold border border-primary-10 text-gray-600 text-center" :disabled="gerandoPdf" @click="gerarPdf">📄 PDF</button>
                   </div>
 
                   <!-- Aprovar/Reprovar -->
                   <template v-if="!orcamentoBloqueado && props.orcamentoParaEditar?.status !== 'aprovado' && props.orcamentoParaEditar?.status !== 'rejeitado'">
-                    <select v-model="formaPagamento" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-xs bg-white">
+                    <select v-model="formaPagamento" class="w-full rounded-lg border border-primary-10 px-3 py-2.5 text-xs bg-theme-card">
                       <option value="">Forma de pagamento...</option>
                       <template v-if="locale.pais === 'PT'">
                         <option value="mbway">MB Way</option>
@@ -237,23 +237,23 @@
             </div>
 
             <!-- Right: sticky summary panel (hidden on mobile, shown sm+) -->
-            <div class="hidden sm:block w-[320px] border-l border-gray-100 bg-gray-50/50 p-5 overflow-y-auto">
+            <div class="hidden sm:block w-[320px] border-l border-primary-10 bg-primary-5 p-5 overflow-y-auto">
               <div class="sticky top-0 space-y-5">
                 <!-- Resumo do orçamento card -->
-                <div class="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+                <div class="bg-theme-card rounded-xl border border-primary-10 p-5 space-y-4">
                   <h4 class="flex items-center gap-2 text-sm font-bold text-gray-700">
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                     Resumo do orçamento
                   </h4>
                   <div class="space-y-2.5 text-sm">
-                    <div class="flex justify-between"><span class="text-gray-500">Subtotal dos itens</span><span class="font-medium text-gray-800">{{ formatCurrency(subtotalItens) }}</span></div>
-                    <div class="flex justify-between"><span class="text-gray-500">Desconto</span><span class="font-medium text-gray-800">{{ formatCurrency(descontoTotal) }}</span></div>
-                    <div class="flex justify-between"><span class="text-gray-500">Mão de obra</span><span class="font-medium text-gray-800">{{ formatCurrency(form.valor_mao_obra ?? 0) }}</span></div>
-                    <div v-if="locale.pais === 'PT'" class="flex justify-between"><span class="text-gray-500">IVA (23%)</span><span class="font-medium text-gray-800">{{ formatCurrency(valorTotalFinal * 0.23) }}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Subtotal dos itens</span><span class="font-medium text-theme-card-text">{{ formatCurrency(subtotalItens) }}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Desconto</span><span class="font-medium text-theme-card-text">{{ formatCurrency(descontoTotal) }}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Mão de obra</span><span class="font-medium text-theme-card-text">{{ formatCurrency(form.valor_mao_obra ?? 0) }}</span></div>
+                    <div v-if="locale.pais === 'PT'" class="flex justify-between"><span class="text-gray-500">IVA (23%)</span><span class="font-medium text-theme-card-text">{{ formatCurrency(valorTotalFinal * 0.23) }}</span></div>
                   </div>
-                  <div class="border-t border-gray-100 pt-3">
+                  <div class="border-t border-primary-10 pt-3">
                     <p class="text-xs text-gray-400 mb-1">{{ locale.pais === 'PT' ? 'Total c/ IVA' : 'Total final' }}</p>
-                    <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(locale.pais === 'PT' ? valorTotalFinal * 1.23 : valorTotalFinal) }}</p>
+                    <p class="text-3xl font-bold text-theme-card-text">{{ formatCurrency(locale.pais === 'PT' ? valorTotalFinal * 1.23 : valorTotalFinal) }}</p>
                   </div>
                   <!-- Validade info -->
                   <div class="flex items-center gap-2 text-xs text-orange-600 bg-orange-50 rounded-lg px-3 py-2 border border-orange-100">
@@ -274,21 +274,21 @@
                   <!-- Ações extras (só em modo edição) -->
                   <template v-if="isEditMode">
                     <!-- Copiar Link -->
-                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border transition-colors" :class="linkCopiado ? 'border-green-200 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'" @click="copiarLinkAprovacao">
+                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border transition-colors" :class="linkCopiado ? 'border-green-200 bg-green-50 text-green-700' : 'border-primary-10 text-gray-600 hover:bg-primary-5'" @click="copiarLinkAprovacao">
                       <svg v-if="!linkCopiado" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-2.06a4.5 4.5 0 00-1.242-7.244l-4.5-4.5a4.5 4.5 0 00-6.364 6.364L4.34 8.374"/></svg>
                       <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                       {{ linkCopiado ? 'Link copiado!' : 'Copiar link de aprovação' }}
                     </button>
 
                     <!-- Gerar PDF -->
-                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50" :disabled="gerandoPdf" @click="gerarPdf">
+                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border border-primary-10 text-gray-600 hover:bg-primary-5 transition-colors disabled:opacity-50" :disabled="gerandoPdf" @click="gerarPdf">
                       <span v-if="gerandoPdf" class="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"/>
                       <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                       {{ gerandoPdf ? 'Gerando...' : 'Gerar PDF' }}
                     </button>
 
                     <!-- Enviar orçamento (WhatsApp) -->
-                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors" @click="enviarOrcamento">
+                    <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium border border-primary-10 text-gray-600 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors" @click="enviarOrcamento">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
                       Enviar orçamento
                     </button>
@@ -296,9 +296,9 @@
                     <!-- Aprovar / Reprovar -->
                     <template v-if="!orcamentoBloqueado && props.orcamentoParaEditar?.status !== 'aprovado' && props.orcamentoParaEditar?.status !== 'rejeitado'">
                       <!-- Forma de pagamento (necessário para aprovar) -->
-                      <div class="space-y-2 pt-2 border-t border-gray-100">
+                      <div class="space-y-2 pt-2 border-t border-primary-10">
                         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pagamento</label>
-                        <select v-model="formaPagamento" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                        <select v-model="formaPagamento" class="w-full rounded-lg border border-primary-10 px-3 py-2 text-xs bg-theme-card focus:outline-none focus:ring-2 focus:ring-orange-400">
                           <option value="">Selecione...</option>
                           <template v-if="locale.pais === 'PT'">
                             <option value="mbway">MB Way</option>
@@ -318,7 +318,7 @@
                           </template>
                         </select>
                         <div v-if="formaPagamento" class="flex items-center gap-2">
-                          <input v-model.number="parcelasQtd" type="number" min="1" max="24" class="w-16 rounded-lg border border-gray-200 px-2 py-1.5 text-xs text-center" />
+                          <input v-model.number="parcelasQtd" type="number" min="1" max="24" class="w-16 rounded-lg border border-primary-10 px-2 py-1.5 text-xs text-center" />
                           <span class="text-[10px] text-gray-400">parcela(s)</span>
                         </div>
                       </div>
@@ -366,7 +366,7 @@
                   </template>
 
                   <!-- Cancelar -->
-                  <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-gray-600 border border-gray-200 hover:bg-gray-100 transition-colors" @click="fechar">
+                  <button type="button" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-gray-600 border border-primary-10 hover:bg-primary-5 transition-colors" @click="fechar">
                     Cancelar
                   </button>
 
@@ -378,7 +378,7 @@
           </div>
 
           <!-- Mobile footer FIXO (só Cancelar + Salvar) -->
-          <div class="sm:hidden flex-shrink-0 border-t border-gray-100 bg-white px-4 py-3 flex items-center gap-3">
+          <div class="sm:hidden flex-shrink-0 border-t border-primary-10 bg-theme-card px-4 py-3 flex items-center gap-3">
             <button type="button" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600" @click="fechar">{{ orcamentoBloqueado ? 'Fechar' : 'Cancelar' }}</button>
             <button v-if="!orcamentoBloqueado" type="submit" form="orcamento-form" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold text-white bg-gray-900" :disabled="salvando">
               <span v-if="salvando" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
@@ -395,7 +395,7 @@
     <transition name="modal">
       <div v-if="showConfirmFatura" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" @click.self="showConfirmFatura = false">
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-        <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5">
+        <div class="relative bg-theme-card rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5">
           <!-- Ícone -->
           <div class="flex justify-center">
             <div class="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center">
@@ -407,7 +407,7 @@
 
           <!-- Título -->
           <div class="text-center">
-            <h3 class="text-lg font-bold text-gray-900">Emitir Fatura Certificada</h3>
+            <h3 class="text-lg font-bold text-theme-card-text">Emitir Fatura Certificada</h3>
             <p class="text-sm text-gray-500 mt-2 leading-relaxed">
               Tem a certeza que deseja emitir a fatura para este orçamento?
             </p>
@@ -425,20 +425,20 @@
           </div>
 
           <!-- Resumo -->
-          <div class="bg-gray-50 rounded-xl p-4 space-y-2">
+          <div class="bg-primary-5 rounded-xl p-4 space-y-2">
             <div class="flex justify-between text-xs">
               <span class="text-gray-500">Orçamento</span>
-              <span class="font-bold text-gray-800">{{ props.orcamentoParaEditar?.numero_orcamento }}</span>
+              <span class="font-bold text-theme-card-text">{{ props.orcamentoParaEditar?.numero_orcamento }}</span>
             </div>
             <div class="flex justify-between text-xs">
               <span class="text-gray-500">Valor c/ IVA</span>
-              <span class="font-bold text-gray-800">{{ formatCurrency(valorComIva(valorTotalFinal)) }}</span>
+              <span class="font-bold text-theme-card-text">{{ formatCurrency(valorComIva(valorTotalFinal)) }}</span>
             </div>
           </div>
 
           <!-- Botões -->
           <div class="flex gap-3">
-            <button type="button" class="flex-1 py-3 rounded-xl text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors" @click="showConfirmFatura = false">
+            <button type="button" class="flex-1 py-3 rounded-xl text-sm font-bold border border-primary-10 text-gray-600 hover:bg-primary-5 transition-colors" @click="showConfirmFatura = false">
               Cancelar
             </button>
             <button type="button" class="flex-1 py-3 rounded-xl text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 transition-colors" @click="confirmarEmissaoFatura">

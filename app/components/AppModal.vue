@@ -31,7 +31,7 @@
         >
           <div
             v-if="show"
-            class="relative z-10 flex flex-col w-full rounded-modal bg-white shadow-modal overflow-hidden max-h-[90vh]"
+            class="relative z-10 flex flex-col w-full rounded-modal bg-theme-card shadow-modal overflow-hidden max-h-[90vh]"
             :class="sizeClass"
             role="dialog"
             aria-modal="true"
@@ -39,13 +39,14 @@
           >
             <!-- Header -->
             <div class="flex-shrink-0 flex items-center justify-between px-6 py-5 border-b border-primary-border">
-              <h2 :id="titleId" class="text-h3 text-gray-900">
+              <h2 :id="titleId" class="text-h3" style="color: var(--color-card-texto)">
                 {{ title }}
               </h2>
               <button
                 v-if="closable"
                 type="button"
-                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors duration-150"
+                class="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-150 hover:bg-primary-5"
+                style="color: var(--color-card-texto); opacity: 0.6"
                 aria-label="Fechar"
                 @click="onClose"
               >

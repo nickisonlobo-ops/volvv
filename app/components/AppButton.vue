@@ -58,7 +58,7 @@ const variantClasses: Record<string, string> = {
   danger:    'bg-error text-white hover:opacity-90 focus-visible:ring-error shadow-sm',
   outline:   'border border-primary-20 text-primary bg-transparent hover:bg-primary-5 focus-visible:ring-primary',
   ghost:     'text-primary bg-transparent hover:bg-primary-5 focus-visible:ring-primary',
-  white:     'bg-white text-primary hover:bg-primary-50 focus-visible:ring-primary shadow-sm border border-primary-10',
+  white:     'bg-theme-card text-primary hover:bg-primary-5 focus-visible:ring-primary shadow-sm border border-primary-10',
 }
 
 const sizeClasses: Record<string, string> = {
