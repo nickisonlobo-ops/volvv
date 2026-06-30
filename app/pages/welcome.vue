@@ -9,14 +9,7 @@
     <!-- Content -->
     <div class="relative z-10 flex flex-col items-center gap-10 max-w-lg w-full">
       <!-- Logo -->
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-violet-500/25">
-          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-          </svg>
-        </div>
-        <span class="text-2xl font-bold tracking-tight">Sign<span class="text-violet-400">PRO</span></span>
-      </div>
+      <img src="/logo-signpro.png" alt="SignPRO" class="h-12 sm:h-14 w-auto" />
 
       <!-- Title -->
       <div class="text-center">

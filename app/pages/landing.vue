@@ -8,13 +8,8 @@
     >
       <div class="max-w-7xl mx-auto px-6 sm:px-10 flex items-center justify-between h-16 sm:h-20">
         <!-- Logo -->
-        <NuxtLink to="/" class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-            </svg>
-          </div>
-          <span class="text-lg font-bold tracking-tight">Sign<span class="text-violet-400">PRO</span></span>
+        <NuxtLink to="/welcome" class="flex items-center">
+          <img src="/logo-signpro.png" alt="SignPRO" class="h-8 sm:h-10 w-auto" />
         </NuxtLink>
 
         <!-- Desktop links -->

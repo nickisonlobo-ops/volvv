@@ -21,16 +21,9 @@
       <div v-if="showIntro" class="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-16 text-center">
 
         <!-- Logo -->
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-2xl shadow-violet-500/30 mb-8 intro-badge">
-          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-          </svg>
-        </div>
-
-        <!-- Brand -->
-        <h2 class="text-2xl font-bold tracking-tight mb-2 intro-icon">
-          Sign<span class="text-violet-400">PRO</span>
-        </h2>
+        <NuxtLink to="/welcome" class="mb-8 intro-badge">
+          <img src="/logo-signpro.png" alt="SignPRO" class="h-10 sm:h-12 w-auto" />
+        </NuxtLink>
 
         <!-- Headline -->
         <h1 class="font-bold tracking-tight leading-[1.08] mb-6 intro-headline">
