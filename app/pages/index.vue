@@ -504,16 +504,23 @@
         </div>
       </Transition>
 
-      <!-- 2. FINANCIAL METRIC CARDS with sparklines -->
-      <div v-if="loading" class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        <div v-for="i in 4" :key="i" class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm animate-pulse">
-          <div class="h-4 w-24 bg-primary-10 rounded mb-3" />
-          <div class="h-7 w-32 bg-primary-10 rounded mb-2" />
-          <div class="h-3 w-20 bg-primary-5 rounded" />
+      <!-- ═══════════════════════════════════════════════════════ SEÇÃO: FINANCEIRO -->
+      <div class="mb-8">
+        <div class="flex items-center gap-2 px-1 mb-4">
+          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Financeiro</span>
+          <div class="flex-1 h-px bg-primary-10" />
         </div>
-      </div>
 
-      <div v-else class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <!-- 2. FINANCIAL METRIC CARDS with sparklines -->
+        <div v-if="loading" class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-4">
+          <div v-for="i in 4" :key="i" class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm animate-pulse">
+            <div class="h-4 w-24 bg-primary-10 rounded mb-3" />
+            <div class="h-7 w-32 bg-primary-10 rounded mb-2" />
+            <div class="h-3 w-20 bg-primary-5 rounded" />
+          </div>
+        </div>
+
+        <div v-else class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-4">
         <!-- Faturamento -->
         <div class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm">
           <div class="flex items-center gap-2.5 mb-2">
@@ -584,7 +591,7 @@
       </div>
 
       <!-- 2.5 PREVISÃO FINANCEIRA (por vencimento, apenas não pagas) -->
-      <div v-if="!loading" class="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 mb-6">
+      <div v-if="!loading" class="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
         <!-- A Receber -->
         <div class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm">
           <div class="flex items-center gap-2.5 mb-2">
@@ -621,9 +628,12 @@
           <p class="text-[11px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.75">receber - pagar (não pagas)</p>
         </div>
       </div>
+      </div>
 
+      <!-- ═══════════════════════════════════════════════════════ SEÇÃO: ORÇAMENTOS -->
+      <div class="mb-8">
       <!-- 3. PIPELINE DE ORÇAMENTOS — Horizontal inline section -->
-      <div class="mb-5">
+      <div class="mb-0">
         <div class="flex items-center gap-2 px-1 mb-3">
           <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Pipeline de Orçamentos</span>
           <div class="flex-1 h-px bg-primary-10" />
@@ -688,9 +698,12 @@
           </div>
         </div>
       </div>
+      </div>
 
+      <!-- ═══════════════════════════════════════════════════════ SEÇÃO: PRODUÇÃO -->
+      <div class="mb-8">
       <!-- 4. STATUS DE PRODUÇÃO — Cards with highlighted alert -->
-      <div class="mb-5">
+      <div class="mb-0">
         <div class="flex items-center gap-2 px-1 mb-3">
           <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Status de Produção</span>
           <div class="flex-1 h-px bg-primary-10" />
@@ -754,6 +767,7 @@
             <span class="text-xs font-semibold" style="color: var(--color-card-texto); opacity: 0.75">Sem atrasos ✅</span>
           </div>
         </div>
+      </div>
       </div>
 
       <!-- 5 & 6. CHARTS SECTION -->
