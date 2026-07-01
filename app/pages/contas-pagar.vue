@@ -219,8 +219,8 @@
                 type="button"
                 class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl border transition-all duration-150"
                 :class="filtros.presetAtivo === preset.label
-                  ? 'bg-primary border-primary text-primary-text shadow-sm'
-                  : 'bg-white border-gray-200 text-gray-600 hover:border-primary hover:text-primary hover:bg-primary-5'"
+                  ? 'bg-gray-900 border-gray-900 text-white shadow-sm'
+                  : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400 hover:text-gray-800'"
                 @click="aplicarPreset(preset)"
               >
                 {{ preset.label }}
@@ -623,7 +623,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue'
 import { createSupabaseClient } from '~/lib/supabase'
 import { useRealtime } from '~/composables/useRealtime'
 import { useAdmin } from '~/composables/useAdmin'
@@ -755,9 +755,10 @@ const contasPaginadas = computed(() => {
 // Reset página ao filtrar
 watch(contasFiltradas, () => { paginaAtual.value = 1 })
 
-// Limpa o preset ativo se o usuário editar as datas manualmente
-watch(() => filtros.vencimentoDe, () => { if (filtros.presetAtivo) filtros.presetAtivo = '' })
-watch(() => filtros.vencimentoAte, () => { if (filtros.presetAtivo) filtros.presetAtivo = '' })
+// Limpa o preset ativo se o usuário editar as datas manualmente (não via preset)
+const presetAplicando = ref(false)
+watch(() => filtros.vencimentoDe, () => { if (filtros.presetAtivo && !presetAplicando.value) filtros.presetAtivo = '' })
+watch(() => filtros.vencimentoAte, () => { if (filtros.presetAtivo && !presetAplicando.value) filtros.presetAtivo = '' })
 
 const totalValor = computed(() =>
   contas.value.reduce((sum, c) => sum + c.valor, 0)
@@ -859,12 +860,14 @@ function aplicarPreset(preset: { label: string; days: number }) {
     filtros.vencimentoAte = ''
     return
   }
+  presetAplicando.value = true
   const hoje = new Date()
   const fim = new Date()
   fim.setDate(hoje.getDate() + preset.days)
   filtros.vencimentoDe = toISODate(hoje)
   filtros.vencimentoAte = toISODate(fim)
   filtros.presetAtivo = preset.label
+  nextTick(() => { presetAplicando.value = false })
 }
 
 function toggleFiltroPeriodicidade(p: string) {
