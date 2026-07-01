@@ -91,17 +91,59 @@
       </div>
     </div>
 
-    <!-- Tabs Pagar / Receber -->
-    <div class="flex items-center gap-1 bg-gray-100 rounded-xl p-1 max-w-md mb-4">
-      <button type="button" class="flex-1 px-4 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5" :class="filtros.tipo === '' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'" @click="filtros.tipo = ''">
-        Todas <span class="text-[10px] opacity-60">({{ contas.length }})</span>
+    <!-- ══════ FAIXA DE ALERTA FINANCEIRO ══════ -->
+    <div v-if="!loading && contasVencidasCount > 0" class="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-6 py-4 mb-6">
+      <div class="shrink-0 w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center">
+        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+      </div>
+      <div class="flex-1">
+        <p class="text-sm font-bold text-gray-800">{{ contasVencidasCount }} contas vencidas somando {{ formatCurrency(totalVencidas) }}</p>
+        <p class="text-xs text-gray-500 mt-0.5">Revise os vencimentos e mantenha seu financeiro em dia.</p>
+      </div>
+      <button type="button" class="text-sm font-semibold text-amber-700 hover:text-amber-900 flex items-center gap-1 shrink-0" @click="filtros.status = ['vencido']; filtros.tipo = ''">
+        Ver detalhes
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
       </button>
-      <button type="button" class="flex-1 px-4 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5" :class="filtros.tipo === 'pagar' ? 'bg-red-500 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'" @click="filtros.tipo = 'pagar'">
-        ↓ A Pagar <span class="text-[10px] opacity-60">({{ contasDespesas }})</span>
-      </button>
-      <button type="button" class="flex-1 px-4 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5" :class="filtros.tipo === 'receber' ? 'bg-emerald-500 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'" @click="filtros.tipo = 'receber'">
-        ↑ A Receber <span class="text-[10px] opacity-60">({{ contasReceitas }})</span>
-      </button>
+    </div>
+
+    <!-- ══════ BUSCA + TABS ══════ -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
+      <!-- Busca -->
+      <div class="relative w-full sm:w-80">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/></svg>
+        <input
+          v-model="filtros.busca"
+          type="text"
+          placeholder="Buscar por descrição, cliente, categoria..."
+          class="w-full rounded-xl border border-gray-200 pl-10 pr-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-white transition-shadow"
+        />
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex items-center gap-1 flex-wrap">
+        <button type="button" class="px-4 py-2 rounded-lg text-xs font-bold transition-all" :class="filtros.tipo === '' && filtros.status.length === 0 ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'" @click="filtros.tipo = ''; filtros.status = []">
+          Todas
+        </button>
+        <button type="button" class="px-4 py-2 rounded-lg text-xs font-bold transition-all" :class="filtros.tipo === 'receber' && filtros.status.length === 0 ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'" @click="filtros.tipo = 'receber'; filtros.status = []">
+          A receber
+        </button>
+        <button type="button" class="px-4 py-2 rounded-lg text-xs font-bold transition-all" :class="filtros.tipo === 'pagar' && filtros.status.length === 0 ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'" @click="filtros.tipo = 'pagar'; filtros.status = []">
+          A pagar
+        </button>
+        <button type="button" class="px-4 py-2 rounded-lg text-xs font-bold transition-all" :class="filtros.status.includes('pendente') ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'" @click="filtros.tipo = ''; filtros.status = ['pendente']">
+          Pendentes
+        </button>
+        <button type="button" class="px-4 py-2 rounded-lg text-xs font-bold transition-all" :class="filtros.status.includes('pago') ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'" @click="filtros.tipo = ''; filtros.status = ['pago']">
+          Pagas
+        </button>
+        <button type="button" class="px-4 py-2 rounded-lg text-xs font-bold transition-all" :class="filtros.status.includes('vencido') ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'" @click="filtros.tipo = ''; filtros.status = ['vencido']">
+          Vencidas
+        </button>
+        <button type="button" class="px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5" :class="filtros.presetAtivo === 'Este mês' ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'" @click="aplicarPresetEsteMes">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+          Este mês
+        </button>
+      </div>
     </div>
 
     <Transition name="slide-fade">
@@ -294,7 +336,7 @@
               </td>
             </tr>
             <tr
-              v-for="conta in contasFiltradas"
+              v-for="conta in contasPaginadas"
               :key="conta.id"
               class="hover:bg-primary-5/40 transition-colors duration-150 group"
             >
@@ -414,6 +456,35 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Paginação -->
+      <div v-if="contasFiltradas.length > 0" class="flex items-center justify-between px-7 py-4 border-t border-gray-100">
+        <div class="flex items-center gap-2">
+          <select v-model="porPagina" class="rounded-lg border border-gray-200 text-xs py-1.5 px-2.5 text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+            <option :value="10">10</option>
+            <option :value="20">20</option>
+            <option :value="50">50</option>
+          </select>
+          <span class="text-xs text-gray-400">por página</span>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <button type="button" :disabled="paginaAtual <= 1" class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-colors" :class="paginaAtual <= 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-100'" @click="paginaAtual = 1">«</button>
+          <button
+            v-for="p in totalPaginas"
+            :key="p"
+            type="button"
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-colors"
+            :class="p === paginaAtual ? 'bg-gray-900 text-white' : 'text-gray-500 hover:bg-gray-100'"
+            @click="paginaAtual = p"
+          >{{ p }}</button>
+          <button type="button" :disabled="paginaAtual >= totalPaginas" class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-colors" :class="paginaAtual >= totalPaginas ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-100'" @click="paginaAtual = totalPaginas">»</button>
+        </div>
+
+        <span class="text-xs text-gray-400">
+          Mostrando {{ (paginaAtual - 1) * porPagina + 1 }} a {{ Math.min(paginaAtual * porPagina, contasFiltradas.length) }} de {{ contasFiltradas.length }} contas
+        </span>
       </div>
     </div>
 
@@ -572,6 +643,8 @@ const { formatCurrency, formatDate, locale } = useLocale()
 const contas = ref<ContaPagar[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
+const paginaAtual = ref(1)
+const porPagina = ref(10)
 
 const editando = ref<ContaPagar | null>(null)
 const adicionando = ref(false)
@@ -656,6 +729,15 @@ const contasFiltradas = computed(() => {
   })
 })
 
+// Paginação
+const totalPaginas = computed(() => Math.ceil(contasFiltradas.value.length / porPagina.value) || 1)
+const contasPaginadas = computed(() => {
+  const start = (paginaAtual.value - 1) * porPagina.value
+  return contasFiltradas.value.slice(start, start + porPagina.value)
+})
+// Reset página ao filtrar
+watch(contasFiltradas, () => { paginaAtual.value = 1 })
+
 // Limpa o preset ativo se o usuário editar as datas manualmente
 watch(() => filtros.vencimentoDe, () => { if (filtros.presetAtivo) filtros.presetAtivo = '' })
 watch(() => filtros.vencimentoAte, () => { if (filtros.presetAtivo) filtros.presetAtivo = '' })
@@ -676,6 +758,21 @@ function totalPorStatus(status: string): number {
 
 function contasPorStatus(status: string): number {
   return contas.value.filter(c => (c.status ?? 'pendente') === status).length
+}
+
+const contasVencidasCount = computed(() => contasPorStatus('vencido'))
+const totalVencidas = computed(() => totalPorStatus('vencido'))
+
+function aplicarPresetEsteMes() {
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const lastDay = new Date(y, now.getMonth() + 1, 0).getDate()
+  filtros.vencimentoDe = `${y}-${m}-01`
+  filtros.vencimentoAte = `${y}-${m}-${String(lastDay).padStart(2, '0')}`
+  filtros.presetAtivo = 'Este mês'
+  filtros.tipo = ''
+  filtros.status = []
 }
 
 function statusDot(status: string | null): string {
