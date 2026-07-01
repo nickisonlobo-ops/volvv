@@ -59,35 +59,63 @@
         <!-- Divisor -->
         <div class="h-px bg-white/10 my-4 sm:my-6" />
 
-        <!-- Stats cards -->
-        <div v-if="!loading" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div class="group flex flex-col gap-1 bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
-            <span class="text-xs font-semibold text-red-300 uppercase tracking-widest">A Pagar</span>
-            <span class="text-xl font-black text-white leading-tight">{{ formatCurrency(totalDespesas) }}</span>
-            <span class="text-xs text-white/50">{{ contasDespesas }} conta(s)</span>
+        <!-- Subtítulo -->
+        <p class="text-sm text-white/60">Controle financeiro de receitas, despesas, vencimentos e pagamentos</p>
+      </div>
+    </div>
+
+    <!-- ══════ CARDS FINANCEIROS ══════ -->
+    <div v-if="!loading" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+      <!-- A Pagar -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 relative overflow-hidden">
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-red-500 rounded-b-2xl"></div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-red-50 border border-red-100 flex items-center justify-center">
+            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
           </div>
-          <div class="flex flex-col gap-1 bg-white/10 rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
-            <span class="text-xs font-semibold text-green-300 uppercase tracking-widest">A Receber</span>
-            <span class="text-xl font-black text-white leading-tight">{{ formatCurrency(totalReceitas) }}</span>
-            <span class="text-xs text-white/50">{{ contasReceitas }} conta(s)</span>
-          </div>
-          <div class="flex flex-col gap-1 bg-white/10 rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-white/70 shadow-sm shadow-yellow-400/50" />
-              <span class="text-xs font-semibold text-white/70 uppercase tracking-widest">Pendente</span>
-            </div>
-            <span class="text-xl font-black text-white leading-tight">{{ formatCurrency(totalPorStatus('pendente')) }}</span>
-            <span class="text-xs text-white/50">{{ contasPorStatus('pendente') }} conta(s)</span>
-          </div>
-          <div class="flex flex-col gap-1 bg-white/10 rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-white/70 shadow-sm shadow-emerald-300/50" />
-              <span class="text-xs font-semibold text-white/70 uppercase tracking-widest">Saldo</span>
-            </div>
-            <span class="text-xl font-black leading-tight" :class="saldoGeral >= 0 ? 'text-green-300' : 'text-red-300'">{{ formatCurrency(saldoGeral) }}</span>
-            <span class="text-xs text-white/50">receitas - despesas</span>
-          </div>
+          <span class="text-[10px] font-black uppercase tracking-widest text-red-600">A Pagar</span>
         </div>
+        <p class="text-xl font-black text-red-600">{{ formatCurrency(totalDespesas) }}</p>
+        <p class="text-[11px] text-gray-500 mt-0.5">{{ contasDespesas }} conta pendente</p>
+      </div>
+
+      <!-- A Receber -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 relative overflow-hidden">
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-green-500 rounded-b-2xl"></div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-green-50 border border-green-100 flex items-center justify-center">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <span class="text-[10px] font-black uppercase tracking-widest text-green-600">A Receber</span>
+        </div>
+        <p class="text-xl font-black text-green-600">{{ formatCurrency(totalReceitas) }}</p>
+        <p class="text-[11px] text-gray-500 mt-0.5">{{ contasReceitas }} contas</p>
+      </div>
+
+      <!-- Vencidas -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 relative overflow-hidden">
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-amber-500 rounded-b-2xl"></div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+          </div>
+          <span class="text-[10px] font-black uppercase tracking-widest text-amber-600">Vencidas</span>
+        </div>
+        <p class="text-xl font-black text-amber-600">{{ formatCurrency(totalVencidas) }}</p>
+        <p class="text-[11px] text-gray-500 mt-0.5">{{ contasVencidasCount }} contas em atraso</p>
+      </div>
+
+      <!-- Saldo Previsto -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 relative overflow-hidden">
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 rounded-b-2xl"></div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
+          </div>
+          <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600">Saldo Previsto</span>
+        </div>
+        <p class="text-xl font-black" :class="saldoGeral >= 0 ? 'text-emerald-600' : 'text-red-600'">{{ formatCurrency(saldoGeral) }}</p>
+        <p class="text-[11px] text-gray-500 mt-0.5">receitas - despesas</p>
       </div>
     </div>
 
