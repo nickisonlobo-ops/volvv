@@ -15,12 +15,12 @@
           <span class="truncate">{{ card.info_extra?.telefone ?? '—' }}</span>
         </div>
 
-        <!-- Última interação -->
+        <!-- Última atualização relativa -->
         <div class="flex items-center gap-1.5 text-xs" style="color: var(--color-card-texto, #64748b); opacity: 0.7">
           <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>{{ card.info_extra?.ultima_interacao ?? '—' }}</span>
+          <span>{{ tempoRelativo }}</span>
         </div>
       </div>
     </template>
@@ -28,12 +28,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { KanbanCard as KanbanCardType } from '~/composables/useKanban'
 import KanbanCard from './KanbanCard.vue'
 
 defineOptions({ name: 'KanbanCardCliente' })
 
-defineProps<{
+const props = defineProps<{
   card: KanbanCardType
 }>()
 
@@ -41,4 +42,23 @@ const emit = defineEmits<{
   (e: 'click', card: KanbanCardType): void
   (e: 'dragstart', event: DragEvent): void
 }>()
+
+const tempoRelativo = computed(() => {
+  const dataStr = props.card.info_extra?.ultima_atualizacao
+  if (!dataStr) return '—'
+  const data = new Date(dataStr)
+  const agora = new Date()
+  const diffMs = agora.getTime() - data.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  const diffHoras = Math.floor(diffMs / 3600000)
+  const diffDias = Math.floor(diffMs / 86400000)
+
+  if (diffMin < 1) return 'agora mesmo'
+  if (diffMin < 60) return `há ${diffMin} min`
+  if (diffHoras < 24) return `há ${diffHoras}h`
+  if (diffDias === 1) return 'há 1 dia'
+  if (diffDias < 30) return `há ${diffDias} dias`
+  if (diffDias < 365) return `há ${Math.floor(diffDias / 30)} mês(es)`
+  return `há ${Math.floor(diffDias / 365)} ano(s)`
+})
 </script>

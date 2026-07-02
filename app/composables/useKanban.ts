@@ -13,6 +13,7 @@ export interface KanbanCard {
   titulo: string
   subtitulo?: string
   info_extra?: Record<string, string>
+  nicho?: string | null
 }
 
 export interface KanbanState {
@@ -81,7 +82,7 @@ export function useKanban(pipelineTipo: PipelineTipo) {
   async function carregarCardsCRM(): Promise<KanbanCard[]> {
     const { data, error } = await supabase
       .from('clientes')
-      .select('id, nome, telefone, etapa_id, created_at')
+      .select('id, nome, telefone, etapa_id, created_at, nicho, updated_at')
       .eq('empresa_id', empresaId.value!)
 
     if (error) {
@@ -103,9 +104,11 @@ export function useKanban(pipelineTipo: PipelineTipo) {
         etapa_id: etapaId,
         titulo: cliente.nome ?? 'Sem nome',
         subtitulo: cliente.telefone ?? undefined,
+        nicho: cliente.nicho ?? null,
         info_extra: {
           telefone: cliente.telefone ?? '—',
           ultima_interacao: formatarData(cliente.created_at),
+          ultima_atualizacao: cliente.updated_at ?? cliente.created_at ?? '',
         },
       }
     }).filter((c: any) => c.etapa_id != null)
@@ -362,6 +365,23 @@ export function useKanban(pipelineTipo: PipelineTipo) {
 
       if (error) {
         throw new Error(`Erro ao mover card: ${error.message}`)
+      }
+
+      // ─── 5.1 Registrar movimentação no histórico (CRM) ──
+      if (pipelineTipo === 'crm' && empresaId.value) {
+        const etapaOrigemNome = etapaOrigem?.nome ?? 'Desconhecida'
+        const etapaDestinoNome = etapaDestino?.nome ?? 'Desconhecida'
+        supabase
+          .from('cliente_historico')
+          .insert({
+            cliente_id: cardId,
+            empresa_id: empresaId.value,
+            etapa_origem: etapaOrigemNome,
+            etapa_destino: etapaDestinoNome,
+          })
+          .then(({ error: histErr }) => {
+            if (histErr) console.warn('[useKanban] Erro ao registrar histórico:', histErr.message)
+          })
       }
     } catch (err: any) {
       // ─── 6. Rollback: reverter card para etapa original ──
