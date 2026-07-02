@@ -14,6 +14,7 @@ export interface KanbanCard {
   subtitulo?: string
   info_extra?: Record<string, string>
   nicho?: string | null
+  pais?: string | null
 }
 
 export interface KanbanState {
@@ -82,7 +83,7 @@ export function useKanban(pipelineTipo: PipelineTipo) {
   async function carregarCardsCRM(): Promise<KanbanCard[]> {
     const { data, error } = await supabase
       .from('clientes')
-      .select('id, nome, telefone, etapa_id, created_at, nicho, updated_at')
+      .select('id, nome, telefone, etapa_id, created_at, nicho, updated_at, pais')
       .eq('empresa_id', empresaId.value!)
 
     if (error) {
@@ -105,6 +106,7 @@ export function useKanban(pipelineTipo: PipelineTipo) {
         titulo: cliente.nome ?? 'Sem nome',
         subtitulo: cliente.telefone ?? undefined,
         nicho: cliente.nicho ?? null,
+        pais: cliente.pais ?? null,
         info_extra: {
           telefone: cliente.telefone ?? '—',
           ultima_interacao: formatarData(cliente.created_at),

@@ -6,7 +6,7 @@
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="emit('close')" />
 
         <!-- Modal container -->
-        <div class="relative z-10 flex flex-col w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:mx-auto sm:my-auto sm:rounded-2xl bg-theme-card overflow-hidden shadow-2xl" style="color: var(--color-card-texto)">
+        <div class="relative z-10 flex flex-col w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-3xl sm:mx-auto sm:my-auto sm:rounded-2xl bg-theme-card overflow-hidden shadow-2xl" style="color: var(--color-card-texto)">
 
           <!-- ═══ CLEAN WHITE HEADER ═══ -->
           <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-primary-10 bg-theme-card">
@@ -41,318 +41,220 @@
             </button>
           </div>
 
-          <!-- ═══ BODY: 2-COLUMN LAYOUT ═══ -->
-          <div class="flex flex-1 min-h-0">
-            <!-- LEFT: scrollable content -->
-            <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+          <!-- ═══ BODY: SINGLE COLUMN ═══ -->
+          <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
 
-              <!-- TRABALHO (orange left border card) -->
-              <div v-if="ordemServico.nome_trabalho" class="border-l-4 border-primary rounded-r-xl bg-primary-5 px-4 py-3">
-                <p class="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">Trabalho</p>
-                <p class="text-base sm:text-lg font-bold text-[color:var(--color-card-texto)]">{{ ordemServico.nome_trabalho }}</p>
+              <!-- ═══ HEADER ESCURO (estilo os-print) ═══ -->
+              <div class="rounded-2xl bg-gray-900 text-white px-6 py-5 flex items-center justify-between">
+                <p class="text-xs text-gray-400 uppercase tracking-wider">{{ personalizacao.nome_empresa || 'Empresa' }}</p>
+                <h2 class="text-lg font-bold">{{ ordemServico.nome_trabalho || 'Ordem de Serviço' }}</h2>
+                <div class="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-1.5">
+                  <span class="w-2 h-2 rounded-full" :class="statusDotClass" />
+                  <span class="text-sm font-bold">{{ statusLabel }}</span>
+                </div>
               </div>
 
-              <!-- CLIENTE INFO -->
-              <section>
-                <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-3">
-                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border border-primary-20" style="color: var(--color-card-texto)">1</span>
-                  Cliente
-                </h3>
-                <div class="rounded-xl p-4 border border-primary-10">
-                  <div class="flex items-center justify-between gap-3">
-                    <div class="min-w-0">
-                      <p class="text-sm font-bold text-gray-800 truncate">{{ ordemServico.cliente_nome || 'Cliente' }}</p>
-                      <p v-if="ordemServico.cliente_telefone" class="text-xs text-gray-500 mt-0.5">{{ ordemServico.cliente_telefone }}</p>
-                    </div>
-                    <!-- WhatsApp Button -->
-                    <a
-                      v-if="whatsappLink"
-                      :href="whatsappLink"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-green-500 hover:bg-green-600 text-white text-xs font-bold transition-colors shadow-sm flex-shrink-0"
-                    >
-                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                      </svg>
-                      WhatsApp
-                    </a>
+              <!-- DATAS -->
+              <div class="flex justify-center gap-12 text-center">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+                  <div>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">Emitido em</p>
+                    <p class="text-sm font-bold">{{ formatDataPrint(ordemServico.data_aprovacao) }}</p>
                   </div>
                 </div>
-              </section>
-
-              <!-- ENDEREÇO DE INSTALAÇÃO -->
-              <section v-if="ordemServico.endereco_instalacao">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-3">
-                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border border-primary-20" style="color: var(--color-card-texto)">2</span>
-                  Endereço de Instalação
-                </h3>
-                <div class="rounded-xl p-4 border border-primary-10 flex items-start gap-3">
-                  <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                  </svg>
-                  <p class="text-sm text-[color:var(--color-card-texto)]">{{ ordemServico.endereco_instalacao }}</p>
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <div>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">Previsão de Entrega</p>
+                    <p class="text-sm font-bold">{{ formatDataPrint(ordemServico.data_entrega || ordemServico.prazo_estimado) }}</p>
+                  </div>
                 </div>
-              </section>
+              </div>
 
-              <!-- DATA DE ENTREGA -->
-              <section v-if="ordemServico?.data_entrega">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-3">
-                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border border-primary-20" style="color: var(--color-card-texto)">3</span>
-                  Data de Entrega
-                </h3>
-                <div class="border border-primary-20 rounded-xl px-4 py-3 flex items-center gap-3">
-                  <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
-                  <p class="text-sm font-bold text-primary">{{ formatDataEntrega(ordemServico.data_entrega) }}</p>
+              <!-- CLIENTE + ENDEREÇO (2 colunas) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="border rounded-xl p-4">
+                  <p class="text-[10px] text-gray-400 uppercase font-bold mb-1">Cliente</p>
+                  <p class="text-base font-bold">{{ ordemServico.cliente_nome || '—' }}</p>
+                  <p v-if="ordemServico.cliente_telefone" class="text-xs text-gray-500">{{ ordemServico.cliente_telefone }}</p>
                 </div>
-              </section>
+                <div v-if="ordemServico.endereco_instalacao" class="border rounded-xl p-4">
+                  <p class="text-[10px] text-gray-400 uppercase font-bold mb-1">Endereço de Instalação</p>
+                  <p class="text-sm font-bold">{{ ordemServico.endereco_instalacao }}</p>
+                </div>
+              </div>
 
-              <!-- ITENS DA OS -->
-              <section>
-                <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-3">
-                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border border-primary-20" style="color: var(--color-card-texto)">4</span>
-                  Itens da OS
-                </h3>
-                <div v-if="itensOS.length === 0" class="text-center py-8">
-                  <p class="text-sm text-gray-400">Nenhum item encontrado</p>
+              <!-- TIMELINE HORIZONTAL (clicável) -->
+              <div v-if="etapasProducao.length > 0" class="border rounded-xl p-5">
+                <p class="text-[10px] font-bold uppercase text-gray-400 mb-4 tracking-wider">Acompanhamento do Pedido</p>
+                <div class="flex items-center justify-between">
+                  <template v-for="(etapa, idx) in etapasProducao" :key="etapa.id">
+                    <button type="button" class="flex flex-col items-center gap-1.5 flex-shrink-0 group" :disabled="atualizandoStatus" @click="moverParaEtapa(etapa)">
+                      <div class="w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all group-hover:scale-110" :class="etapaAtual && etapa.posicao <= etapaAtual.posicao ? 'border-transparent text-white bg-primary' : 'border-gray-200 text-gray-400 bg-white group-hover:border-primary group-hover:text-primary'">
+                        <span class="text-xs font-bold">{{ idx + 1 }}</span>
+                      </div>
+                      <span class="text-[10px] font-bold text-center max-w-[70px] leading-tight" :class="etapaAtual && etapa.posicao <= etapaAtual.posicao ? 'text-gray-800' : 'text-gray-400'">{{ etapa.nome }}</span>
+                    </button>
+                    <div v-if="idx < etapasProducao.length - 1" class="flex-1 h-0.5 mx-1" :style="{ backgroundColor: etapaAtual && idx < etapaAtual.posicao ? 'var(--color-primary, #374151)' : '#e5e7eb' }" />
+                  </template>
                 </div>
-                <div class="space-y-3">
-                  <div
-                    v-for="(item, idx) in itensOS"
-                    :key="item.id"
-                    class="border border-primary-10 rounded-xl overflow-hidden shadow-sm"
-                  >
-                    <!-- Card Header -->
-                    <div class="flex items-center gap-3 px-4 py-3">
-                      <span class="w-6 h-6 rounded-lg text-[10px] font-black flex items-center justify-center flex-shrink-0 border border-primary-20" style="color: var(--color-card-texto)">{{ idx + 1 }}</span>
-                      <span class="text-sm font-semibold truncate" style="color: var(--color-card-texto)">{{ item.descricao }}</span>
+              </div>
+
+              <!-- TABELA DE ITENS (clicável para expandir) -->
+              <div>
+                <p class="text-[10px] font-bold uppercase text-gray-400 mb-3 tracking-wider">Itens da Ordem de Serviço</p>
+                <!-- Cabeçalho da tabela -->
+                <div class="grid grid-cols-12 gap-2 px-4 py-2 border-b-2 border-primary">
+                  <span class="col-span-1 text-[10px] font-bold uppercase text-gray-500">#</span>
+                  <span class="col-span-5 text-[10px] font-bold uppercase text-gray-500">Descrição</span>
+                  <span class="col-span-3 text-[10px] font-bold uppercase text-gray-500 text-center">Dimensões</span>
+                  <span class="col-span-3 text-[10px] font-bold uppercase text-gray-500 text-center">Qtd</span>
+                </div>
+                <!-- Linhas -->
+                <div v-for="(item, idx) in itensOS" :key="item.id" class="border border-gray-200 rounded-xl mt-2 overflow-hidden">
+                  <!-- Linha da tabela (clicável) -->
+                  <button type="button" class="w-full grid grid-cols-12 gap-2 px-4 py-3.5 text-left hover:bg-gray-50 transition-colors items-center" @click="toggleItem(item.id)">
+                    <span class="col-span-1 text-sm font-bold text-gray-500">{{ idx + 1 }}</span>
+                    <span class="col-span-5 text-sm font-bold text-gray-800">{{ item.descricao }}</span>
+                    <span class="col-span-3 text-sm text-gray-600 text-center">{{ item.largura_cm }} × {{ item.altura_cm }} cm</span>
+                    <span class="col-span-2 text-sm font-bold text-primary text-center">{{ item.quantidade }} un</span>
+                    <span class="col-span-1 flex justify-end">
+                      <svg class="w-4 h-4 text-gray-400 transition-transform" :class="expandedItems.includes(item.id) ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                    </span>
+                  </button>
+                  <!-- Item expandido (fotos) -->
+                  <div v-if="expandedItems.includes(item.id)" class="px-4 pb-4 space-y-3">
+                    <!-- Fotos Arte + Local -->
+                    <div v-if="item.foto_arte_url || item.foto_local_url" class="flex gap-4 flex-wrap pt-1">
+                      <div v-if="item.foto_arte_url && !isPdf(item.foto_arte_url)" class="flex flex-col items-center gap-1">
+                        <button type="button" @click="openLightbox(item.foto_arte_url!)"><img :src="item.foto_arte_url" class="w-36 h-44 object-contain rounded-lg border border-gray-200 hover:border-primary transition-colors" /></button>
+                        <span class="text-[9px] font-bold text-gray-400 uppercase">Arte</span>
+                      </div>
+                      <div v-if="item.foto_local_url && !isPdf(item.foto_local_url)" class="flex flex-col items-center gap-1">
+                        <button type="button" @click="openLightbox(item.foto_local_url!)"><img :src="item.foto_local_url" class="w-36 h-44 object-contain rounded-lg border border-gray-200 hover:border-primary transition-colors" /></button>
+                        <span class="text-[9px] font-bold text-gray-400 uppercase">Local</span>
+                      </div>
                     </div>
-
-                    <!-- Card Body -->
-                    <div class="px-4 pb-4 border-t border-gray-100 pt-3 space-y-3">
-                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                        <div class="rounded-lg px-3 py-2 border border-primary-10">
-                          <span class="text-[10px] font-bold text-gray-400 uppercase block">Material</span>
-                          <span class="text-gray-700 font-semibold">{{ item.material_id }}</span>
+                    <!-- Fotos da Instalação -->
+                    <div class="pt-2">
+                      <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Fotos da Instalação Feita</label>
+                      <div class="flex flex-wrap gap-2">
+                        <div v-for="(fotoUrl, fIdx) in getInstalacaoFotos(item.id)" :key="fIdx" class="relative group">
+                          <button type="button" @click="openLightbox(fotoUrl)"><img :src="fotoUrl" class="w-20 h-20 rounded-lg object-cover border-2 border-emerald-100 group-hover:border-emerald-400 transition-colors shadow-sm" /></button>
+                          <button type="button" @click="removerFotoInstalacao(item.id, fIdx)" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
                         </div>
-                        <div class="rounded-lg px-3 py-2 border border-primary-10">
-                          <span class="text-[10px] font-bold text-gray-400 uppercase block">Dimensões</span>
-                          <span class="text-gray-700 font-semibold">{{ item.largura_cm }} × {{ item.altura_cm }} cm</span>
-                        </div>
-                        <div class="rounded-lg px-3 py-2 border border-primary-10">
-                          <span class="text-[10px] font-bold text-gray-400 uppercase block">Quantidade</span>
-                          <span class="text-gray-700 font-semibold">{{ item.quantidade }}</span>
-                        </div>
-                      </div>
-
-                      <!-- Fotos -->
-                      <div v-if="item.foto_arte_url || item.foto_local_url || item.arquivo_url" class="flex flex-wrap gap-3 pt-1">
-                        <!-- Foto Arte -->
-                        <div v-if="item.foto_arte_url && !isPdf(item.foto_arte_url)" class="flex flex-col items-center gap-1">
-                          <button type="button" @click="openLightbox(item.foto_arte_url!)" class="group">
-                            <img
-                              :src="item.foto_arte_url"
-                              alt="Arte"
-                              class="w-36 h-36 rounded-lg object-cover border-2 border-indigo-100 group-hover:border-indigo-400 transition-colors shadow-sm"
-                            />
-                          </button>
-                          <span class="text-[9px] font-bold text-gray-400 uppercase">Arte</span>
-                        </div>
-                        <a v-else-if="item.foto_arte_url && isPdf(item.foto_arte_url)" :href="item.foto_arte_url" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-1">
-                          <div class="w-36 h-36 rounded-lg border-2 border-red-100 bg-red-50 flex items-center justify-center hover:border-red-300 transition-colors">
-                            <svg class="w-7 h-7 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z"/></svg>
-                          </div>
-                          <span class="text-[9px] font-bold text-gray-400 uppercase">Arte (PDF)</span>
-                        </a>
-
-                        <!-- Foto Local -->
-                        <div v-if="item.foto_local_url && !isPdf(item.foto_local_url)" class="flex flex-col items-center gap-1">
-                          <button type="button" @click="openLightbox(item.foto_local_url!)" class="group">
-                            <img
-                              :src="item.foto_local_url"
-                              alt="Local"
-                              class="w-36 h-36 rounded-lg object-cover border-2 border-green-100 group-hover:border-green-400 transition-colors shadow-sm"
-                            />
-                          </button>
-                          <span class="text-[9px] font-bold text-gray-400 uppercase">Local</span>
-                        </div>
-                        <a v-else-if="item.foto_local_url && isPdf(item.foto_local_url)" :href="item.foto_local_url" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-1">
-                          <div class="w-36 h-36 rounded-lg border-2 border-green-100 bg-green-50 flex items-center justify-center hover:border-green-300 transition-colors">
-                            <svg class="w-7 h-7 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z"/></svg>
-                          </div>
-                          <span class="text-[9px] font-bold text-gray-400 uppercase">Local (PDF)</span>
-                        </a>
-
-                        <!-- Arquivo Anexo -->
-                        <a v-if="item.arquivo_url" :href="item.arquivo_url" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-1">
-                          <div class="w-16 h-16 rounded-lg border-2 border-purple-100 bg-purple-50 flex items-center justify-center hover:border-purple-300 transition-colors">
-                            <svg class="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
-                            </svg>
-                          </div>
-                          <span class="text-[9px] font-bold text-gray-400 uppercase">Arquivo</span>
-                        </a>
-                      </div>
-
-                      <!-- Fotos da Instalação Feita (múltiplas por item) -->
-                      <div class="pt-2">
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Fotos da Instalação Feita</label>
-                        <div class="flex flex-wrap gap-2 mb-2">
-                          <div v-for="(fotoUrl, fIdx) in getInstalacaoFotos(item.id)" :key="fIdx" class="relative group">
-                            <button type="button" @click="openLightbox(fotoUrl)" class="block">
-                              <img :src="fotoUrl" alt="Instalação" class="w-20 h-20 rounded-lg object-cover border-2 border-emerald-100 group-hover:border-emerald-400 transition-colors shadow-sm" />
-                            </button>
-                            <button type="button" @click="removerFotoInstalacao(item.id, fIdx)" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-                              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                            </button>
-                          </div>
-                          <!-- Botão adicionar foto -->
-                          <label class="w-20 h-20 rounded-lg border-2 border-dashed border-primary-10 bg-transparent flex flex-col items-center justify-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-colors">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                            <span class="text-[9px] text-gray-400 font-bold mt-0.5">Foto</span>
-                            <input type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="onAddFotoInstalacao(item.id, $event)" />
-                          </label>
-                        </div>
+                        <label class="w-20 h-20 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-colors">
+                          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                          <span class="text-[9px] text-gray-400 font-bold mt-0.5">Foto</span>
+                          <input type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="onAddFotoInstalacao(item.id, $event)" />
+                        </label>
                       </div>
                     </div>
                   </div>
                 </div>
-              </section>
+              </div>
 
-              <!-- OBSERVAÇÕES -->
-              <section>
-                <h3 class="flex items-center gap-2 text-sm font-bold text-theme-card-text mb-3">
-                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border border-primary-20" style="color: var(--color-card-texto)">5</span>
-                  Observações / Comentários
-                </h3>
-                <textarea
-                  v-model="observacoes"
-                  rows="3"
-                  placeholder="Adicione notas ou comentários sobre esta OS..."
-                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-800 placeholder:text-gray-400 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
-                />
-              </section>
+              <!-- COMENTÁRIOS (estilo rede social) -->
+              <div class="border-t border-gray-100 pt-4">
+                <p class="text-[10px] font-bold uppercase text-gray-400 mb-3 tracking-wider">Comentários</p>
 
-            </div>
-
-            <!-- RIGHT SIDEBAR -->
-            <div class="hidden sm:flex flex-col w-[320px] border-l border-primary-10 overflow-y-auto">
-              <div class="sticky top-0 p-5 space-y-5">
-
-                <!-- Resumo da OS -->
-                <div class="rounded-xl border border-primary-10 p-4 space-y-3 shadow-sm">
-                  <h4 class="text-xs font-black text-gray-500 uppercase tracking-wider">Resumo da OS</h4>
-                  <div class="space-y-2.5">
-                    <div class="flex items-center justify-between">
-                      <span class="text-xs text-gray-500">Cliente</span>
-                      <span class="text-xs font-bold text-gray-800 truncate max-w-[160px]">{{ ordemServico.cliente_nome || '—' }}</span>
+                <!-- Lista de comentários -->
+                <div v-if="comentarios.length > 0" class="space-y-3 mb-4">
+                  <div v-for="com in comentarios" :key="com.id" class="flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+                      {{ com.autor_nome ? com.autor_nome.charAt(0).toUpperCase() : '?' }}
                     </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-xs text-gray-500">Itens</span>
-                      <span class="text-xs font-bold text-[color:var(--color-card-texto)]">{{ itensOS.length }}</span>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-gray-800">{{ com.autor_nome || 'Usuário' }}</span>
+                        <span class="text-[10px] text-gray-400">{{ formatTempoComentario(com.created_at) }}</span>
+                      </div>
+                      <p class="text-sm text-gray-600 mt-0.5 whitespace-pre-wrap">{{ com.conteudo }}</p>
                     </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-xs text-gray-500">Status</span>
-                      <span
-                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-                        :class="statusBadgeClasses"
+                  </div>
+                </div>
+
+                <!-- Input novo comentário -->
+                <div class="flex gap-3">
+                  <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 text-xs font-bold flex items-center justify-center flex-shrink-0">
+                    {{ currentUserInitial }}
+                  </div>
+                  <div class="flex-1 relative">
+                    <div class="flex gap-2">
+                      <input
+                        ref="mencoesInputRef"
+                        v-model="novoComentario"
+                        type="text"
+                        placeholder="Escreva um comentário... use @ para mencionar"
+                        class="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        @input="onComentarioInput"
+                        @keyup.enter="enviarComentario"
+                      />
+                      <button
+                        type="button"
+                        :disabled="!novoComentario.trim() || enviandoComentario"
+                        class="px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
+                        @click="enviarComentario"
                       >
-                        <span class="w-1.5 h-1.5 rounded-full" :class="statusDotClass" />
-                        {{ statusLabel }}
-                      </span>
+                        <span v-if="enviandoComentario" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                        <span v-else>Enviar</span>
+                      </button>
                     </div>
-                    <div v-if="etapaAtual" class="flex items-center justify-between">
-                      <span class="text-xs text-gray-500">Etapa atual</span>
-                      <span class="text-xs font-bold text-[color:var(--color-card-texto)]">{{ etapaAtual.nome }}</span>
+                    <!-- Dropdown de menções -->
+                    <div v-if="mostrarMencoes" class="absolute bottom-full mb-1 left-0 w-64 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-10">
+                      <div v-if="mencoesFiltradas.length === 0" class="px-3 py-2 text-xs text-gray-400">Nenhum membro encontrado</div>
+                      <button
+                        v-for="m in mencoesFiltradas"
+                        :key="m.id"
+                        type="button"
+                        class="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors"
+                        @mousedown.prevent="selecionarMencao(m)"
+                      >
+                        <div class="w-6 h-6 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center">{{ m.nome.charAt(0).toUpperCase() }}</div>
+                        <span class="text-sm font-medium text-gray-700">{{ m.nome }}</span>
+                      </button>
                     </div>
                   </div>
                 </div>
-
-                <!-- Próxima Etapa info box -->
-                <div v-if="nextEtapa" class="border border-primary-20 rounded-xl p-4">
-                  <p class="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">Próxima etapa</p>
-                  <p class="text-sm font-bold text-primary">{{ nextEtapa.nome }}</p>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="space-y-2.5">
-                  <!-- Mover para próxima etapa -->
-                  <button
-                    v-if="nextEtapa"
-                    type="button"
-                    :disabled="atualizandoStatus"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    :class="nextStatusButtonClass"
-                    :style="nextStatusButtonStyle"
-                    @click="avancarStatus"
-                  >
-                    <span v-if="atualizandoStatus" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                    </svg>
-                    {{ nextStatusLabel }}
-                  </button>
-
-                  <!-- Salvar observações -->
-                  <button
-                    type="button"
-                    :disabled="salvandoObs"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[color:var(--color-card-texto)] border border-primary-10 hover:bg-primary-5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    @click="salvarObservacoes"
-                  >
-                    <span v-if="salvandoObs" class="w-3.5 h-3.5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-                    <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9" />
-                    </svg>
-                    Salvar observações
-                  </button>
-
-                  <!-- Gerar PDF -->
-                  <button
-                    type="button"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[color:var(--color-card-texto)] border border-primary-10 hover:bg-primary-5 transition-colors"
-                    @click="gerarOsPdf"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                    </svg>
-                    Gerar PDF
-                  </button>
-                </div>
-
               </div>
-            </div>
-          </div>
 
-          <!-- ═══ MOBILE FOOTER (sm:hidden) ═══ -->
-          <div class="sm:hidden flex-shrink-0 border-t border-primary-10 bg-theme-card px-4 py-3 space-y-2">
-            <button
-              v-if="nextEtapa"
-              type="button"
-              :disabled="atualizandoStatus"
-              class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              :class="nextStatusButtonClass"
-              :style="nextStatusButtonStyle"
-              @click="avancarStatus"
-            >
-              <span v-if="atualizandoStatus" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-              {{ nextStatusLabel }}
-            </button>
-            <button
-              type="button"
-              :disabled="salvandoObs"
-              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[color:var(--color-card-texto)] border border-primary-10 hover:bg-primary-5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              @click="salvarObservacoes"
-            >
-              <span v-if="salvandoObs" class="w-3.5 h-3.5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-              <span v-else>Salvar observações</span>
-            </button>
-          </div>
+              <!-- ACTION BUTTONS -->
+              <div class="flex flex-wrap gap-3 border-t border-gray-100 pt-4">
+                <button
+                  v-if="nextEtapa"
+                  type="button"
+                  :disabled="atualizandoStatus"
+                  class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  :class="nextStatusButtonClass"
+                  :style="nextStatusButtonStyle"
+                  @click="avancarStatus"
+                >
+                  <span v-if="atualizandoStatus" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                  {{ nextStatusLabel }}
+                </button>
+                <button
+                  type="button"
+                  :disabled="salvandoObs"
+                  class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold border border-gray-200 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                  @click="salvarObservacoes"
+                >
+                  <span v-if="salvandoObs" class="w-3.5 h-3.5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                  <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9"/></svg>
+                  Salvar observações
+                </button>
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold border border-gray-200 hover:bg-gray-50 transition-colors"
+                  @click="gerarOsPdf"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                  Gerar PDF
+                </button>
+              </div>
 
+          </div>
         </div>
       </div>
     </transition>
@@ -415,6 +317,29 @@ const lightboxUrl = ref<string | null>(null)
 const observacoes = ref('')
 const salvandoObs = ref(false)
 const atualizandoStatus = ref(false)
+
+// Comentários
+const comentarios = ref<any[]>([])
+const novoComentario = ref('')
+const enviandoComentario = ref(false)
+const currentUserName = ref('')
+const currentUserId = ref('')
+
+// Menções @
+const membrosEquipe = ref<{ id: string; nome: string; email: string | null }[]>([])
+const mostrarMencoes = ref(false)
+const mencoesQuery = ref('')
+const mencoesInputRef = ref<HTMLInputElement | null>(null)
+
+const mencoesFiltradas = computed(() => {
+  if (!mencoesQuery.value) return membrosEquipe.value.slice(0, 5)
+  const q = mencoesQuery.value.toLowerCase()
+  return membrosEquipe.value.filter(m => m.nome.toLowerCase().includes(q)).slice(0, 5)
+})
+
+const currentUserInitial = computed(() => {
+  return currentUserName.value ? currentUserName.value.charAt(0).toUpperCase() : '?'
+})
 const instalacaoFotosMap = ref<Record<number, string[]>>({})
 
 // ─── Watchers ────────────────────────────────────────────────────────────────
@@ -436,6 +361,9 @@ watch(() => props.ordemServico, (os) => {
         instalacaoFotosMap.value[item.id] = []
       }
     }
+    // Carregar comentários e dados do usuário
+    carregarComentarios()
+    carregarUsuarioAtual()
   }
 }, { immediate: true })
 
@@ -470,6 +398,13 @@ const statusDotClass = computed(() => {
 function formatDataEntrega(val: string | null): string {
   if (!val) return ''
   // Suporta tanto "2026-07-15" quanto "2026-07-15T00:00:00+00:00"
+  const iso = val.includes('T') ? val.split('T')[0] : val
+  const [y, m, d] = iso.split('-')
+  return `${d}/${m}/${y}`
+}
+
+function formatDataPrint(val: string | null | undefined): string {
+  if (!val) return '—'
   const iso = val.includes('T') ? val.split('T')[0] : val
   const [y, m, d] = iso.split('-')
   return `${d}/${m}/${y}`
@@ -685,6 +620,47 @@ async function avancarStatus() {
   }
 }
 
+async function moverParaEtapa(etapa: any) {
+  if (!props.ordemServico || atualizandoStatus.value) return
+  // Se já está nessa etapa, não faz nada
+  if (etapaAtual.value && etapa.id === etapaAtual.value.id) return
+
+  atualizandoStatus.value = true
+  try {
+    let novoStatus: string
+    if (etapa.is_final) {
+      novoStatus = 'entregue'
+    } else if (etapa.posicao === 0) {
+      novoStatus = 'aguardando_producao'
+    } else {
+      novoStatus = 'em_producao'
+    }
+
+    const updatePayload: Record<string, unknown> = {
+      etapa_id: etapa.id,
+      status: novoStatus,
+    }
+
+    if (novoStatus === 'em_producao') updatePayload.data_inicio_producao = new Date().toISOString()
+    else if (novoStatus === 'entregue') updatePayload.data_entrega = new Date().toISOString()
+
+    const { data, error } = await supabase
+      .from('ordens_servico_adesivo')
+      .update(updatePayload)
+      .eq('id', props.ordemServico.id)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    emit('statusUpdated', data as OrdemServico)
+  } catch (err) {
+    console.error('Erro ao mover para etapa:', err)
+  } finally {
+    atualizandoStatus.value = false
+  }
+}
+
 async function salvarObservacoes() {
   if (!props.ordemServico) return
   salvandoObs.value = true
@@ -698,6 +674,130 @@ async function salvarObservacoes() {
   } finally {
     salvandoObs.value = false
   }
+}
+
+// ─── Comentários ─────────────────────────────────────────────────────────────
+async function carregarComentarios() {
+  if (!props.ordemServico) return
+  const { data } = await supabase
+    .from('os_comentarios')
+    .select('id, conteudo, autor_nome, created_at')
+    .eq('ordem_servico_id', props.ordemServico.id)
+    .order('created_at', { ascending: true })
+  comentarios.value = data ?? []
+}
+
+async function carregarUsuarioAtual() {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session?.user) {
+    currentUserId.value = session.user.id
+    currentUserName.value = session.user.user_metadata?.full_name || session.user.email || ''
+    // Carregar membros da equipe (funcionários) para menções
+    let empId = empresaId.value || session.user.user_metadata?.empresa_id
+    if (!empId) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('empresa_id')
+        .eq('id', session.user.id)
+        .maybeSingle()
+      empId = profile?.empresa_id
+    }
+    if (empId) {
+      const { data } = await supabase
+        .from('funcionarios')
+        .select('id, nome, email')
+        .eq('empresa_id', empId)
+      membrosEquipe.value = (data ?? []).map((f: any) => ({
+        id: String(f.id),
+        nome: f.nome || f.email || 'Sem nome',
+        email: f.email || null,
+      }))
+    }
+  }
+}
+
+async function enviarComentario() {
+  if (!novoComentario.value.trim() || !props.ordemServico) return
+  enviandoComentario.value = true
+  try {
+    const conteudo = novoComentario.value.trim()
+    const { error } = await supabase
+      .from('os_comentarios')
+      .insert({
+        ordem_servico_id: props.ordemServico.id,
+        autor_id: currentUserId.value,
+        autor_nome: currentUserName.value,
+        conteudo,
+      })
+    if (error) throw error
+
+    // Detectar menções (@NomeDoUsuário) e criar notificações
+    const mencionados = membrosEquipe.value.filter(m =>
+      conteudo.includes(`@${m.nome}`)
+    )
+    for (const mencionado of mencionados) {
+      if (mencionado.email) {
+        await supabase.rpc('criar_notificacao', {
+          p_email: mencionado.email,
+          p_tipo: 'mencao',
+          p_titulo: `${currentUserName.value} mencionou você`,
+          p_mensagem: `Em OS ${props.ordemServico.numero_os}: "${conteudo.substring(0, 80)}${conteudo.length > 80 ? '...' : ''}"`,
+          p_link: `os:${props.ordemServico.id}`,
+        })
+      }
+    }
+
+    novoComentario.value = ''
+    mostrarMencoes.value = false
+    await carregarComentarios()
+  } catch (err) {
+    console.error('Erro ao enviar comentário:', err)
+  } finally {
+    enviandoComentario.value = false
+  }
+}
+
+function onComentarioInput(e: Event) {
+  const input = e.target as HTMLInputElement
+  const val = input.value
+  const cursorPos = input.selectionStart ?? val.length
+  // Verificar se está digitando uma menção
+  const textBeforeCursor = val.substring(0, cursorPos)
+  const lastAt = textBeforeCursor.lastIndexOf('@')
+  if (lastAt >= 0) {
+    const textAfterAt = textBeforeCursor.substring(lastAt + 1)
+    // Mostrar menções se não tem espaço depois do @
+    if (!textAfterAt.includes(' ')) {
+      mencoesQuery.value = textAfterAt
+      mostrarMencoes.value = true
+      return
+    }
+  }
+  mostrarMencoes.value = false
+}
+
+function selecionarMencao(membro: { id: string; nome: string }) {
+  const val = novoComentario.value
+  const lastAt = val.lastIndexOf('@')
+  if (lastAt >= 0) {
+    novoComentario.value = val.substring(0, lastAt) + `@${membro.nome} `
+  }
+  mostrarMencoes.value = false
+}
+
+function formatTempoComentario(dataStr: string): string {
+  if (!dataStr) return ''
+  const data = new Date(dataStr)
+  const agora = new Date()
+  const diffMs = agora.getTime() - data.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  const diffHoras = Math.floor(diffMs / 3600000)
+  const diffDias = Math.floor(diffMs / 86400000)
+  if (diffMin < 1) return 'agora'
+  if (diffMin < 60) return `${diffMin}min`
+  if (diffHoras < 24) return `${diffHoras}h`
+  if (diffDias < 7) return `${diffDias}d`
+  return data.toLocaleDateString('pt-BR')
 }
 
 function isPdf(url: string | null | undefined): boolean {

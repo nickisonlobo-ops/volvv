@@ -96,7 +96,7 @@
             Limpar todos
           </button>
         </div>
-        <div class="p-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+        <div class="p-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
           <div class="sm:col-span-2 flex flex-col gap-1.5">
             <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Busca</label>
             <div class="relative">
@@ -116,6 +116,13 @@
             <select v-model="filtros.nicho" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-800 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
               <option value="">Todos</option>
               <option v-for="n in nichos" :key="n.id" :value="n.nome">{{ n.nome }}</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">País</label>
+            <select v-model="filtros.pais" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-800 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+              <option value="">Todos</option>
+              <option v-for="p in paisesUnicos" :key="p" :value="p">{{ p }}</option>
             </select>
           </div>
           <div class="flex flex-col gap-1.5">
@@ -353,6 +360,14 @@
                     <option v-for="uf in locale.pais === 'PT' ? distritosPortugal : ufs" :key="uf" :value="uf">{{ uf }}</option>
                   </select>
                 </div>
+              </div>
+              <!-- País -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-sm font-semibold text-gray-700">País</label>
+                <select v-model="form.pais" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-800 bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                  <option value="">Selecione</option>
+                  <option v-for="p in paises" :key="p" :value="p">{{ p }}</option>
+                </select>
               </div>
               <!-- Observação -->
               <div class="flex flex-col gap-1.5">
@@ -857,6 +872,7 @@ interface Cliente {
   created_at: string | null
   nicho: string | null
   nome_empresa: string | null
+  pais: string | null
 }
 
 const supabase = createSupabaseClient()
@@ -906,12 +922,13 @@ const form = reactive({
   ativo: true,
   nicho: '',
   nome_empresa: '',
+  pais: '',
 })
 
 const formErrors = reactive({ nome: '', cpf_cnpj: '', email: '' })
 
 const filtroAberto = ref(false)
-const filtros = reactive({ busca: '', cidade: '', ativo: '', nicho: '' })
+const filtros = reactive({ busca: '', cidade: '', ativo: '', nicho: '', pais: '' })
 
 const distritosPortugal = ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro', 'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo', 'Vila Real', 'Viseu', 'Açores', 'Madeira']
 
@@ -987,6 +1004,15 @@ const ufs = [
   'PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO',
 ]
 
+const paises = [
+  'Brasil', 'Portugal', 'Angola', 'Moçambique', 'Cabo Verde',
+  'Estados Unidos', 'Espanha', 'França', 'Alemanha', 'Itália',
+  'Reino Unido', 'Argentina', 'Uruguai', 'Paraguai', 'Chile',
+  'Colômbia', 'México', 'Canadá', 'Japão', 'Austrália',
+  'Índia', 'China', 'Coreia do Sul', 'Guiné-Bissau', 'Timor-Leste',
+  'São Tomé e Príncipe', 'Outro',
+]
+
 // �"?�"? Stats �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 const clientesAtivos = computed(() =>
   clientes.value.filter(c => c.ativo !== false).length
@@ -999,6 +1025,11 @@ const cidadesUnicas = computed(() => {
   return Array.from(set).sort()
 })
 
+const paisesUnicos = computed(() => {
+  const set = new Set(clientes.value.map(c => c.pais).filter(Boolean) as string[])
+  return Array.from(set).sort()
+})
+
 // �"?�"? Filtros �"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?�"?
 const filtrosAtivos = computed(() => {
   let c = 0
@@ -1006,6 +1037,7 @@ const filtrosAtivos = computed(() => {
   if (filtros.cidade) c++
   if (filtros.ativo) c++
   if (filtros.nicho) c++
+  if (filtros.pais) c++
   return c
 })
 
@@ -1013,6 +1045,7 @@ const clientesFiltrados = computed(() => {
   return clientes.value.filter(c => {
     if (filtros.cidade && c.cidade !== filtros.cidade) return false
     if (filtros.nicho && (c.nicho ?? '') !== filtros.nicho) return false
+    if (filtros.pais && (c.pais ?? '') !== filtros.pais) return false
     if (filtros.ativo === 'true' && c.ativo === false) return false
     if (filtros.ativo === 'false' && c.ativo !== false) return false
     if (filtros.busca.trim()) {
@@ -1033,13 +1066,14 @@ function limparFiltros() {
   filtros.cidade = ''
   filtros.ativo = ''
   filtros.nicho = ''
+  filtros.pais = ''
 }
 
 // Filtro para o Kanban
 const kanbanFilterFn = computed(() => {
-  if (!filtros.nicho && !filtros.busca.trim()) return undefined
   return (card: any) => {
     if (filtros.nicho && (card.nicho ?? '') !== filtros.nicho) return false
+    if (filtros.pais && (card.pais ?? '') !== filtros.pais) return false
     if (filtros.busca.trim()) {
       const q = filtros.busca.toLowerCase()
       return card.titulo.toLowerCase().includes(q) || (card.subtitulo ?? '').toLowerCase().includes(q)
@@ -1215,6 +1249,7 @@ function abrirAdicionar() {
   form.estado = ''; form.cep = ''; form.observacao = ''; form.ativo = true
   form.nicho = ''
   form.nome_empresa = ''
+  form.pais = ''
 }
 
 function fecharModal() {
@@ -1240,6 +1275,7 @@ function editCliente(cli: Cliente) {
   form.ativo      = cli.ativo !== false
   form.nicho      = cli.nicho ?? ''
   form.nome_empresa = cli.nome_empresa ?? ''
+  form.pais       = cli.pais ?? ''
 }
 
 function buildPayload() {
@@ -1258,6 +1294,7 @@ function buildPayload() {
     ativo:      form.ativo,
     nicho:      form.nicho || null,
     nome_empresa: form.nome_empresa.trim() || null,
+    pais:       form.pais || null,
     empresa_id: empresaId.value!,
   }
 }

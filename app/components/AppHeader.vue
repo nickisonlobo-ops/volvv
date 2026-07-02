@@ -32,6 +32,47 @@
         Olá, {{ displayName }}
       </span>
 
+      <!-- Notificações -->
+      <div class="relative">
+        <button
+          type="button"
+          class="relative w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white/10 transition-colors"
+          :style="{ color: 'var(--color-primary-text, #fff)' }"
+          @click="notifAberto = !notifAberto"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+          <span v-if="naoLidas > 0" class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1">{{ naoLidas > 9 ? '9+' : naoLidas }}</span>
+        </button>
+
+        <!-- Dropdown notificações -->
+        <div v-if="notifAberto" class="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+            <span class="text-sm font-bold text-gray-800">Notificações</span>
+            <button v-if="naoLidas > 0" type="button" class="text-[10px] font-bold text-primary hover:underline" @click="marcarTodasComoLidas">Marcar todas como lidas</button>
+          </div>
+          <div class="max-h-[320px] overflow-y-auto">
+            <div v-if="notificacoes.length === 0" class="py-8 text-center text-sm text-gray-400">Nenhuma notificação</div>
+            <div
+              v-for="notif in notificacoes"
+              :key="notif.id"
+              class="flex gap-3 px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
+              :class="notif.lida ? 'opacity-60' : ''"
+              @click="abrirNotificacao(notif)"
+            >
+              <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-gray-800 truncate">{{ notif.titulo }}</p>
+                <p class="text-[11px] text-gray-500 truncate">{{ notif.mensagem }}</p>
+                <p class="text-[10px] text-gray-400 mt-0.5">{{ formatNotifTime(notif.created_at) }}</p>
+              </div>
+              <span v-if="!notif.lida" class="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-2" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Avatar -->
       <div
         class="app-header__avatar"
@@ -62,6 +103,8 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '~/composables/useAuth'
 import { usePersonalizacao } from '~/composables/usePersonalizacao'
+import { useNotificacoes } from '~/composables/useNotificacoes'
+import { useGlobalOS } from '~/composables/useGlobalOS'
 import { createSupabaseClient } from '~/lib/supabase'
 
 defineOptions({ name: 'AppHeader' })
@@ -70,6 +113,25 @@ const router = useRouter()
 const { logout } = useAuth()
 const supabase = createSupabaseClient()
 const { config } = usePersonalizacao()
+const { notificacoes, naoLidas, carregarNotificacoes, marcarComoLida, marcarTodasComoLidas } = useNotificacoes()
+const { abrirOS } = useGlobalOS()
+
+const notifAberto = ref(false)
+
+function formatNotifTime(dataStr: string): string {
+  if (!dataStr) return ''
+  const data = new Date(dataStr)
+  const agora = new Date()
+  const diffMs = agora.getTime() - data.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  const diffHoras = Math.floor(diffMs / 3600000)
+  const diffDias = Math.floor(diffMs / 86400000)
+  if (diffMin < 1) return 'agora'
+  if (diffMin < 60) return `${diffMin}min atrás`
+  if (diffHoras < 24) return `${diffHoras}h atrás`
+  if (diffDias < 7) return `${diffDias}d atrás`
+  return data.toLocaleDateString('pt-BR')
+}
 
 function logoSizeToPx(s: string): number {
   const num = parseInt(s)
@@ -102,6 +164,7 @@ const headerHeight = computed(() => {
 onMounted(async () => {
   const { data: { user } } = await supabase.auth.getUser()
   userName.value = user?.user_metadata?.full_name ?? user?.email ?? ''
+  await carregarNotificacoes()
 
   const perfil = user?.user_metadata?.perfil as string | undefined
   if (perfil !== 'funcionario') {
@@ -141,6 +204,16 @@ const initials = computed(() => {
 async function handleLogout() {
   await logout()
   await router.push('/login')
+}
+
+function abrirNotificacao(notif: any) {
+  if (!notif.lida) marcarComoLida(notif.id)
+  notifAberto.value = false
+  // Se tem link do tipo "os:123", abrir o modal da OS diretamente
+  if (notif.link && notif.link.startsWith('os:')) {
+    const osId = Number(notif.link.split(':')[1])
+    if (osId) abrirOS(osId)
+  }
 }
 </script>
 

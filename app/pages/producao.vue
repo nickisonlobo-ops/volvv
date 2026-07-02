@@ -524,6 +524,7 @@ import type { OrdemServico, ItemOS } from '~/composables/useOrdensServico'
 
 definePageMeta({ layout: 'default' })
 
+const route = useRoute()
 const { carregarInstancias, carregarChecklist, toggleChecklist, atualizarProgresso, atualizarInstancia, carregarTemplates } = useProcessos()
 
 const instancias = ref<ProcessoInstancia[]>([])
@@ -1369,6 +1370,12 @@ onMounted(async () => {
   instancias.value = await carregarInstancias(['pendente', 'em_andamento', 'concluido'])
   templates.value = await carregarTemplates()
   carregarOsEntregas()
+
+  // Abrir OS via query param (ex: vindo de notificação)
+  const osIdFromQuery = route.query.os
+  if (osIdFromQuery) {
+    await abrirOSCalendario({ id: Number(osIdFromQuery) })
+  }
 })
 
 // Realtime: atualiza ao vivo quando processos mudam

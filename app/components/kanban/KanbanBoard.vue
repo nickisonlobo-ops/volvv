@@ -90,7 +90,7 @@
         v-for="etapa in kanban.state.value.etapas"
         :key="etapa.id"
         :etapa="etapa"
-        :cards="filteredCardsPorEtapa(etapa.id).value"
+        :cards="getFilteredCards(etapa.id)"
         :is-over="dragDrop.isOverEtapa(etapa.id).value"
         class="snap-start flex-shrink-0"
         @dragover="handleColumnDragOver"
@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useKanban, type KanbanCard } from '~/composables/useKanban'
 import { useDragDrop } from '~/composables/useDragDrop'
 import type { PipelineTipo } from '~/composables/useEtapas'
@@ -180,12 +180,10 @@ function fecharConfigModal() {
 const kanban = useKanban(props.pipelineTipo)
 
 // Filtered cards per etapa (applies external filter if provided)
-function filteredCardsPorEtapa(etapaId: number) {
-  return computed(() => {
-    const cards = kanban.cardsPorEtapa(etapaId).value
-    if (!props.filterFn) return cards
-    return cards.filter(props.filterFn)
-  })
+function getFilteredCards(etapaId: number): KanbanCard[] {
+  const cards = kanban.cardsPorEtapa(etapaId).value
+  if (!props.filterFn) return cards
+  return cards.filter(props.filterFn)
 }
 
 const dragDrop = useDragDrop({
