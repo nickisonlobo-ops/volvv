@@ -44,10 +44,10 @@
           </defs>
 
           <!-- Grid lines -->
-          <line v-for="(step, n) in evolYSteps" :key="`egl${n}`" x1="60" :y1="15 + n * (120 / (evolYSteps.length - 1))" x2="940" :y2="15 + n * (120 / (evolYSteps.length - 1))" stroke="var(--color-primary-10)" stroke-width="1" />
+          <line v-for="(step, n) in evolYSteps" :key="`egl${n}`" x1="80" :y1="15 + n * (120 / (evolYSteps.length - 1))" x2="940" :y2="15 + n * (120 / (evolYSteps.length - 1))" stroke="var(--color-primary-10)" stroke-width="1" />
 
           <!-- Y-axis labels -->
-          <text v-for="(step, n) in evolYSteps" :key="`eyl${n}`" x="56" :y="15 + n * (120 / (evolYSteps.length - 1)) + 4" text-anchor="end" font-size="9" fill="currentColor" style="opacity: 0.5">
+          <text v-for="(step, n) in evolYSteps" :key="`eyl${n}`" x="76" :y="15 + n * (120 / (evolYSteps.length - 1)) + 4" text-anchor="end" font-size="9" fill="currentColor" style="opacity: 0.5">
             {{ formatShort(step) }}
           </text>
 
@@ -81,7 +81,7 @@
           <text v-for="(p, i) in evolPoints" :key="`epl${i}`" :x="p.x" y="162" text-anchor="middle" font-size="9" fill="currentColor" style="opacity: 0.5" font-weight="600">{{ p.label }}</text>
 
           <!-- Baseline -->
-          <line x1="60" y1="135" x2="940" y2="135" stroke="var(--color-primary-10)" stroke-width="1.5" />
+          <line x1="80" y1="135" x2="940" y2="135" stroke="var(--color-primary-10)" stroke-width="1.5" />
         </svg>
 
         <!-- Tooltip -->
@@ -497,16 +497,18 @@ const evolRawMax = computed(() =>
 const evolMaxVal = computed(() => Math.ceil(evolRawMax.value / 250) * 250 || 250)
 const evolYSteps = computed(() => {
   const max = evolMaxVal.value
-  const step = max >= 2000 ? 500 : 250
+  if (max === 0) return [0]
+  const numSteps = 5
+  const step = max / (numSteps - 1)
   const steps: number[] = []
-  for (let v = 0; v <= max; v += step) steps.push(v)
+  for (let i = 0; i < numSteps; i++) steps.push(Math.round(step * i))
   return steps.reverse()
 })
 
 const evolPoints = computed(() => {
   const maxVal = evolMaxVal.value
   return monthlyData.value.map((m, i) => ({
-    x: 60 + i * (880 / 11),
+    x: 80 + i * (860 / 11),
     yReceita: 135 - (m.receita / maxVal) * 120,
     yDespesas: 135 - (m.despesas / maxVal) * 120,
     yAReceber: 135 - (m.receitaAReceber / maxVal) * 120,

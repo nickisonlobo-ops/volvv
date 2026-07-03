@@ -828,13 +828,12 @@ export function useDashboardAdmin(): DashboardAdminState {
 
   // ── Refresh ──────────────────────────────────────────────────────────────
 
-  async function refresh(): Promise<void> {
+  async function doRefresh(): Promise<void> {
     // Guard: don't execute queries if empresaId is not resolved
     if (!empresaId.value) return
 
     loading.value = true
     try {
-      // Primeiro: buscar dados de produção (osAtrasadas é usado por alertas)
       await Promise.allSettled([
         fetchFinanceiro(),
         fetchPrevisao(),
@@ -847,11 +846,29 @@ export function useDashboardAdmin(): DashboardAdminState {
         fetchTicketMedio(),
         fetchProximosVencimentos(),
       ])
-      // Depois: calcular alertas (depende de producao.osAtrasadas)
       await fetchAlertas()
     } finally {
       loading.value = false
     }
+  }
+
+  // Debounce para evitar múltiplas chamadas simultâneas
+  let refreshTimer: ReturnType<typeof setTimeout> | null = null
+  let refreshPromise: Promise<void> | null = null
+
+  async function refresh() {
+    if (!empresaId.value) return
+    if (refreshPromise) return refreshPromise
+
+    if (refreshTimer) clearTimeout(refreshTimer)
+    return new Promise<void>((resolve) => {
+      refreshTimer = setTimeout(async () => {
+        refreshPromise = doRefresh()
+        await refreshPromise
+        refreshPromise = null
+        resolve()
+      }, 50)
+    })
   }
 
   // ── Reactive Watches ─────────────────────────────────────────────────────
@@ -868,9 +885,11 @@ export function useDashboardAdmin(): DashboardAdminState {
     }
   })
 
-  // Realtime: atualiza dashboard ao vivo quando dados mudam
+  // Realtime: atualiza dashboard ao vivo quando dados mudam (throttled)
+  let realtimeTimer: ReturnType<typeof setTimeout> | null = null
   useRealtimeMulti(['contas_pagar', 'vendas', 'agendamentos', 'ordens_servico_adesivo', 'orcamentos_adesivo'], () => {
-    refresh()
+    if (realtimeTimer) clearTimeout(realtimeTimer)
+    realtimeTimer = setTimeout(() => refresh(), 3000)
   })
 
   // ── Return ───────────────────────────────────────────────────────────────

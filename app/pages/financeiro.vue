@@ -333,10 +333,10 @@
             </defs>
 
             <!-- Grid lines -->
-            <line v-for="(step, n) in lineYSteps" :key="`lgl${n}`" x1="60" :y1="15 + n * (120 / (lineYSteps.length - 1))" x2="940" :y2="15 + n * (120 / (lineYSteps.length - 1))" stroke="#f3f4f6" stroke-width="1" />
+            <line v-for="(step, n) in lineYSteps" :key="`lgl${n}`" x1="80" :y1="15 + n * (120 / (lineYSteps.length - 1))" x2="940" :y2="15 + n * (120 / (lineYSteps.length - 1))" stroke="#f3f4f6" stroke-width="1" />
 
             <!-- Y-axis labels -->
-            <text v-for="(step, n) in lineYSteps" :key="`lyl${n}`" x="56" :y="15 + n * (120 / (lineYSteps.length - 1)) + 4" text-anchor="end" font-size="9" fill="#9ca3af">
+            <text v-for="(step, n) in lineYSteps" :key="`lyl${n}`" x="76" :y="15 + n * (120 / (lineYSteps.length - 1)) + 4" text-anchor="end" font-size="9" fill="#9ca3af">
               {{ formatCurrencyShort(step) }}
             </text>
 
@@ -982,11 +982,13 @@ const lineMaxVal = computed(() =>
 // Steps dinâmicos para o eixo Y (evita muitas linhas)
 const lineYSteps = computed(() => {
   const max = lineMaxVal.value
-  // Step de 500 se max >= 2000, senão 250
-  const step = max >= 2000 ? 500 : 250
+  if (max === 0) return [0]
+  // Sempre gerar exatamente 5 steps (0, 25%, 50%, 75%, 100%)
+  const numSteps = 5
+  const step = max / (numSteps - 1)
   const steps: number[] = []
-  for (let v = 0; v <= max; v += step) {
-    steps.push(v)
+  for (let i = 0; i < numSteps; i++) {
+    steps.push(Math.round(step * i))
   }
   return steps.reverse() // do maior para o menor (topo → base)
 })
@@ -995,7 +997,7 @@ const lineChartPoints = computed(() => {
   const pts = monthlyData.value
   const maxVal = lineMaxVal.value
   return pts.map((m, i) => ({
-    x: 60 + i * (880 / 11),
+    x: 80 + i * (860 / 11),
     yReceita: 135 - (m.receita / maxVal) * 120,
     yDespesas: 135 - (m.despesas / maxVal) * 120,
     yAReceber: 135 - (m.receitaAReceber / maxVal) * 120,
