@@ -846,9 +846,11 @@ const pipelineTotal = computed(() =>
 // ── Sparkline helpers ────────────────────────────────────────────────────────
 function buildSparklinePath(values: number[]): string {
   if (values.length === 0) return 'M 0,15 L 100,15'
-  const max = Math.max(...values, 1)
+  const max = Math.max(...values)
+  // Se todos os valores são zero ou negativos, mostra linha reta
+  if (max <= 0) return 'M 0,28 L 100,28'
   const step = 100 / Math.max(values.length - 1, 1)
-  const pts = values.map((v, i) => ({ x: i * step, y: 28 - (v / max) * 26 }))
+  const pts = values.map((v, i) => ({ x: i * step, y: 28 - (Math.max(v, 0) / max) * 26 }))
   if (pts.length < 2) return `M ${pts[0].x},${pts[0].y}`
   let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`
   for (let i = 1; i < pts.length; i++) {

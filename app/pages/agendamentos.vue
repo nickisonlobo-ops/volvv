@@ -212,6 +212,15 @@
                   <!-- Ações para agendamentos normais -->
                   <template v-else>
                     <button
+                      v-if="ag.status !== 'concluido'"
+                      type="button"
+                      class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-green-500 hover:bg-green-50 transition-colors"
+                      title="Concluir"
+                      @click.stop="abrirConcluir(ag)"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    </button>
+                    <button
                       type="button"
                       class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-primary hover:bg-primary-10 transition-colors"
                       title="Editar"
@@ -494,7 +503,7 @@
                 <input
                   v-model="buscaCliente"
                   type="text"
-                  placeholder="Pesquisar cliente pelo nome..."
+                  :placeholder="form.cliente_id ? '' : 'Pesquisar cliente pelo nome...'"
                   class="w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   :class="formErrors.cliente_id ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-gray-50'"
                   @focus="clienteDropdownAberto = true"
@@ -1143,6 +1152,35 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- MODAL CONCLUIR AGENDAMENTO -->
+    <Teleport to="body">
+      <div v-if="concluindoAg" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="concluindoAg = null" />
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6">
+          <div class="w-14 h-14 rounded-2xl bg-green-50 border border-green-100 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          </div>
+          <h2 class="text-lg font-bold text-gray-900 text-center mb-1">Concluir agendamento?</h2>
+          <p class="text-sm text-gray-500 text-center mb-2">
+            <strong>{{ concluindoAg.cliente_nome }}</strong> — {{ formatCurrency(concluindoAg.valor_total || 0) }}
+          </p>
+          <p class="text-xs text-gray-400 text-center mb-5">
+            Será registrado como receita no financeiro (contas a receber).
+          </p>
+          <div v-if="concluirError" class="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm mb-4">{{ concluirError }}</div>
+          <div class="flex gap-3">
+            <button type="button" class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50" @click="concluindoAg = null">Cancelar</button>
+            <button
+              type="button"
+              :disabled="concluindoLoading"
+              class="flex-1 py-2.5 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 disabled:opacity-50 transition-colors"
+              @click="executarConcluir"
+            >{{ concluindoLoading ? 'Concluindo...' : 'Concluir' }}</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -1278,6 +1316,11 @@ const modalServicosAberto = ref(false)
 const excluindo = ref<AgendamentoRow | null>(null)
 const deleting = ref(false)
 const deleteError = ref<string | null>(null)
+
+// Concluir agendamento
+const concluindoAg = ref<AgendamentoRow | null>(null)
+const concluindoLoading = ref(false)
+const concluirError = ref<string | null>(null)
 
 const filtroAberto = ref(false)
 const filtro = reactive({ busca: '', status: [] as string[], data: '' })
@@ -2250,6 +2293,58 @@ async function executarExclusao() {
   deleting.value = false
   if (deleteErr) { deleteError.value = deleteErr.message; return }
   excluindo.value = null
+  await fetchAgendamentos()
+}
+
+// ─── Concluir agendamento ────────────────────────────────────────────────────
+function abrirConcluir(ag: AgendamentoRow) {
+  concluindoAg.value = ag
+  concluirError.value = null
+}
+
+async function executarConcluir() {
+  if (!concluindoAg.value) return
+  concluindoLoading.value = true
+  concluirError.value = null
+
+  const ag = concluindoAg.value
+
+  // 1. Atualizar status para concluido
+  const { error: updateErr } = await supabase
+    .from('agendamentos')
+    .update({ status: 'concluido' })
+    .eq('id', ag.id)
+
+  if (updateErr) {
+    concluirError.value = updateErr.message
+    concluindoLoading.value = false
+    return
+  }
+
+  // 2. Registrar no contas a pagar/receber
+  if (ag.valor_total && ag.valor_total > 0) {
+    const hoje = new Date().toISOString().split('T')[0]
+    await supabase.from('contas_pagar').insert({
+      empresa_id: empresaId.value,
+      tipo: 'receber',
+      descricao: `Agendamento - ${ag.cliente_nome || 'Cliente'}${ag.servicos_nomes ? ' (' + ag.servicos_nomes + ')' : ''}`,
+      valor: ag.valor_total,
+      data_vencimento: hoje,
+      status: 'pago',
+      data_pagamento: hoje,
+      categoria: 'Agendamento',
+    })
+  }
+
+  // 3. Gerar comissões (se aplicável)
+  const funcId = ag.funcionario_id
+  if (funcId) {
+    const funcNome = funcionarios.value.find(f => Number(f.id) === Number(funcId))?.nome ?? null
+    await gerarComissoes(ag.id, ag.data_hora, funcId, funcNome)
+  }
+
+  concluindoLoading.value = false
+  concluindoAg.value = null
   await fetchAgendamentos()
 }
 </script>
