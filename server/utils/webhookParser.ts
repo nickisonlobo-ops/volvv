@@ -64,70 +64,84 @@ function extractContent(
 export function parseWebhook(body: any): ParsedEvent[] {
   const events: ParsedEvent[] = []
 
-  for (const entry of body?.entry ?? []) {
-    const wabaId: string | undefined = entry?.id
+  // Formato completo Meta: { entry: [{ changes: [{ value }] }] }
+  // Formato simplificado Datafy: { field, value: { ... } }
+  let changes: any[] = []
 
-    for (const change of entry?.changes ?? []) {
-      const value = change?.value ?? {}
-      const meta = value.metadata ?? {}
-      const phoneNumberId: string | undefined = meta.phone_number_id
-      const displayPhoneNumber: string | undefined = meta.display_phone_number
-
-      // mapa de contatos (wa_id -> nome/userId)
-      const contactMap: Record<string, { name?: string; userId?: string }> = {}
-      for (const c of value.contacts ?? []) {
-        if (c?.wa_id) contactMap[c.wa_id] = { name: c.profile?.name, userId: c.user_id }
+  if (body?.entry) {
+    // Formato Meta padrão
+    for (const entry of body.entry) {
+      for (const change of entry?.changes ?? []) {
+        changes.push({ wabaId: entry?.id, value: change?.value ?? {} })
       }
+    }
+  } else if (body?.value) {
+    // Formato simplificado (Datafy test)
+    changes.push({ wabaId: null, value: body.value })
+  } else if (body?.field && body?.messaging_product) {
+    // Payload ainda mais flat
+    changes.push({ wabaId: null, value: body })
+  }
 
-      // mensagens recebidas (direction = in)
-      for (const m of value.messages ?? []) {
-        const contact = contactMap[m.from] ?? {}
-        events.push({
-          type: 'message',
-          direction: 'in',
-          phoneNumberId,
-          displayPhoneNumber,
-          wabaId,
-          contactWaId: m.from,
-          contactName: contact.name,
-          contactUserId: contact.userId,
-          waMessageId: m.id,
-          fromWaId: m.from,
-          toWaId: displayPhoneNumber,
-          ...extractContent(m),
-          waTimestamp: toIso(m.timestamp),
-        })
-      }
+  for (const { wabaId, value } of changes) {
+    const meta = value.metadata ?? {}
+    const phoneNumberId: string | undefined = meta.phone_number_id
+    const displayPhoneNumber: string | undefined = meta.display_phone_number
 
-      // echoes — enviadas pelo app Business (direction = out)
-      for (const m of value.message_echoes ?? []) {
-        const contact = contactMap[m.to] ?? {}
-        events.push({
-          type: 'message',
-          direction: 'out',
-          phoneNumberId,
-          displayPhoneNumber,
-          wabaId,
-          contactWaId: m.to,
-          contactName: contact.name,
-          contactUserId: contact.userId,
-          waMessageId: m.id,
-          fromWaId: m.from,
-          toWaId: m.to,
-          ...extractContent(m),
-          waTimestamp: toIso(m.timestamp),
-        })
-      }
+    // mapa de contatos (wa_id -> nome/userId)
+    const contactMap: Record<string, { name?: string; userId?: string }> = {}
+    for (const c of value.contacts ?? []) {
+      if (c?.wa_id) contactMap[c.wa_id] = { name: c.profile?.name, userId: c.user_id }
+    }
 
-      // status de entrega
-      for (const s of value.statuses ?? []) {
-        events.push({
-          type: 'status',
-          waMessageId: s.id,
-          status: s.status,
-          waTimestamp: toIso(s.timestamp),
-        })
-      }
+    // mensagens recebidas (direction = in)
+    for (const m of value.messages ?? []) {
+      const contact = contactMap[m.from] ?? {}
+      events.push({
+        type: 'message',
+        direction: 'in',
+        phoneNumberId,
+        displayPhoneNumber,
+        wabaId,
+        contactWaId: m.from,
+        contactName: contact.name,
+        contactUserId: contact.userId,
+        waMessageId: m.id,
+        fromWaId: m.from,
+        toWaId: displayPhoneNumber,
+        ...extractContent(m),
+        waTimestamp: toIso(m.timestamp),
+      })
+    }
+
+    // echoes — enviadas pelo app Business (direction = out)
+    for (const m of value.message_echoes ?? []) {
+      const contact = contactMap[m.to] ?? {}
+      events.push({
+        type: 'message',
+        direction: 'out',
+        phoneNumberId,
+        displayPhoneNumber,
+        wabaId,
+        contactWaId: m.to,
+        contactName: contact.name,
+        contactUserId: contact.userId,
+        waMessageId: m.id,
+        fromWaId: m.from,
+        toWaId: m.to,
+        ...extractContent(m),
+        waTimestamp: toIso(m.timestamp),
+      })
+    }
+
+    // status de entrega
+    for (const s of value.statuses ?? []) {
+      events.push({
+        type: 'status',
+        waMessageId: s.id,
+        status: s.status,
+        waTimestamp: toIso(s.timestamp),
+      })
     }
   }
 
