@@ -67,6 +67,7 @@ const menuAberto = ref(false)
 const allNavItems = [
   // Principal
   { to: '/',                         icon: 'home',           label: 'Início',             minPerfil: 'all' },
+  { to: '/chat',                     icon: 'chat',           label: 'WhatsApp',           minPerfil: 'all' },
   { to: '/agendamentos',             icon: 'calendar',       label: 'Agendamentos',       minPerfil: 'all' },
   { to: '/servicos',                 icon: 'sparkles',       label: 'Serviços',           minPerfil: 'all' },
   { to: '/clientes',                 icon: 'identification', label: 'Clientes',           minPerfil: 'all' },
