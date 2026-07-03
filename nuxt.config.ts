@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
   ssr: false,
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
   tailwindcss: {
     configPath: '~/tailwind.config.ts',
   },
@@ -44,9 +44,19 @@ export default defineNuxtConfig({
     ],
   },
   runtimeConfig: {
+    // Server-only (Datafy + Pusher server + Supabase service role)
+    supabaseUrl: process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL,
+    supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    datafyApiUrl: process.env.DATAFY_API_URL,
+    datafyNumberToken: process.env.DATAFY_NUMBER_TOKEN,
+    datafyPhoneNumberId: process.env.DATAFY_PHONE_NUMBER_ID,
+    pusherAppId: process.env.PUSHER_APP_ID,
+    pusherSecret: process.env.PUSHER_SECRET,
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,
+      pusherKey: process.env.PUSHER_KEY,
+      pusherCluster: process.env.PUSHER_CLUSTER,
     },
   },
 })
