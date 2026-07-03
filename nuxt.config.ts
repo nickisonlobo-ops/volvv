@@ -55,8 +55,8 @@ export default defineNuxtConfig({
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,
-      pusherKey: process.env.PUSHER_KEY,
-      pusherCluster: process.env.PUSHER_CLUSTER,
+      pusherKey: process.env.NUXT_PUBLIC_PUSHER_KEY || process.env.PUSHER_KEY,
+      pusherCluster: process.env.NUXT_PUBLIC_PUSHER_CLUSTER || process.env.PUSHER_CLUSTER,
     },
   },
 })
