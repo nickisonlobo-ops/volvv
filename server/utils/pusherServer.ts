@@ -8,10 +8,10 @@ let client: Pusher | null = null
 
 function getPusher(): Pusher | null {
   const c = useRuntimeConfig()
-  const appId = c.pusherAppId as string
-  const key = c.public.pusherKey as string
-  const secret = c.pusherSecret as string
-  const cluster = c.public.pusherCluster as string
+  const appId = (c.pusherAppId || process.env.PUSHER_APP_ID) as string
+  const key = (c.public?.pusherKey || process.env.PUSHER_KEY) as string
+  const secret = (c.pusherSecret || process.env.PUSHER_SECRET) as string
+  const cluster = (c.public?.pusherCluster || process.env.PUSHER_CLUSTER) as string
 
   if (!appId || !key || !secret || !cluster) {
     console.warn('[pusher] não configurado (PUSHER_APP_ID/KEY/SECRET/CLUSTER)')
