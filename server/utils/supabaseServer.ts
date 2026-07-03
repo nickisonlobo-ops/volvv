@@ -1,28 +1,26 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '../../app/types/database'
 
 /**
  * Client Supabase de SERVIDOR, com a service role key.
- * ⚠️ Nunca importar isto em código que roda no browser — a service role
- * bypassa a RLS. Só usar dentro de handlers de `server/api`.
  */
-let client: SupabaseClient<Database> | null = null
+let client: SupabaseClient | null = null
 
-export function useSupabaseServer(): SupabaseClient<Database> {
+export function useSupabaseServer(): SupabaseClient {
   if (client) return client
 
   const config = useRuntimeConfig()
-  const url = config.supabaseUrl as string
-  const key = config.supabaseServiceKey as string
+  const url = (config.supabaseUrl || process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL) as string
+  const key = (config.supabaseServiceKey || process.env.SUPABASE_SERVICE_ROLE_KEY) as string
 
   if (!url || !key) {
+    console.error('[supabase] SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY não configurados')
     throw createError({
       statusCode: 500,
-      statusMessage: 'Supabase não configurado (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY).',
+      message: 'Supabase não configurado (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY).',
     })
   }
 
-  client = createClient<Database>(url, key, {
+  client = createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
   return client
