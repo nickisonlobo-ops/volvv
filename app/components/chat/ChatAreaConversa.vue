@@ -1,6 +1,6 @@
 <template>
   <section class="chat-area-conversas">
-    <ChatHeaderConversa v-model:busca="busca" v-model:filtro="filtro" />
+    <ChatHeaderConversa v-model:busca="busca" v-model:filtro="filtro" @kanban="$emit('kanban')" />
     <ChatListaConversa :conversas="conversasFiltradas" :ativa-id="ativaId" @selecionar="$emit('selecionar', $event)" />
   </section>
 </template>
@@ -9,7 +9,7 @@
 import { ref, computed } from 'vue'
 
 const props = defineProps<{ conversas: any[]; ativaId: number }>()
-defineEmits<{ (e: 'selecionar', id: number): void }>()
+defineEmits<{ (e: 'selecionar', id: number): void; (e: 'kanban'): void }>()
 
 const busca = ref('')
 const filtro = ref('Tudo')

@@ -1,18 +1,8 @@
 <template>
   <div>
     <div class="chat-page" :data-theme="chatTheme" v-if="viewMode === 'chat'">
-      <ChatAreaConversa :conversas="conversasView" :ativa-id="ativaIdNum" @selecionar="onSelecionar" />
+      <ChatAreaConversa :conversas="conversasView" :ativa-id="ativaIdNum" @selecionar="onSelecionar" @kanban="viewMode = 'kanban'" />
       <ChatAreaMensagens :conversa="conversaAtivaView" :mensagens="mensagensView" @enviar="onEnviar" />
-      <!-- Botoes flutuantes no topo direito -->
-      <div style="position: fixed; top: 70px; right: 20px; z-index: 40; display: flex; gap: 8px;">
-        <button class="px-3 py-2 rounded-xl text-xs font-bold shadow-lg transition-all hover:scale-105" style="background: var(--chat-header, #202c33); color: var(--chat-text, #e9edef); border: 1px solid var(--chat-divider, #222d34);" @click="viewMode = 'kanban'">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z"/></svg>
-          Kanban
-        </button>
-        <button class="px-3 py-2 rounded-xl text-xs font-bold shadow-lg transition-all hover:scale-105" style="background: var(--chat-header, #202c33); color: var(--chat-text, #e9edef); border: 1px solid var(--chat-divider, #222d34);" @click="chatTheme = chatTheme === 'dark' ? 'light' : 'dark'">
-          {{ chatTheme === 'dark' ? 'Claro' : 'Escuro' }}
-        </button>
-      </div>
     </div>
     <div v-else class="min-h-full bg-transparent p-3 sm:p-8">
       <div class="flex items-center justify-between mb-4">

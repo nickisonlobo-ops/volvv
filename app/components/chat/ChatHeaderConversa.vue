@@ -3,6 +3,9 @@
     <div class="chat-hc-top">
       <h1>Conversas</h1>
       <div class="chat-hc-actions">
+        <button class="chat-ic-btn" title="Modo Kanban" @click="$emit('kanban')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z"/></svg>
+        </button>
         <button class="chat-ic-btn" title="Nova conversa">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M12 9v6M9 12h6"/></svg>
         </button>
@@ -25,7 +28,7 @@
 
 <script setup lang="ts">
 defineProps<{ busca: string; filtro: string }>()
-defineEmits<{ (e: 'update:busca', v: string): void; (e: 'update:filtro', v: string): void }>()
+defineEmits<{ (e: 'update:busca', v: string): void; (e: 'update:filtro', v: string): void; (e: 'kanban'): void }>()
 
 const filtros = ['Tudo', 'Não lidas', 'Favoritas', 'Grupos']
 </script>
