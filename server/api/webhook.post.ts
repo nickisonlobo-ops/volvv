@@ -79,12 +79,22 @@ async function persistMessage(supabase: ReturnType<typeof useSupabaseServer>, ev
   }
   if (!inserted) return
 
+  // Incrementa unread_count se mensagem recebida (in)
+  const updatePayload: Record<string, unknown> = {
+    last_message_preview: previewFor(ev.kind, ev.body, ev.caption),
+    last_message_at: ev.waTimestamp,
+  }
+  if (ev.direction === 'in') {
+    // Incrementa via RPC ou raw query
+    await supabase.rpc('increment_unread', { conv_id: conversationId }).catch(() => {
+      // Fallback: se RPC nao existe, faz update direto
+      supabase.from('conversations').update({ unread_count: 999 }).eq('id', conversationId)
+    })
+  }
+
   const { data: convRow } = await supabase
     .from('conversations')
-    .update({
-      last_message_preview: previewFor(ev.kind, ev.body, ev.caption),
-      last_message_at: ev.waTimestamp,
-    })
+    .update(updatePayload)
     .eq('id', conversationId)
     .select('*')
     .single()

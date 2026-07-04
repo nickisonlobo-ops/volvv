@@ -3,9 +3,14 @@
     <template #default>
       <div class="space-y-1.5">
         <!-- Nome do contato -->
-        <p class="text-sm font-semibold truncate" style="color: var(--color-card-texto, #1e293b)">
-          {{ card.titulo }}
-        </p>
+        <div class="flex items-center justify-between">
+          <p class="text-sm font-semibold truncate" style="color: var(--color-card-texto, #1e293b)">
+            {{ card.titulo }}
+          </p>
+          <span v-if="card.info_extra?.unread && card.info_extra.unread !== '0'" class="min-w-[20px] h-5 px-1.5 rounded-full bg-[#25d366] text-[10px] font-bold text-white flex items-center justify-center">
+            {{ card.info_extra.unread }}
+          </span>
+        </div>
 
         <!-- Última mensagem -->
         <div class="flex items-center gap-1.5 text-xs" style="color: var(--color-card-texto, #64748b); opacity: 0.7">

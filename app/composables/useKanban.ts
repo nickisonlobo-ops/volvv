@@ -263,7 +263,7 @@ export function useKanban(pipelineTipo: PipelineTipo) {
   async function carregarCardsWhatsApp(): Promise<KanbanCard[]> {
     const { data, error } = await supabase
       .from('conversations')
-      .select('id, contact_name, wa_id, last_message_preview, last_message_at, etapa_id')
+      .select('id, contact_name, wa_id, last_message_preview, last_message_at, etapa_id, unread_count')
 
     if (error) {
       throw new Error(`Erro ao carregar conversas: ${error.message}`)
@@ -286,6 +286,7 @@ export function useKanban(pipelineTipo: PipelineTipo) {
         info_extra: {
           preview: conv.last_message_preview ?? '—',
           time: conv.last_message_at ? formatarData(conv.last_message_at) : '—',
+          unread: String(conv.unread_count ?? 0),
         },
       }
     }).filter((c: any) => c.etapa_id != null)
