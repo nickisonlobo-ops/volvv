@@ -293,13 +293,13 @@
       </div>
 
       <!-- ══════════════════════════════════════════════════════ AREA LINE CHART -->
-      <div class="bg-white rounded-3xl shadow-md border border-gray-100 p-6 mb-6">
+      <div class="rounded-3xl shadow-md border p-6 mb-6" style="background: var(--color-card, #fff); border-color: var(--color-primary-10, #e5e7eb);">
         <div class="flex items-center justify-between mb-5">
           <div>
-            <h3 class="text-base font-black text-gray-800">Evolução da Receita</h3>
-            <p class="text-xs text-gray-400 mt-0.5">Últimos 12 meses — valores mensais</p>
+            <h3 class="text-base font-black" style="color: var(--color-card-texto, #1f2937)">Evolução da Receita</h3>
+            <p class="text-xs mt-0.5" style="color: var(--color-card-texto, #9ca3af); opacity: 0.6">Últimos 12 meses — valores mensais</p>
           </div>
-          <div class="flex items-center gap-4 text-xs font-semibold text-gray-500">
+          <div class="flex items-center gap-4 text-xs font-semibold" style="color: var(--color-card-texto, #6b7280); opacity: 0.8;">
             <div class="flex items-center gap-1.5">
               <span class="w-3 h-3 rounded-sm bg-emerald-500"></span>
               Receita
@@ -333,10 +333,10 @@
             </defs>
 
             <!-- Grid lines -->
-            <line v-for="(step, n) in lineYSteps" :key="`lgl${n}`" x1="80" :y1="15 + n * (120 / (lineYSteps.length - 1))" x2="940" :y2="15 + n * (120 / (lineYSteps.length - 1))" stroke="#f3f4f6" stroke-width="1" />
+            <line v-for="(step, n) in lineYSteps" :key="`lgl${n}`" x1="80" :y1="15 + n * (120 / (lineYSteps.length - 1))" x2="940" :y2="15 + n * (120 / (lineYSteps.length - 1))" stroke="var(--color-primary-10, #f3f4f6)" stroke-width="1" />
 
             <!-- Y-axis labels -->
-            <text v-for="(step, n) in lineYSteps" :key="`lyl${n}`" x="76" :y="15 + n * (120 / (lineYSteps.length - 1)) + 4" text-anchor="end" font-size="9" fill="#9ca3af">
+            <text v-for="(step, n) in lineYSteps" :key="`lyl${n}`" x="76" :y="15 + n * (120 / (lineYSteps.length - 1)) + 4" text-anchor="end" font-size="9" fill="var(--color-card-texto, #9ca3af)" opacity="0.6">
               {{ formatCurrencyShort(step) }}
             </text>
 
@@ -412,12 +412,13 @@
               y="162"
               text-anchor="middle"
               font-size="9"
-              fill="#9ca3af"
+              fill="var(--color-card-texto, #9ca3af)"
+              opacity="0.6"
               font-weight="600"
             >{{ p.label }}</text>
 
             <!-- Baseline -->
-            <line x1="60" y1="135" x2="940" y2="135" stroke="#e5e7eb" stroke-width="1.5" />
+            <line x1="60" y1="135" x2="940" y2="135" stroke="var(--color-primary-10, #e5e7eb)" stroke-width="1.5" />
           </svg>
 
           <!-- Tooltip -->
