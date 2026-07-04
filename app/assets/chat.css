@@ -117,6 +117,9 @@
   outline: none;
   color: var(--chat-text);
   font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: none;
 }
 .chat-hc-search input::placeholder { color: var(--chat-text-2); }
 
@@ -362,6 +365,9 @@
   color: var(--chat-text);
   font-size: 15px;
   padding: 0 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: none;
 }
 .chat-ci-input::placeholder { color: var(--chat-text-2); }
 
@@ -589,4 +595,16 @@
     min-height: 100dvh;
     min-height: -webkit-fill-available;
   }
+}
+
+/* ===== Reset Tailwind conflicts on chat inputs ===== */
+.chat-page input,
+.chat-page input:focus,
+.chat-page input:active {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  ring: none !important;
+  --tw-ring-shadow: none !important;
+  --tw-ring-color: transparent !important;
 }
