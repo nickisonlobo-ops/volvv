@@ -240,6 +240,18 @@ export function usePersonalizacao() {
     root.style.setProperty('--color-primary-bg',     primaryBg)
     root.style.setProperty('--grad-direction',       dir)
 
+    // ── Background do html/body (cor sólida para status bar mobile) ──
+    document.documentElement.style.background = cfg.cor_fundo
+    document.body.style.background = cfg.cor_fundo
+    // Meta theme-color (status bar do mobile)
+    let metaTheme = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null
+    if (!metaTheme) {
+      metaTheme = document.createElement('meta')
+      metaTheme.name = 'theme-color'
+      document.head.appendChild(metaTheme)
+    }
+    metaTheme.content = cfg.cor_fundo
+
     // ── Variantes automáticas ───────────────────────────────────
     root.style.setProperty('--color-primary-5',      hexToRgba(cfg.cor_primaria, 0.05))
     root.style.setProperty('--color-primary-10',     hexToRgba(cfg.cor_primaria, 0.10))
