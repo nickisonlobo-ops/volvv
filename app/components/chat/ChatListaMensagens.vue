@@ -6,9 +6,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUpdated, nextTick } from 'vue'
+import { ref, onMounted, onUpdated, watch, nextTick } from 'vue'
 
-defineProps<{ mensagens: any[] }>()
+const props = defineProps<{ mensagens: any[] }>()
 
 const scroller = ref<HTMLElement | null>(null)
 
@@ -16,8 +16,16 @@ function scrollToBottom() {
   nextTick(() => {
     if (scroller.value) scroller.value.scrollTop = scroller.value.scrollHeight
   })
+  // Fallback para depois que imagens/videos carregam
+  setTimeout(() => {
+    if (scroller.value) scroller.value.scrollTop = scroller.value.scrollHeight
+  }, 300)
+  setTimeout(() => {
+    if (scroller.value) scroller.value.scrollTop = scroller.value.scrollHeight
+  }, 800)
 }
 
 onMounted(scrollToBottom)
 onUpdated(scrollToBottom)
+watch(() => props.mensagens.length, scrollToBottom)
 </script>
