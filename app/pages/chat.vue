@@ -4,17 +4,46 @@
       <ChatAreaConversa :conversas="conversasView" :ativa-id="ativaIdNum" @selecionar="onSelecionar" />
       <ChatAreaMensagens :conversa="conversaAtivaView" :mensagens="mensagensView" @enviar="onEnviar" />
       <button class="chat-theme-toggle" @click="chatTheme = chatTheme === 'dark' ? 'light' : 'dark'">
-        {{ chatTheme === 'dark' ? '☀ Claro' : '🌙 Escuro' }}
+        {{ chatTheme === 'dark' ? 'â˜€ Claro' : 'ðŸŒ™ Escuro' }}
       </button>
-      <button class="chat-theme-toggle" style="bottom: 120px;" @click="viewMode = 'kanban'">📋 Kanban</button>
+      <button class="chat-theme-toggle" style="bottom: 120px;" @click="viewMode = 'kanban'">ðŸ“‹ Kanban</button>
     </div>
     <div v-else class="min-h-full bg-transparent p-3 sm:p-8">
       <div class="flex items-center justify-between mb-4">
-        <h1 class="text-xl font-bold">WhatsApp — Kanban</h1>
-        <button class="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-bold" @click="viewMode = 'chat'">← Chat</button>
+        <h1 class="text-xl font-bold">WhatsApp â€” Kanban</h1>
+        <button class="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-bold" @click="viewMode = 'chat'">â† Chat</button>
       </div>
       <KanbanBoard pipeline-tipo="whatsapp" @card-click="onKanbanCardClick" />
     </div>
+
+    <!-- Modal conversacional (abre por cima do Kanban) -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="modalConversaAberto" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click.self="modalConversaAberto = false">
+          <div class="bg-[#0b141a] rounded-2xl shadow-2xl w-full max-w-3xl h-[85vh] overflow-hidden flex flex-col" data-theme="dark">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-5 py-3 bg-[#202c33] flex-shrink-0">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-[#25d366] flex items-center justify-center text-white font-bold text-sm">
+                  {{ modalConversaNome?.charAt(0)?.toUpperCase() || '?' }}
+                </div>
+                <div>
+                  <p class="text-white font-semibold text-sm">{{ modalConversaNome }}</p>
+                  <p class="text-[#8696a0] text-xs">online</p>
+                </div>
+              </div>
+              <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg text-[#aebac1] hover:text-white hover:bg-white/10" @click="modalConversaAberto = false">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <!-- Mensagens -->
+            <div class="flex-1 overflow-hidden">
+              <ChatAreaMensagens :conversa="modalConversaView" :mensagens="mensagensView" @enviar="onEnviar" />
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -71,8 +100,16 @@ const mensagensView = computed(() =>
 
 function onEnviar(txt: string) { store.sendMensagem(txt) }
 
+const modalConversaAberto = ref(false)
+const modalConversaNome = ref('')
+
+const modalConversaView = computed(() => ({
+  id: 0, nome: modalConversaNome.value, hora: '', previa: '', foto: '', cor: '#25d366',
+}))
+
 function onKanbanCardClick(card: KanbanCard) {
   store.selectConversa(String(card.id))
-  viewMode.value = 'chat'
+  modalConversaNome.value = card.titulo || ''
+  modalConversaAberto.value = true
 }
 </script>
