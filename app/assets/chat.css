@@ -231,7 +231,7 @@
 .chat-lm {
   flex: 1;
   overflow-y: auto;
-  padding: 14px 6% 96px;
+  padding: 14px 6% 110px;
   position: relative;
   z-index: 1;
   display: flex;
@@ -523,3 +523,7 @@
 
 .chat-page[data-theme="light"] ::-webkit-scrollbar-thumb { background: #c5ccd2; }
 .chat-page[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #a0a8ae; }
+
+/* Esconde scroll da main quando está no chat */
+.chat-page { position: relative; }
+.chat-page ~ *, .chat-page + * { overflow: hidden; }

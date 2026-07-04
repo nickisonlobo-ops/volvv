@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="chat-page" :data-theme="chatTheme" v-if="viewMode === 'chat'" style="height: calc(100vh - 64px); overflow: hidden;">
+  <div style="height: 100%; overflow: hidden;">
+    <div class="chat-page" :data-theme="chatTheme" v-if="viewMode === 'chat'" style="height: 100%; max-height: 100%; overflow: hidden;">
       <ChatAreaConversa :conversas="conversasView" :ativa-id="ativaIdNum" @selecionar="onSelecionar" @kanban="viewMode = 'kanban'" />
       <ChatAreaMensagens :conversa="conversaAtivaView" :mensagens="mensagensView" @enviar="onEnviar" @toggle-theme="chatTheme = chatTheme === 'dark' ? 'light' : 'dark'" />
     </div>
@@ -104,3 +104,12 @@ function onKanbanCardClick(card: KanbanCard) {
   modalConversaAberto.value = true
 }
 </script>
+
+<style>
+/* Esconde o scroll do main (parent) quando o chat está ativo */
+main:has(.chat-page) {
+  overflow: hidden !important;
+  height: 100% !important;
+  max-height: 100% !important;
+}
+</style>
