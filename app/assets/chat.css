@@ -511,3 +511,15 @@
   border-radius: 6px;
   display: block;
 }
+
+/* ===== Scrollbar customizada ===== */
+.chat-page ::-webkit-scrollbar { width: 6px; }
+.chat-page ::-webkit-scrollbar-track { background: transparent; }
+.chat-page ::-webkit-scrollbar-thumb {
+  background: var(--chat-scroll, #374248);
+  border-radius: 6px;
+}
+.chat-page ::-webkit-scrollbar-thumb:hover { background: var(--chat-accent, #00a884); }
+
+.chat-page[data-theme="light"] ::-webkit-scrollbar-thumb { background: #c5ccd2; }
+.chat-page[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #a0a8ae; }
