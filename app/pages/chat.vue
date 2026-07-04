@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%; overflow: hidden;">
+  <div :style="{ height: viewMode === 'chat' ? '100%' : 'auto', overflow: viewMode === 'chat' ? 'hidden' : 'auto' }">
     <div class="chat-page" v-if="viewMode === 'chat'" style="height: 100%; max-height: 100%; overflow: hidden;">
       <ChatAreaConversa :conversas="conversasView" :ativa-id="ativaIdNum" @selecionar="onSelecionar" @kanban="viewMode = 'kanban'" :class="{ 'chat-mobile-hidden': mobileConversaAberta }" />
       <div class="chat-area-mensagens-wrap" :class="{ 'chat-mobile-visible': mobileConversaAberta }">
@@ -143,6 +143,5 @@ main:has(.chat-page) {
   height: 100% !important;
   max-height: 100% !important;
 }
-html:has(.chat-page) { background: #0b141a; }
-html:has(.chat-page[data-theme="light"]) { background: #efeae2; }
+html:has(.chat-page) { background: var(--color-bg, #0b141a); }
 </style>
