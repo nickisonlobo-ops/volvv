@@ -1,30 +1,32 @@
 /* ===== Chat Theme Variables ===== */
-.chat-page[data-theme="dark"] {
-  --chat-bg-app: #0b141a;
-  --chat-panel-left: #111b21;
-  --chat-header: #202c33;
-  --chat-search-bg: #202c33;
-  --chat-hover: #202c33;
-  --chat-active: #2a3942;
-  --chat-divider: #222d34;
-  --chat-text: #e9edef;
-  --chat-text-2: #8696a0;
-  --chat-accent: #00a884;
-  --chat-accent-strong: #21c063;
-  --chat-bubble-in: #202c33;
-  --chat-bubble-out: #005c4b;
-  --chat-bubble-in-text: #e9edef;
-  --chat-bubble-out-text: #e9edef;
-  --chat-bg: #0b141a;
-  --chat-input-bar: #202c33;
-  --chat-chip: #202c33;
-  --chat-chip-active: #005c4b;
-  --chat-icon: #aebac1;
-  --chat-scroll: #374248;
+/* Herda do tema global do sistema */
+.chat-page {
+  --chat-bg-app: var(--color-bg, #0b141a);
+  --chat-panel-left: var(--color-sidebar, #111b21);
+  --chat-header: var(--color-sidebar, #202c33);
+  --chat-search-bg: var(--color-primary-5, #202c33);
+  --chat-hover: var(--color-primary-5, #202c33);
+  --chat-active: var(--color-primary-10, #2a3942);
+  --chat-divider: var(--color-primary-border, #222d34);
+  --chat-text: var(--color-primary-text, #e9edef);
+  --chat-text-2: var(--color-primary-text, #8696a0);
+  --chat-accent: var(--color-primary, #00a884);
+  --chat-accent-strong: var(--color-primary, #21c063);
+  --chat-bubble-in: var(--color-primary-5, #202c33);
+  --chat-bubble-out: var(--color-primary-20, #005c4b);
+  --chat-bubble-in-text: var(--color-card-texto, #e9edef);
+  --chat-bubble-out-text: var(--color-primary-text, #e9edef);
+  --chat-bg: var(--color-bg, #0b141a);
+  --chat-input-bar: var(--color-sidebar, #202c33);
+  --chat-chip: var(--color-primary-10, #202c33);
+  --chat-chip-active: var(--color-primary, #005c4b);
+  --chat-icon: var(--color-primary-text, #aebac1);
+  --chat-scroll: var(--color-primary-20, #374248);
   --chat-shadow: rgba(0,0,0,0.35);
   --chat-pattern-op: 0.05;
 }
 
+/* Fallback para light quando nao tem tema escuro */
 .chat-page[data-theme="light"] {
   --chat-bg-app: #efeae2;
   --chat-panel-left: #ffffff;
@@ -35,16 +37,16 @@
   --chat-divider: #e9edef;
   --chat-text: #111b21;
   --chat-text-2: #667781;
-  --chat-accent: #008069;
-  --chat-accent-strong: #06cf9c;
+  --chat-accent: var(--color-primary, #008069);
+  --chat-accent-strong: var(--color-primary, #06cf9c);
   --chat-bubble-in: #ffffff;
-  --chat-bubble-out: #d9fdd3;
+  --chat-bubble-out: var(--color-primary-10, #d9fdd3);
   --chat-bubble-in-text: #111b21;
   --chat-bubble-out-text: #111b21;
   --chat-bg: #efeae2;
   --chat-input-bar: #f0f2f5;
   --chat-chip: #e9edef;
-  --chat-chip-active: #008069;
+  --chat-chip-active: var(--color-primary, #008069);
   --chat-icon: #54656f;
   --chat-scroll: #d0d5d9;
   --chat-shadow: rgba(11,20,26,0.13);

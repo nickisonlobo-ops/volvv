@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%; overflow: hidden;">
-    <div class="chat-page" :data-theme="chatTheme" v-if="viewMode === 'chat'" style="height: 100%; max-height: 100%; overflow: hidden;">
+    <div class="chat-page" v-if="viewMode === 'chat'" style="height: 100%; max-height: 100%; overflow: hidden;">
       <ChatAreaConversa :conversas="conversasView" :ativa-id="ativaIdNum" @selecionar="onSelecionar" @kanban="viewMode = 'kanban'" :class="{ 'chat-mobile-hidden': mobileConversaAberta }" />
       <div class="chat-area-mensagens-wrap" :class="{ 'chat-mobile-visible': mobileConversaAberta }">
         <button v-if="mobileConversaAberta" class="chat-mobile-back" @click="mobileConversaAberta = false">
@@ -77,25 +77,11 @@ import '~/assets/chat.css'
 
 definePageMeta({ layout: 'default' })
 
-// Tema segue o tema global da empresa (detecta se e escuro ou claro)
+// Tema segue o tema global da empresa automaticamente
 const chatTheme = ref('dark')
 onMounted(() => {
-  detectTheme()
   store.loadConversas()
 })
-
-function detectTheme() {
-  // Pega a cor de fundo da empresa
-  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim()
-  // Se contem gradient, pega a primeira cor
-  const color = bgColor.includes('#') ? bgColor.match(/#[0-9a-fA-F]{6}/)?.[0] || '#111827' : '#111827'
-  // Calcula luminancia - se escuro usa dark, se claro usa light
-  const r = parseInt(color.slice(1, 3), 16)
-  const g = parseInt(color.slice(3, 5), 16)
-  const b = parseInt(color.slice(5, 7), 16)
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-  chatTheme.value = luminance < 0.5 ? 'dark' : 'light'
-}
 
 const viewMode = ref<'chat' | 'kanban'>('chat')
 const mobileConversaAberta = ref(false)
