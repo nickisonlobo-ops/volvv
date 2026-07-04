@@ -69,7 +69,7 @@ const mensagensView = computed(() =>
         case 'audio':
           return { ...base, tipo: 'audio', url: m.url, duracao: m.duration || '0:00' }
         case 'video':
-          return { ...base, tipo: 'imagem', url: m.url, legenda: m.caption }
+          return { ...base, tipo: 'video', url: m.url, legenda: m.caption }
         case 'document':
           return { ...base, tipo: 'documento', url: m.url, nomeArquivo: m.filename || 'arquivo', tamanho: m.size }
         case 'sticker':

@@ -501,3 +501,12 @@
   box-shadow: 0 2px 8px var(--chat-shadow);
 }
 .chat-theme-toggle:hover { filter: brightness(1.1); }
+
+/* ===== Video Message ===== */
+.chat-video-wrap { position: relative; }
+.chat-video-player {
+  width: 280px;
+  max-width: 100%;
+  border-radius: 6px;
+  display: block;
+}
