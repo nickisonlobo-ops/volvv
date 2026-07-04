@@ -527,3 +527,53 @@
 /* Esconde scroll da main quando está no chat */
 .chat-page { position: relative; }
 .chat-page ~ *, .chat-page + * { overflow: hidden; }
+
+/* ===== Mobile: lista/conversa toggle ===== */
+.chat-area-mensagens-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+}
+.chat-area-mensagens-wrap .chat-area-mensagens { flex: 1; }
+
+.chat-mobile-back {
+  display: none;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--chat-header, #202c33);
+  color: var(--chat-text, #e9edef);
+  border: none;
+  cursor: pointer;
+  place-items: center;
+}
+
+@media (max-width: 768px) {
+  .chat-area-conversas {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .chat-area-mensagens-wrap {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    background: var(--chat-bg, #0b141a);
+  }
+  .chat-area-mensagens-wrap.chat-mobile-visible {
+    display: flex;
+  }
+  .chat-mobile-hidden {
+    display: none !important;
+  }
+  .chat-mobile-back {
+    display: grid;
+  }
+}

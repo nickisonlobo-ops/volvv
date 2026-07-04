@@ -1,8 +1,15 @@
 <template>
   <div style="height: 100%; overflow: hidden;">
     <div class="chat-page" :data-theme="chatTheme" v-if="viewMode === 'chat'" style="height: 100%; max-height: 100%; overflow: hidden;">
-      <ChatAreaConversa :conversas="conversasView" :ativa-id="ativaIdNum" @selecionar="onSelecionar" @kanban="viewMode = 'kanban'" />
-      <ChatAreaMensagens :conversa="conversaAtivaView" :mensagens="mensagensView" @enviar="onEnviar" @toggle-theme="chatTheme = chatTheme === 'dark' ? 'light' : 'dark'" />
+      <!-- Mobile: mostra lista OU conversa -->
+      <ChatAreaConversa :conversas="conversasView" :ativa-id="ativaIdNum" @selecionar="onSelecionar" @kanban="viewMode = 'kanban'" :class="{ 'chat-mobile-hidden': mobileConversaAberta }" />
+      <div class="chat-area-mensagens-wrap" :class="{ 'chat-mobile-visible': mobileConversaAberta }">
+        <!-- Botao voltar (mobile only) -->
+        <button v-if="mobileConversaAberta" class="chat-mobile-back" @click="mobileConversaAberta = false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+        </button>
+        <ChatAreaMensagens :conversa="conversaAtivaView" :mensagens="mensagensView" @enviar="onEnviar" @toggle-theme="chatTheme = chatTheme === 'dark' ? 'light' : 'dark'" />
+      </div>
     </div>
     <div v-else class="min-h-full bg-transparent p-3 sm:p-8">
       <div class="flex items-center justify-between mb-4">
@@ -52,6 +59,7 @@ definePageMeta({ layout: 'default' })
 
 const chatTheme = ref('dark')
 const viewMode = ref<'chat' | 'kanban'>('chat')
+const mobileConversaAberta = ref(false)
 const store = useChatStore()
 
 onMounted(() => { store.loadConversas() })
@@ -70,6 +78,7 @@ const ativaIdNum = computed(() => {
 function onSelecionar(idx: number) {
   const conv = store.conversas[idx]
   if (conv) store.selectConversa(conv.id)
+  mobileConversaAberta.value = true
 }
 
 const conversaAtivaView = computed(() => {
