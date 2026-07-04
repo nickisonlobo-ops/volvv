@@ -241,16 +241,21 @@ export function usePersonalizacao() {
     root.style.setProperty('--grad-direction',       dir)
 
     // ── Background do html/body (cor sólida para status bar mobile) ──
-    document.documentElement.style.background = cfg.cor_fundo
-    document.body.style.background = cfg.cor_fundo
-    // Meta theme-color (status bar do mobile)
-    let metaTheme = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null
-    if (!metaTheme) {
-      metaTheme = document.createElement('meta')
-      metaTheme.name = 'theme-color'
-      document.head.appendChild(metaTheme)
+    const bgSolid = cfg.cor_fundo || '#f8fafc'
+    if (document.documentElement && document.body) {
+      document.documentElement.style.background = bgSolid
+      document.body.style.background = bgSolid
     }
-    metaTheme.content = cfg.cor_fundo
+    // Meta theme-color (status bar do mobile)
+    try {
+      let metaTheme = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null
+      if (!metaTheme) {
+        metaTheme = document.createElement('meta')
+        metaTheme.name = 'theme-color'
+        document.head.appendChild(metaTheme)
+      }
+      metaTheme.content = bgSolid
+    } catch {}
 
     // ── Variantes automáticas ───────────────────────────────────
     root.style.setProperty('--color-primary-5',      hexToRgba(cfg.cor_primaria, 0.05))
