@@ -16,8 +16,8 @@ interface DatafyMediaResponse {
  */
 export async function resolveMediaUrl(mediaId: string): Promise<string | null> {
   const config = useRuntimeConfig()
-  const base = config.datafyApiUrl as string
-  const token = config.datafyNumberToken as string
+  const base = (config.datafyApiUrl || process.env.DATAFY_API_URL) as string
+  const token = (config.datafyNumberToken || process.env.DATAFY_NUMBER_TOKEN) as string
 
   if (!base || !token) {
     console.warn('[media] Datafy não configurado (DATAFY_API_URL / DATAFY_NUMBER_TOKEN)')
@@ -25,12 +25,14 @@ export async function resolveMediaUrl(mediaId: string): Promise<string | null> {
   }
 
   try {
+    console.log(`[media] resolvendo mídia ${mediaId} em ${base}/media/${mediaId}`)
     const res = await $fetch<DatafyMediaResponse>(`${base}/media/${mediaId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
+    console.log(`[media] URL resolvida: ${res?.url}`)
     return res?.url ?? null
-  } catch (e) {
-    console.error('[media] falha ao resolver mídia', mediaId, e)
+  } catch (e: any) {
+    console.error('[media] falha ao resolver mídia', mediaId, e?.message || e)
     return null
   }
 }
