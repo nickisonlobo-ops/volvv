@@ -597,7 +597,7 @@
             </div>
             <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">A Receber</span>
           </div>
-          <p class="text-xl sm:text-2xl font-black text-green-600 truncate">{{ formatCurrency(previsao.aReceber) }}</p>
+          <p class="text-xl sm:text-2xl font-black truncate" style="color: var(--color-card-texto)">{{ formatCurrency(previsao.aReceber) }}</p>
           <p class="text-[11px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.75">{{ previsao.qtdReceber }} conta(s) pendente(s)</p>
         </div>
 
@@ -609,7 +609,7 @@
             </div>
             <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">A Pagar</span>
           </div>
-          <p class="text-xl sm:text-2xl font-black text-red-500 truncate">{{ formatCurrency(previsao.aPagar) }}</p>
+          <p class="text-xl sm:text-2xl font-black truncate" style="color: var(--color-card-texto)">{{ formatCurrency(previsao.aPagar) }}</p>
           <p class="text-[11px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.75">{{ previsao.qtdPagar }} conta(s) pendente(s)</p>
         </div>
 
@@ -621,7 +621,7 @@
             </div>
             <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Saldo Previsto</span>
           </div>
-          <p class="text-xl sm:text-2xl font-black truncate" :class="previsao.saldo >= 0 ? 'text-green-600' : 'text-red-500'">{{ formatCurrency(previsao.saldo) }}</p>
+          <p class="text-xl sm:text-2xl font-black truncate" style="color: var(--color-card-texto)">{{ formatCurrency(previsao.saldo) }}</p>
           <p class="text-[11px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.75">receber - pagar (não pagas)</p>
         </div>
       </div>
