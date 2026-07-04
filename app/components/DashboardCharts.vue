@@ -4,7 +4,7 @@
     <div class="h-px bg-primary-10 my-4" />
 
     <!-- Evolução da Receita (full width SVG area chart — 12 meses) -->
-    <div class="rounded-2xl border border-primary-10 shadow-sm bg-theme-card p-5 mb-5">
+    <div class="rounded-2xl border border-primary-10 shadow-sm bg-theme-card p-5 mb-5" style="color: var(--color-card-texto)">
       <div class="flex items-center justify-between mb-5">
         <div>
           <h3 class="text-base font-black" style="color: var(--color-card-texto)">Evolução da Receita</h3>
