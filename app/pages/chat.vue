@@ -79,10 +79,30 @@ onMounted(() => {
 
 function onCardClick(card: KanbanCard) {
   conversaAtiva.value = card
-  // Selecionar conversa no store pelo id (UUID string no campo card.id)
-  store.selectConversa(String(card.id))
+  const convId = String(card.id)
+  store.selectConversa(convId)
   modalAberto.value = true
+  // Fallback: buscar mensagens diretamente se store não encontrou
+  if (!store.mensagens.length) {
+    fetchMensagensDireto(convId)
+  }
 }
+
+async function fetchMensagensDireto(convId: string) {
+  const { createSupabaseClient } = await import('~/lib/supabase')
+  const supabase = createSupabaseClient()
+  const { data } = await supabase
+    .from('messages')
+    .select('*')
+    .eq('conversation_id', convId)
+    .order('wa_timestamp', { ascending: true })
+    .limit(100)
+  if (data) {
+    mensagensDiretas.value = data
+  }
+}
+
+const mensagensDiretas = ref<any[]>([])
 
 function fecharModal() {
   modalAberto.value = false
@@ -100,31 +120,45 @@ const conversaAtivaView = computed(() => {
   }
 })
 
-const mensagensView = computed(() =>
-  store.mensagens
-    .filter(m => m.type === 'msg')
-    .map((m: any) => {
-      const base = { de: m.from, hora: m.time }
-      switch (m.kind) {
-        case 'text':
-          return { ...base, tipo: 'texto', texto: m.text }
-        case 'image':
-          return { ...base, tipo: 'imagem', url: m.url, legenda: m.caption }
-        case 'audio':
-          return { ...base, tipo: 'audio', url: m.url, duracao: m.duration || '0:00' }
-        case 'video':
-          return { ...base, tipo: 'video', url: m.url, legenda: m.caption }
-        case 'document':
-          return { ...base, tipo: 'documento', url: m.url, nomeArquivo: m.filename || 'arquivo', tamanho: m.size }
-        case 'sticker':
-          return { ...base, tipo: 'sticker', url: m.url }
-        default:
-          return { ...base, tipo: 'texto', texto: '' }
-      }
-    })
-)
+const mensagensView = computed(() => {
+  // Use store messages if available, otherwise use direct fetch
+  const msgs = store.mensagens.length > 0
+    ? store.mensagens.filter(m => m.type === 'msg')
+    : mensagensDiretas.value
 
-function onEnviar(txt: string) {
+  return msgs.map((m: any) => {
+    // Direct fetch from supabase returns raw DB rows
+    if (m.kind && m.conversation_id) {
+      const base = { de: m.direction, hora: m.wa_timestamp ? new Date(m.wa_timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '' }
+      switch (m.kind) {
+        case 'text': return { ...base, tipo: 'texto', texto: m.body || '' }
+        case 'image': return { ...base, tipo: 'imagem', url: m.media_url || '', legenda: m.caption }
+        case 'audio': return { ...base, tipo: 'audio', url: m.media_url || '', duracao: '0:00' }
+        case 'video': return { ...base, tipo: 'video', url: m.media_url || '', legenda: m.caption }
+        case 'document': return { ...base, tipo: 'documento', url: m.media_url || '', nomeArquivo: m.body || 'arquivo', tamanho: '' }
+        case 'sticker': return { ...base, tipo: 'sticker', url: m.media_url || '' }
+        default: return { ...base, tipo: 'texto', texto: m.body || '' }
+      }
+    }
+    // Store mapped messages
+    const base = { de: m.from, hora: m.time }
+    switch (m.kind) {
+      case 'text': return { ...base, tipo: 'texto', texto: m.text }
+      case 'image': return { ...base, tipo: 'imagem', url: m.url, legenda: m.caption }
+      case 'audio': return { ...base, tipo: 'audio', url: m.url, duracao: m.duration || '0:00' }
+      case 'video': return { ...base, tipo: 'video', url: m.url, legenda: m.caption }
+      case 'document': return { ...base, tipo: 'documento', url: m.url, nomeArquivo: m.filename || 'arquivo', tamanho: m.size }
+      case 'sticker': return { ...base, tipo: 'sticker', url: m.url }
+      default: return { ...base, tipo: 'texto', texto: '' }
+    }
+  })
+})
+
+async function onEnviar(txt: string) {
   store.sendMensagem(txt)
+  // Refresh mensagens após envio
+  setTimeout(() => {
+    if (conversaAtiva.value) fetchMensagensDireto(String(conversaAtiva.value.id))
+  }, 1000)
 }
 </script>
