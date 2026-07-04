@@ -4,14 +4,14 @@
       <ChatAreaConversa :conversas="conversasView" :ativa-id="ativaIdNum" @selecionar="onSelecionar" />
       <ChatAreaMensagens :conversa="conversaAtivaView" :mensagens="mensagensView" @enviar="onEnviar" />
       <button class="chat-theme-toggle" @click="chatTheme = chatTheme === 'dark' ? 'light' : 'dark'">
-        {{ chatTheme === 'dark' ? 'â˜€ Claro' : 'ðŸŒ™ Escuro' }}
+        {{ chatTheme === 'dark' ? 'Ã¢Ëœâ‚¬ Claro' : 'Ã°Å¸Å’â„¢ Escuro' }}
       </button>
-      <button class="chat-theme-toggle" style="bottom: 120px;" @click="viewMode = 'kanban'">ðŸ“‹ Kanban</button>
+      <button class="chat-theme-toggle" style="bottom: 120px;" @click="viewMode = 'kanban'">Ã°Å¸â€œâ€¹ Kanban</button>
     </div>
     <div v-else class="min-h-full bg-transparent p-3 sm:p-8">
       <div class="flex items-center justify-between mb-4">
-        <h1 class="text-xl font-bold">WhatsApp â€” Kanban</h1>
-        <button class="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-bold" @click="viewMode = 'chat'">â† Chat</button>
+        <h1 class="text-xl font-bold">WhatsApp Ã¢â‚¬â€ Kanban</h1>
+        <button class="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-bold" @click="viewMode = 'chat'">Ã¢â€ Â Chat</button>
       </div>
       <KanbanBoard pipeline-tipo="whatsapp" @card-click="onKanbanCardClick" />
     </div>
@@ -20,7 +20,7 @@
     <Teleport to="body">
       <Transition name="fade">
         <div v-if="modalConversaAberto" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click.self="modalConversaAberto = false">
-          <div class="bg-[#0b141a] rounded-2xl shadow-2xl w-full max-w-3xl h-[85vh] overflow-hidden flex flex-col" data-theme="dark">
+          <div class="chat-page rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden" data-theme="dark" style="height: 85vh; flex-direction: column; display: flex; border-radius: 16px;">
             <!-- Header -->
             <div class="flex items-center justify-between px-5 py-3 bg-[#202c33] flex-shrink-0">
               <div class="flex items-center gap-3">
@@ -36,9 +36,11 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
               </button>
             </div>
-            <!-- Mensagens -->
-            <div class="flex-1 overflow-hidden">
-              <ChatAreaMensagens :conversa="modalConversaView" :mensagens="mensagensView" @enviar="onEnviar" />
+            <!-- Ãrea de mensagens (mesma estrutura do ChatAreaMensagens) -->
+            <div class="chat-wrap" style="flex: 1; min-height: 0;">
+              <div class="chat-pattern"></div>
+              <ChatListaMensagens :mensagens="mensagensView" />
+              <ChatInput @enviar="onEnviar" />
             </div>
           </div>
         </div>
