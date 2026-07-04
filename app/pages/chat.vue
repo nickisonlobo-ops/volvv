@@ -6,7 +6,7 @@
         <button v-if="mobileConversaAberta" class="chat-mobile-back" @click="mobileConversaAberta = false">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
         </button>
-        <ChatAreaMensagens :conversa="conversaAtivaView" :mensagens="mensagensView" @enviar="onEnviar" @toggle-theme="toggleTheme" />
+        <ChatAreaMensagens :conversa="conversaAtivaView" :mensagens="mensagensView" @enviar="onEnviar" />
       </div>
     </div>
 
@@ -77,17 +77,24 @@ import '~/assets/chat.css'
 
 definePageMeta({ layout: 'default' })
 
-// Tema persistido no localStorage
+// Tema segue o tema global da empresa (detecta se e escuro ou claro)
 const chatTheme = ref('dark')
 onMounted(() => {
-  const saved = localStorage.getItem('chat_theme')
-  if (saved) chatTheme.value = saved
+  detectTheme()
   store.loadConversas()
 })
 
-function toggleTheme() {
-  chatTheme.value = chatTheme.value === 'dark' ? 'light' : 'dark'
-  localStorage.setItem('chat_theme', chatTheme.value)
+function detectTheme() {
+  // Pega a cor de fundo da empresa
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim()
+  // Se contem gradient, pega a primeira cor
+  const color = bgColor.includes('#') ? bgColor.match(/#[0-9a-fA-F]{6}/)?.[0] || '#111827' : '#111827'
+  // Calcula luminancia - se escuro usa dark, se claro usa light
+  const r = parseInt(color.slice(1, 3), 16)
+  const g = parseInt(color.slice(3, 5), 16)
+  const b = parseInt(color.slice(5, 7), 16)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  chatTheme.value = luminance < 0.5 ? 'dark' : 'light'
 }
 
 const viewMode = ref<'chat' | 'kanban'>('chat')
