@@ -556,6 +556,9 @@
 }
 
 @media (max-width: 768px) {
+  .chat-page {
+    position: relative;
+  }
   .chat-area-conversas {
     width: 100% !important;
     max-width: 100% !important;
