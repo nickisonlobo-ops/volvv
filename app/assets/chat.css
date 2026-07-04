@@ -60,6 +60,7 @@
   color: var(--chat-text);
   font-family: "Segoe UI", Helvetica, Arial, sans-serif;
   overflow: hidden;
+  min-height: 0;
 }
 
 /* ===== Área Conversas (esquerda) ===== */

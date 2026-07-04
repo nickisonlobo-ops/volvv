@@ -8,7 +8,10 @@
       </div>
     </div>
     <div class="chat-hm-actions">
-      <button class="chat-ic-btn" title="Vídeo">
+      <button class="chat-ic-btn" title="Tema" @click="$emit('toggle-theme')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.07 5.07 1.41 1.41M5.52 5.52l1.41 1.41m11.14 0 1.41-1.41M5.52 18.48l1.41-1.41"/></svg>
+      </button>
+      <button class="chat-ic-btn" title="Video">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4Z"/></svg>
       </button>
       <button class="chat-ic-btn" title="Ligar">
@@ -26,4 +29,4 @@
 
 <script setup lang="ts">
 defineProps<{ conversa: any }>()
-</script>
+defineEmits<{ (e: 'toggle-theme'): void }>()</script>

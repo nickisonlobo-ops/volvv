@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="chat-page" :data-theme="chatTheme" v-if="viewMode === 'chat'">
+    <div class="chat-page" :data-theme="chatTheme" v-if="viewMode === 'chat'" style="height: calc(100vh - 64px); overflow: hidden;">
       <ChatAreaConversa :conversas="conversasView" :ativa-id="ativaIdNum" @selecionar="onSelecionar" @kanban="viewMode = 'kanban'" />
-      <ChatAreaMensagens :conversa="conversaAtivaView" :mensagens="mensagensView" @enviar="onEnviar" />
+      <ChatAreaMensagens :conversa="conversaAtivaView" :mensagens="mensagensView" @enviar="onEnviar" @toggle-theme="chatTheme = chatTheme === 'dark' ? 'light' : 'dark'" />
     </div>
     <div v-else class="min-h-full bg-transparent p-3 sm:p-8">
       <div class="flex items-center justify-between mb-4">
