@@ -121,4 +121,11 @@ main:has(.chat-page) {
   height: 100% !important;
   max-height: 100% !important;
 }
+/* Preenche a tela inteira no mobile (sem tarjas) */
+html:has(.chat-page) {
+  background: #0b141a;
+}
+html:has(.chat-page[data-theme="light"]) {
+  background: #efeae2;
+}
 </style>

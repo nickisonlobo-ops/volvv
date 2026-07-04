@@ -580,3 +580,11 @@
     display: grid;
   }
 }
+
+/* ===== Mobile fullscreen: preenche areas do browser ===== */
+@media (max-width: 768px) {
+  .chat-page {
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+  }
+}
