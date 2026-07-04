@@ -139,6 +139,20 @@
               @touchend="(event: TouchEvent) => dragDrop.onTouchEnd(event)"
             />
           </template>
+
+          <!-- WhatsApp Cards -->
+          <template v-else-if="pipelineTipo === 'whatsapp'">
+            <KanbanCardConversa
+              v-for="card in cards"
+              :key="card.id"
+              :card="card"
+              @click="(c) => emit('card-click', c)"
+              @dragstart="(event) => dragDrop.onDragStart(event, card.id, etapa.id)"
+              @touchstart.passive="(event: TouchEvent) => dragDrop.onTouchStart(event, card.id, etapa.id)"
+              @touchmove="(event: TouchEvent) => dragDrop.onTouchMove(event)"
+              @touchend="(event: TouchEvent) => dragDrop.onTouchEnd(event)"
+            />
+          </template>
         </template>
       </KanbanColumn>
     </div>
@@ -154,6 +168,7 @@ import KanbanColumn from './KanbanColumn.vue'
 import KanbanCardCliente from './KanbanCardCliente.vue'
 import KanbanCardOS from './KanbanCardOS.vue'
 import KanbanCardOrcamento from './KanbanCardOrcamento.vue'
+import KanbanCardConversa from './KanbanCardConversa.vue'
 import EtapasManager from './EtapasManager.vue'
 
 defineOptions({ name: 'KanbanBoard' })

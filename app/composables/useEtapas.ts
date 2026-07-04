@@ -5,7 +5,7 @@ import { useEmpresa } from './useEmpresa'
 
 // ─── Tipos e Interfaces ───────────────────────────────────
 
-export type PipelineTipo = 'crm' | 'producao' | 'orcamentos'
+export type PipelineTipo = 'crm' | 'producao' | 'orcamentos' | 'whatsapp'
 
 export interface Etapa {
   id: number
@@ -58,6 +58,13 @@ const SEED_ORCAMENTOS: EtapaSeed[] = [
   { pipeline_tipo: 'orcamentos', nome: 'Reprovado', cor: '#ef4444', posicao: 4, is_final: true },
 ]
 
+const SEED_WHATSAPP: EtapaSeed[] = [
+  { pipeline_tipo: 'whatsapp', nome: 'Novo', cor: '#25d366', posicao: 0, is_final: false },
+  { pipeline_tipo: 'whatsapp', nome: 'Em Atendimento', cor: '#3b82f6', posicao: 1, is_final: false },
+  { pipeline_tipo: 'whatsapp', nome: 'Aguardando', cor: '#f59e0b', posicao: 2, is_final: false },
+  { pipeline_tipo: 'whatsapp', nome: 'Finalizado', cor: '#6b7280', posicao: 3, is_final: true },
+]
+
 // ─── Composable ───────────────────────────────────────────
 
 export function useEtapas() {
@@ -83,6 +90,8 @@ export function useEtapas() {
         return [...SEED_PRODUCAO]
       case 'orcamentos':
         return [...SEED_ORCAMENTOS]
+      case 'whatsapp':
+        return [...SEED_WHATSAPP]
     }
   }
 
@@ -319,6 +328,9 @@ export function useEtapas() {
         break
       case 'orcamentos':
         tabela = 'orcamentos_adesivo'
+        break
+      case 'whatsapp':
+        tabela = 'conversations'
         break
     }
 

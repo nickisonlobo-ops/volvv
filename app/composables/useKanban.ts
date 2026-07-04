@@ -76,6 +76,8 @@ export function useKanban(pipelineTipo: PipelineTipo) {
         return await carregarCardsProducao()
       case 'orcamentos':
         return await carregarCardsOrcamentos()
+      case 'whatsapp':
+        return await carregarCardsWhatsApp()
     }
   }
 
@@ -257,6 +259,47 @@ export function useKanban(pipelineTipo: PipelineTipo) {
     return cards
   }
 
+  // ─── WhatsApp: tabela `conversations` ───────────────────
+  async function carregarCardsWhatsApp(): Promise<KanbanCard[]> {
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('id, contact_name, wa_id, last_message_preview, last_message_at, etapa_id')
+
+    if (error) {
+      throw new Error(`Erro ao carregar conversas: ${error.message}`)
+    }
+
+    const primeiraEtapaId = state.value.etapas[0]?.id ?? null
+    const itensParaAtualizar: string[] = []
+
+    const cards = (data ?? []).map((conv: any) => {
+      let etapaId = conv.etapa_id
+      if (!etapaId && primeiraEtapaId) {
+        etapaId = primeiraEtapaId
+        itensParaAtualizar.push(conv.id)
+      }
+      return {
+        id: conv.id,
+        etapa_id: etapaId,
+        titulo: conv.contact_name ?? conv.wa_id ?? 'Sem nome',
+        subtitulo: conv.last_message_preview ?? undefined,
+        info_extra: {
+          preview: conv.last_message_preview ?? '—',
+          time: conv.last_message_at ? formatarData(conv.last_message_at) : '—',
+        },
+      }
+    }).filter((c: any) => c.etapa_id != null)
+
+    if (itensParaAtualizar.length > 0 && primeiraEtapaId) {
+      for (const id of itensParaAtualizar) {
+        supabase.from('conversations').update({ etapa_id: primeiraEtapaId }).eq('id', id)
+          .then(({ error: e }) => { if (e) console.warn('[useKanban] erro atribuir etapa conversa:', e.message) })
+      }
+    }
+
+    return cards
+  }
+
   // ─── Mover card para outra etapa (otimista + persistência) ──
   async function moverCard(cardId: number, novaEtapaId: number): Promise<void> {
     // Encontrar o card no estado local
@@ -291,6 +334,9 @@ export function useKanban(pipelineTipo: PipelineTipo) {
         break
       case 'orcamentos':
         tabela = 'orcamentos_adesivo'
+        break
+      case 'whatsapp':
+        tabela = 'conversations'
         break
     }
 
