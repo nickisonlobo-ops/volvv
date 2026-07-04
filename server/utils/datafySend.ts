@@ -15,15 +15,17 @@ export async function sendTextMessage(
   text: string,
 ): Promise<string | null> {
   const config = useRuntimeConfig()
-  const base = config.datafyApiUrl as string
-  const token = config.datafyNumberToken as string
+  const base = (config.datafyApiUrl || process.env.DATAFY_API_URL) as string
+  const token = (config.datafyNumberToken || process.env.DATAFY_NUMBER_TOKEN) as string
 
   if (!base || !token) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Datafy não configurado (DATAFY_API_URL / DATAFY_NUMBER_TOKEN).',
+      message: 'Datafy não configurado (DATAFY_API_URL / DATAFY_NUMBER_TOKEN).',
     })
   }
+
+  console.log(`[send] enviando para ${to} via ${base}/v1/${phoneNumberId}/messages`)
 
   const res = await $fetch<SendResponse>(`${base}/v1/${phoneNumberId}/messages`, {
     method: 'POST',
@@ -37,5 +39,6 @@ export async function sendTextMessage(
     },
   })
 
+  console.log(`[send] resposta:`, JSON.stringify(res))
   return res?.messages?.[0]?.id ?? null
 }
