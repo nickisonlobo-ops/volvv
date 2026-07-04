@@ -1,11 +1,14 @@
 <template>
-  <!-- FAB de menu -->
+  <!-- FAB de menu (arrastavel) -->
   <button
     type="button"
     class="fab-btn lg:hidden"
     :class="menuAberto ? 'fab-btn--open' : ''"
-    :style="{ background: 'var(--color-primary, #374151)', boxShadow: `0 8px 28px var(--glow-primary, rgba(55,65,81,0.45)), 0 2px 8px rgba(0,0,0,0.25)` }"
-    @click="menuAberto = !menuAberto"
+    :style="{ background: 'var(--color-primary, #374151)', boxShadow: `0 8px 28px var(--glow-primary, rgba(55,65,81,0.45)), 0 2px 8px rgba(0,0,0,0.25)`, top: fabPos.top, left: fabPos.left, right: fabPos.right, bottom: fabPos.bottom }"
+    @click="onFabClick"
+    @touchstart.passive="onFabTouchStart"
+    @touchmove.prevent="onFabTouchMove"
+    @touchend="onFabTouchEnd"
   >
     <svg v-if="!menuAberto" class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -63,6 +66,53 @@ defineOptions({ name: 'AppBottomNav' })
 
 const { isAdminOrGerente } = useAdmin()
 const menuAberto = ref(false)
+
+// FAB draggable
+const fabPos = reactive({ top: 'auto', left: 'auto', right: '1.25rem', bottom: '1.25rem' })
+let fabDragging = false
+let fabMoved = false
+let fabStartX = 0
+let fabStartY = 0
+let fabStartLeft = 0
+let fabStartTop = 0
+
+function onFabTouchStart(e: TouchEvent) {
+  const touch = e.touches[0]
+  const btn = e.currentTarget as HTMLElement
+  const rect = btn.getBoundingClientRect()
+  fabDragging = true
+  fabMoved = false
+  fabStartX = touch.clientX
+  fabStartY = touch.clientY
+  fabStartLeft = rect.left
+  fabStartTop = rect.top
+  // Switch to top/left positioning
+  fabPos.top = rect.top + 'px'
+  fabPos.left = rect.left + 'px'
+  fabPos.right = 'auto'
+  fabPos.bottom = 'auto'
+}
+
+function onFabTouchMove(e: TouchEvent) {
+  if (!fabDragging) return
+  const touch = e.touches[0]
+  const dx = touch.clientX - fabStartX
+  const dy = touch.clientY - fabStartY
+  if (Math.abs(dx) > 5 || Math.abs(dy) > 5) fabMoved = true
+  const newLeft = Math.max(0, Math.min(window.innerWidth - 56, fabStartLeft + dx))
+  const newTop = Math.max(0, Math.min(window.innerHeight - 56, fabStartTop + dy))
+  fabPos.left = newLeft + 'px'
+  fabPos.top = newTop + 'px'
+}
+
+function onFabTouchEnd() {
+  fabDragging = false
+}
+
+function onFabClick() {
+  if (!fabMoved) menuAberto.value = !menuAberto.value
+  fabMoved = false
+}
 
 const allNavItems = [
   // Principal
