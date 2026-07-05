@@ -293,6 +293,9 @@
       </div>
     </section>
 
+    <!-- ═══ TESTIMONIALS ═══ -->
+    <TestimonialsMarquee />
+
     <!-- ═══ FOOTER ═══ -->
     <footer class="border-t border-white/5 py-8">
       <div class="max-w-6xl mx-auto px-6 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-4">
