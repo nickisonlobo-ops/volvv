@@ -7,38 +7,38 @@
     </div>
 
     <!-- So renderiza quando visivel -->
-    <div v-if="isVisible" class="relative flex h-[500px] sm:h-[550px] w-full max-w-[1100px] mx-auto flex-row items-center justify-center overflow-hidden gap-4" style="perspective: 800px;">
-      <div class="flex flex-row items-center gap-5" style="transform: translateX(-50px) translateZ(-50px) rotateX(10deg) rotateY(-8deg) rotateZ(10deg);">
+    <div v-if="isVisible" class="relative flex h-[420px] sm:h-[550px] w-full max-w-[1100px] mx-auto flex-row items-center justify-center overflow-hidden gap-3 sm:gap-4" style="perspective: 800px;">
+      <div class="flex flex-row items-center gap-3 sm:gap-5" :style="isMobile ? 'transform: rotateX(5deg) rotateY(-5deg) rotateZ(5deg)' : 'transform: translateX(-50px) translateZ(-50px) rotateX(10deg) rotateY(-8deg) rotateZ(10deg)'">
         <!-- Coluna 1 -->
-        <div class="flex flex-col gap-4 animate-marquee-down">
-          <div v-for="(t, i) in col1" :key="'c1-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] p-5 shrink-0">
-            <div class="flex items-center gap-3 mb-3">
-              <img :src="t.img" loading="lazy" class="w-10 h-10 rounded-full object-cover" />
+        <div class="flex flex-col gap-3 sm:gap-4 animate-marquee-down">
+          <div v-for="(t, i) in mobileCol1" :key="'c1-'+i" class="w-48 sm:w-64 rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 shrink-0">
+            <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+              <img :src="t.img" loading="lazy" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover" />
               <div>
-                <p class="text-sm font-bold text-white">{{ t.name }}</p>
-                <p class="text-[11px] text-white/40">{{ t.role }}</p>
+                <p class="text-xs sm:text-sm font-bold text-white">{{ t.name }}</p>
+                <p class="text-[10px] sm:text-[11px] text-white/40">{{ t.role }}</p>
               </div>
             </div>
-            <p class="text-sm text-white/60 leading-relaxed">"{{ t.body }}"</p>
+            <p class="text-xs sm:text-sm text-white/60 leading-relaxed">"{{ t.body }}"</p>
           </div>
         </div>
 
         <!-- Coluna 2 -->
-        <div class="flex flex-col gap-4 animate-marquee-up">
-          <div v-for="(t, i) in col2" :key="'c2-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] p-5 shrink-0">
-            <div class="flex items-center gap-3 mb-3">
-              <img :src="t.img" loading="lazy" class="w-10 h-10 rounded-full object-cover" />
+        <div class="flex flex-col gap-3 sm:gap-4 animate-marquee-up">
+          <div v-for="(t, i) in mobileCol2" :key="'c2-'+i" class="w-48 sm:w-64 rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 shrink-0">
+            <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+              <img :src="t.img" loading="lazy" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover" />
               <div>
-                <p class="text-sm font-bold text-white">{{ t.name }}</p>
-                <p class="text-[11px] text-white/40">{{ t.role }}</p>
+                <p class="text-xs sm:text-sm font-bold text-white">{{ t.name }}</p>
+                <p class="text-[10px] sm:text-[11px] text-white/40">{{ t.role }}</p>
               </div>
             </div>
-            <p class="text-sm text-white/60 leading-relaxed">"{{ t.body }}"</p>
+            <p class="text-xs sm:text-sm text-white/60 leading-relaxed">"{{ t.body }}"</p>
           </div>
         </div>
 
-        <!-- Coluna 3 -->
-        <div class="flex flex-col gap-4 animate-marquee-down hidden sm:flex">
+        <!-- Coluna 3 (desktop only) -->
+        <div class="hidden sm:flex flex-col gap-4 animate-marquee-down">
           <div v-for="(t, i) in col3" :key="'c3-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] p-5 shrink-0">
             <div class="flex items-center gap-3 mb-3">
               <img :src="t.img" loading="lazy" class="w-10 h-10 rounded-full object-cover" />
@@ -51,8 +51,8 @@
           </div>
         </div>
 
-        <!-- Coluna 4 -->
-        <div class="flex flex-col gap-4 animate-marquee-up hidden md:flex">
+        <!-- Coluna 4 (desktop only) -->
+        <div class="hidden md:flex flex-col gap-4 animate-marquee-up">
           <div v-for="(t, i) in col4" :key="'c4-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] p-5 shrink-0">
             <div class="flex items-center gap-3 mb-3">
               <img :src="t.img" loading="lazy" class="w-10 h-10 rounded-full object-cover" />
@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const sectionRef = ref<HTMLElement | null>(null)
 const isVisible = ref(false)
@@ -97,6 +97,9 @@ onMounted(() => {
 
 onUnmounted(() => { observer?.disconnect() })
 
+const isMobile = ref(false)
+onMounted(() => { isMobile.value = window.innerWidth < 640 })
+
 const testimonials = [
   { name: 'Ricardo Souza', role: 'Adesivos Express', body: 'O Volvv organizou toda nossa producao. Antes perdiamos OS no papel, agora tudo no kanban.', img: 'https://randomuser.me/api/portraits/men/32.jpg' },
   { name: 'Amanda Costa', role: 'Studio Visual', body: 'O CRM com WhatsApp integrado mudou nosso atendimento. Respondemos 3x mais rapido.', img: 'https://randomuser.me/api/portraits/women/44.jpg' },
@@ -113,6 +116,10 @@ const col1 = [...testimonials.slice(0, 5), ...testimonials.slice(0, 5)]
 const col2 = [...testimonials.slice(3, 8), ...testimonials.slice(3, 8)]
 const col3 = [...testimonials.slice(5, 9), ...testimonials.slice(0, 4)]
 const col4 = [...testimonials.slice(1, 6), ...testimonials.slice(1, 6)]
+
+// Mobile: apenas 4 cards por coluna
+const mobileCol1 = computed(() => isMobile.value ? [...testimonials.slice(0, 4), ...testimonials.slice(0, 4)] : col1)
+const mobileCol2 = computed(() => isMobile.value ? [...testimonials.slice(4, 8), ...testimonials.slice(4, 8)] : col2)
 </script>
 
 <style scoped>
