@@ -517,6 +517,30 @@
                   <p v-if="formErrors.imagem_url" class="text-xs text-red-500 font-semibold">{{ formErrors.imagem_url }}</p>
                 </div>
 
+                <!-- Imagens extras (galeria) -->
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Fotos Adicionais (Galeria)</label>
+                  <div class="flex flex-wrap gap-2">
+                    <div v-for="(url, idx) in form.imagens_url" :key="idx" class="relative group w-20 h-20 rounded-xl overflow-hidden bg-gray-100 border-2 border-gray-200">
+                      <img :src="url" class="w-full h-full object-cover" />
+                      <button type="button" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" @click="form.imagens_url.splice(idx, 1)">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      </button>
+                    </div>
+                    <!-- Preview de novas fotos -->
+                    <div v-for="(prev, idx) in imagensExtrasPreview" :key="'new-'+idx" class="relative group w-20 h-20 rounded-xl overflow-hidden bg-gray-100 border-2 border-teal-300">
+                      <img :src="prev" class="w-full h-full object-cover" />
+                    </div>
+                    <!-- Botao adicionar -->
+                    <label class="w-20 h-20 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-teal-400 hover:bg-teal-50/30 transition-colors">
+                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                      <span class="text-[9px] text-gray-400 font-bold">Foto</span>
+                      <input type="file" accept="image/png,image/jpeg,image/webp" multiple class="hidden" @change="onImagensExtrasSelecionadas" />
+                    </label>
+                  </div>
+                  <p class="text-[10px] text-gray-400">Adicione ate 5 fotos extras para a galeria do produto</p>
+                </div>
+
                 <!-- ═══ Section 3: Processos de produção ═══ -->
                 <div class="flex items-center gap-3 mb-1 mt-2">
                   <span class="w-6 h-6 rounded-full bg-orange-500 text-white text-xs font-black flex items-center justify-center shrink-0">3</span>
@@ -777,6 +801,8 @@ const saving = ref(false)
 const modalError = ref<string | null>(null)
 const imagemArquivo = ref<File | null>(null)
 const imagemPreview = ref<string | null>(null)
+const imagensExtrasArquivos = ref<File[]>([])
+const imagensExtrasPreview = ref<string[]>([])
 
 const form = reactive({
   nome: '',
@@ -787,6 +813,7 @@ const form = reactive({
   preco_venda: null as number | null,
   descricao: '',
   imagem_url: null as string | null,
+  imagens_url: [] as string[],
   composicoes: [] as ComposicaoRow[],
   tipo_precificacao: 'unidade' as string,
 })
@@ -1078,6 +1105,8 @@ function resetForm() {
   form.tipo_precificacao = 'unidade'
   imagemArquivo.value = null
   imagemPreview.value = null
+  imagensExtrasArquivos.value = []
+  imagensExtrasPreview.value = []
   modalError.value = null
   Object.keys(formErrors).forEach(k => (formErrors as any)[k] = '')
 }
@@ -1099,6 +1128,7 @@ async function abrirEditar(produto: Produto) {
   form.preco_venda = produto.preco_venda
   form.descricao = produto.descricao ?? ''
   form.imagem_url = produto.imagem_url
+  form.imagens_url = produto.imagens_url ?? []
   form.tipo_precificacao = (produto as any).tipo_precificacao ?? 'unidade'
 
   // Load compositions for this product
@@ -1162,6 +1192,33 @@ function onImagemSelecionada(event: Event) {
   formErrors.imagem_url = ''
   imagemArquivo.value = file
   imagemPreview.value = URL.createObjectURL(file)
+}
+
+function onImagensExtrasSelecionadas(event: Event) {
+  const input = event.target as HTMLInputElement
+  const files = input.files
+  if (!files) return
+  for (const file of Array.from(files)) {
+    if (imagensExtrasArquivos.value.length + form.imagens_url.length >= 5) break
+    imagensExtrasArquivos.value.push(file)
+    imagensExtrasPreview.value.push(URL.createObjectURL(file))
+  }
+  input.value = ''
+}
+
+async function uploadImagensExtras(): Promise<string[]> {
+  const urls: string[] = []
+  if (!empresaId.value) return urls
+  for (const file of imagensExtrasArquivos.value) {
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? 'png'
+    const fileName = `${empresaId.value}/catalogo/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+    const { error: uploadErr } = await supabase.storage.from('artes-cliente').upload(fileName, file, { contentType: file.type, upsert: false })
+    if (!uploadErr) {
+      const { data: urlData } = supabase.storage.from('artes-cliente').getPublicUrl(fileName)
+      urls.push(urlData.publicUrl)
+    }
+  }
+  return urls
 }
 
 async function uploadImagem(): Promise<string | null> {
@@ -1230,8 +1287,11 @@ async function salvar() {
   try {
     // Upload image if a new file was selected
     let imagemUrl = form.imagem_url
-    if (imagemArquivo.value) {
-      imagemUrl = await uploadImagem()
+    // Upload fotos extras
+    let imagensUrlFinal = [...form.imagens_url]
+    if (imagensExtrasArquivos.value.length > 0) {
+      const novasUrls = await uploadImagensExtras()
+      imagensUrlFinal = [...imagensUrlFinal, ...novasUrls]
     }
 
     const payload = {
@@ -1243,6 +1303,7 @@ async function salvar() {
       preco_venda: form.preco_venda!,
       descricao: form.descricao?.trim() || null,
       imagem_url: imagemUrl,
+      imagens_url: imagensUrlFinal,
       empresa_id: empresaId.value!,
       tipo_precificacao: form.tipo_precificacao,
     }
