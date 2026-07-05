@@ -10,9 +10,9 @@
       <div class="flex flex-row items-center gap-5" style="transform: translateX(-50px) translateZ(-50px) rotateX(10deg) rotateY(-8deg) rotateZ(10deg);">
         <!-- Coluna 1 -->
         <div class="flex flex-col gap-4 animate-marquee-down">
-          <div v-for="(t, i) in col1" :key="'c1-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm p-5 shrink-0">
+          <div v-for="(t, i) in col1" :key="'c1-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] p-5 shrink-0">
             <div class="flex items-center gap-3 mb-3">
-              <img :src="t.img" class="w-10 h-10 rounded-full object-cover" />
+              <img :src="t.img" loading="lazy" class="w-10 h-10 rounded-full object-cover" />
               <div>
                 <p class="text-sm font-bold text-white">{{ t.name }}</p>
                 <p class="text-[11px] text-white/40">{{ t.role }}</p>
@@ -24,9 +24,9 @@
 
         <!-- Coluna 2 -->
         <div class="flex flex-col gap-4 animate-marquee-up">
-          <div v-for="(t, i) in col2" :key="'c2-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm p-5 shrink-0">
+          <div v-for="(t, i) in col2" :key="'c2-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] p-5 shrink-0">
             <div class="flex items-center gap-3 mb-3">
-              <img :src="t.img" class="w-10 h-10 rounded-full object-cover" />
+              <img :src="t.img" loading="lazy" class="w-10 h-10 rounded-full object-cover" />
               <div>
                 <p class="text-sm font-bold text-white">{{ t.name }}</p>
                 <p class="text-[11px] text-white/40">{{ t.role }}</p>
@@ -38,9 +38,9 @@
 
         <!-- Coluna 3 -->
         <div class="flex flex-col gap-4 animate-marquee-down hidden sm:flex">
-          <div v-for="(t, i) in col3" :key="'c3-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm p-5 shrink-0">
+          <div v-for="(t, i) in col3" :key="'c3-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] p-5 shrink-0">
             <div class="flex items-center gap-3 mb-3">
-              <img :src="t.img" class="w-10 h-10 rounded-full object-cover" />
+              <img :src="t.img" loading="lazy" class="w-10 h-10 rounded-full object-cover" />
               <div>
                 <p class="text-sm font-bold text-white">{{ t.name }}</p>
                 <p class="text-[11px] text-white/40">{{ t.role }}</p>
@@ -52,9 +52,9 @@
 
         <!-- Coluna 4 -->
         <div class="flex flex-col gap-4 animate-marquee-up hidden md:flex">
-          <div v-for="(t, i) in col4" :key="'c4-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm p-5 shrink-0">
+          <div v-for="(t, i) in col4" :key="'c4-'+i" class="w-64 rounded-2xl border border-white/10 bg-white/[0.04] p-5 shrink-0">
             <div class="flex items-center gap-3 mb-3">
-              <img :src="t.img" class="w-10 h-10 rounded-full object-cover" />
+              <img :src="t.img" loading="lazy" class="w-10 h-10 rounded-full object-cover" />
               <div>
                 <p class="text-sm font-bold text-white">{{ t.name }}</p>
                 <p class="text-[11px] text-white/40">{{ t.role }}</p>
@@ -87,10 +87,10 @@ const testimonials = [
   { name: 'Marcos Vinicius', role: 'MV Comunicacao', body: 'Suporte rapido e o sistema nunca caiu. Confianca total pro meu negocio.', img: 'https://randomuser.me/api/portraits/men/61.jpg' },
 ]
 
-const col1 = [...testimonials, ...testimonials, ...testimonials]
-const col2 = [...testimonials.slice(3), ...testimonials, ...testimonials]
-const col3 = [...testimonials.slice(5), ...testimonials, ...testimonials]
-const col4 = [...testimonials.slice(1), ...testimonials, ...testimonials]
+const col1 = [...testimonials.slice(0, 5), ...testimonials.slice(0, 5)]
+const col2 = [...testimonials.slice(3, 8), ...testimonials.slice(3, 8)]
+const col3 = [...testimonials.slice(5, 9), ...testimonials.slice(0, 4)]
+const col4 = [...testimonials.slice(1, 6), ...testimonials.slice(1, 6)]
 </script>
 
 <style scoped>
