@@ -261,9 +261,32 @@ export function useKanban(pipelineTipo: PipelineTipo) {
 
   // ─── WhatsApp: tabela `conversations` ───────────────────
   async function carregarCardsWhatsApp(): Promise<KanbanCard[]> {
-    const { data, error } = await supabase
+    // Busca phone_number_id da empresa para filtrar
+    const { empresaId } = useEmpresa()
+    let phoneNumberId: string | null = null
+
+    if (empresaId.value) {
+      const { data: cfg } = await supabase
+        .from('whatsapp_config')
+        .select('phone_number_id')
+        .eq('empresa_id', empresaId.value)
+        .eq('ativo', true)
+        .maybeSingle()
+      phoneNumberId = cfg?.phone_number_id ?? null
+    }
+
+    let query = supabase
       .from('conversations')
-      .select('id, contact_name, wa_id, last_message_preview, last_message_at, etapa_id, unread_count')
+      .select('id, contact_name, wa_id, last_message_preview, last_message_at, etapa_id, unread_count, phone_number_id')
+
+    if (phoneNumberId) {
+      query = query.eq('phone_number_id', phoneNumberId)
+    } else if (empresaId.value) {
+      // Empresa sem config = sem cards
+      return []
+    }
+
+    const { data, error } = await query
 
     if (error) {
       throw new Error(`Erro ao carregar conversas: ${error.message}`)
