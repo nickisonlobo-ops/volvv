@@ -36,8 +36,8 @@ export default defineEventHandler(async (event) => {
   if (phoneNumberId) {
     query = query.eq('phone_number_id', phoneNumberId)
   } else if (empresaId) {
-    // Empresa informada mas sem config -> retorna vazio (não tem WhatsApp configurado)
-    return []
+    // Empresa informada mas sem config -> retorna todas conversas (pode ser phone_number_id diferente)
+    // Não bloqueia mais — mostra o que tem
   }
 
   const { data, error } = await query.range(offset, offset + limit - 1)
