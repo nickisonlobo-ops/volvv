@@ -200,6 +200,106 @@
       </div>
     </section>
 
+    <!-- ═══ APARELHOS / DEVICES ═══ -->
+    <section class="relative overflow-hidden bg-[#0c0c0d] py-20 sm:py-24">
+      <div class="absolute top-[120px] left-1/2 -translate-x-1/2 w-[820px] max-w-full h-[460px] pointer-events-none" style="background: radial-gradient(ellipse, rgba(249,115,22,0.18), transparent 62%); filter: blur(44px); animation: glowpulse 7s ease-in-out infinite;"></div>
+      <div class="max-w-[1200px] mx-auto px-6 sm:px-8 relative z-[2]">
+        <div class="text-center mb-14">
+          <p class="font-['Sora'] text-xs font-bold text-orange-500 uppercase tracking-widest mb-3.5">Simples e em qualquer lugar</p>
+          <h2 class="font-['Sora'] font-extrabold text-3xl sm:text-[44px] leading-[1.1] tracking-tight max-w-[680px] mx-auto mb-4">Fácil de usar, no computador e no celular</h2>
+          <p class="text-[17px] text-zinc-400 max-w-[540px] mx-auto leading-relaxed">Uma interface intuitiva que qualquer pessoa da equipe domina em minutos — e você acessa de onde estiver: no desktop do escritório ou no smartphone, no chão de fábrica.</p>
+        </div>
+
+        <!-- Devices scene -->
+        <div class="relative w-[800px] max-w-full mx-auto h-[440px] sm:h-[560px]">
+          <!-- LAPTOP -->
+          <div class="absolute left-[12%] sm:left-[95px] top-0 w-[86%] sm:w-[620px]">
+            <div class="bg-[#1a1a1d] border border-white/10 rounded-t-2xl rounded-b p-3 shadow-[0_40px_90px_rgba(0,0,0,0.6)]">
+              <div class="bg-[#0d0d0f] border border-white/[0.06] rounded-lg overflow-hidden">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+                  <div class="flex items-center gap-2">
+                    <div class="w-[22px] h-[22px] rounded-md bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center font-['Sora'] font-extrabold text-[10px] text-[#0a0a0b]">SP</div>
+                    <span class="font-['Sora'] font-bold text-xs">Painel de produção</span>
+                  </div>
+                  <div class="hidden sm:flex items-baseline gap-1.5">
+                    <span class="text-[10px] text-zinc-500">Faturamento Jun</span>
+                    <span class="font-['Sora'] font-extrabold text-[13px] text-orange-500">R$ 84,2k</span>
+                    <span class="text-[10px] font-bold text-emerald-500">▲18%</span>
+                  </div>
+                </div>
+                <div class="p-4 flex flex-col gap-3.5">
+                  <div class="grid grid-cols-3 gap-2.5">
+                    <div class="flex flex-col gap-2">
+                      <p class="text-[9.5px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">Arte</p>
+                      <div class="bg-[#18181b] border border-white/[0.06] border-l-[3px] border-l-orange-500 rounded-[7px] p-2.5"><p class="text-[11px] font-semibold">Banner 3×1m</p><p class="text-[9px] text-zinc-500 mt-0.5">Studio Vibe</p></div>
+                      <div class="bg-[#18181b] border border-white/[0.06] border-l-[3px] border-l-orange-500 rounded-[7px] p-2.5"><p class="text-[11px] font-semibold">Fachada ACM</p><p class="text-[9px] text-zinc-500 mt-0.5">Padaria Sol</p></div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <p class="text-[9.5px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">Impressão</p>
+                      <div class="bg-[#18181b] border border-white/[0.06] border-l-[3px] border-l-blue-500 rounded-[7px] p-2.5"><p class="text-[11px] font-semibold">Adesivo ×50</p><p class="text-[9px] text-zinc-500 mt-0.5">Bar do Zé</p></div>
+                      <div class="bg-[#18181b] border border-white/[0.06] border-l-[3px] border-l-blue-500 rounded-[7px] p-2.5"><p class="text-[11px] font-semibold">Cartões ×1000</p><p class="text-[9px] text-zinc-500 mt-0.5">Adv. Lima</p></div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <p class="text-[9.5px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">Acabamento</p>
+                      <div class="bg-[#18181b] border border-white/[0.06] border-l-[3px] border-l-emerald-500 rounded-[7px] p-2.5"><p class="text-[11px] font-semibold">Placa PS ×3</p><p class="text-[9px] text-emerald-500 mt-0.5">✓ Pronto</p></div>
+                      <div class="bg-[#18181b] border border-white/[0.06] border-l-[3px] border-l-emerald-500 rounded-[7px] p-2.5"><p class="text-[11px] font-semibold">Wind banner</p><p class="text-[9px] text-emerald-500 mt-0.5">✓ Pronto</p></div>
+                    </div>
+                  </div>
+                  <div class="hidden sm:flex gap-2.5">
+                    <div class="flex-1 bg-[#18181b] border border-white/[0.06] rounded-lg p-3">
+                      <div class="flex justify-between items-center mb-3"><span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Faturamento · 7 dias</span><span class="text-[11px] font-bold text-emerald-500">▲ 18%</span></div>
+                      <div class="flex items-end gap-1.5 h-[46px]">
+                        <div class="flex-1 h-[38%] bg-zinc-700 rounded-[3px]"></div><div class="flex-1 h-[52%] bg-zinc-700 rounded-[3px]"></div><div class="flex-1 h-[44%] bg-zinc-600 rounded-[3px]"></div><div class="flex-1 h-[64%] bg-zinc-600 rounded-[3px]"></div><div class="flex-1 h-[56%] bg-zinc-500 rounded-[3px]"></div><div class="flex-1 h-[80%] bg-zinc-400 rounded-[3px]"></div><div class="flex-1 h-full bg-gradient-to-t from-orange-500 to-orange-400 rounded-[3px]"></div>
+                      </div>
+                    </div>
+                    <div class="w-[148px] flex flex-col gap-2.5">
+                      <div class="flex-1 bg-[#18181b] border border-white/[0.06] rounded-lg p-2.5 flex flex-col justify-center"><p class="text-[9.5px] text-zinc-500">A receber</p><p class="font-['Sora'] font-extrabold text-[15px]">R$ 12,4k</p></div>
+                      <div class="flex-1 bg-[#18181b] border border-white/[0.06] rounded-lg p-2.5 flex flex-col justify-center"><p class="text-[9.5px] text-zinc-500">O.S. no mês</p><p class="font-['Sora'] font-extrabold text-[15px]">38</p></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-[118%] -ml-[9%] h-3 bg-gradient-to-b from-[#2a2a2e] to-[#161618] shadow-[0_24px_50px_rgba(0,0,0,0.55)]"></div>
+            <div class="w-[118%] -ml-[9%] h-[9px] bg-gradient-to-b from-[#141416] to-[#0c0c0d] rounded-b-[14px] relative">
+              <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[88px] h-[5px] bg-[#08080a] rounded-b-md"></div>
+            </div>
+          </div>
+
+          <!-- PHONE -->
+          <div class="absolute left-0 sm:left-2 bottom-0 w-[180px] sm:w-[236px] z-[4] animate-float-phone">
+            <div class="bg-[#101013] border border-white/[0.14] rounded-[28px] sm:rounded-[34px] p-2 shadow-[0_40px_80px_rgba(0,0,0,0.7)]">
+              <div class="bg-[#0a0a0b] rounded-[22px] sm:rounded-[27px] overflow-hidden relative">
+                <div class="absolute top-2 left-1/2 -translate-x-1/2 w-[56px] sm:w-[70px] h-4 sm:h-[18px] bg-[#101013] rounded-full z-[3]"></div>
+                <div class="flex justify-between items-center px-4 pt-2.5 pb-1.5 text-[10px] text-zinc-400 font-semibold"><span>9:41</span><span>●●● ▂▄▆</span></div>
+                <div class="px-3.5 sm:px-4 pt-2 pb-3">
+                  <div class="flex justify-between items-center mb-3">
+                    <div><p class="text-[9px] text-zinc-500">Hoje</p><p class="font-['Sora'] font-bold text-[13px] sm:text-[15px]">Produção</p></div>
+                    <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-br from-orange-500 to-orange-600"></div>
+                  </div>
+                  <div class="flex gap-2 mb-3">
+                    <div class="flex-1 bg-[#161618] border border-white/[0.06] rounded-[10px] p-2"><p class="text-[8px] text-zinc-500">Ativas</p><p class="font-['Sora'] font-extrabold text-[13px] sm:text-[15px] text-orange-500">12</p></div>
+                    <div class="flex-1 bg-[#161618] border border-white/[0.06] rounded-[10px] p-2"><p class="text-[8px] text-zinc-500">Prontas</p><p class="font-['Sora'] font-extrabold text-[13px] sm:text-[15px] text-emerald-500">5</p></div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div class="bg-[#161618] border border-white/[0.06] border-l-[3px] border-l-orange-500 rounded-[9px] p-2.5 flex justify-between items-center"><div><p class="text-[10px] sm:text-[11px] font-semibold">Banner 3×1m</p><p class="text-[8px] text-zinc-500 mt-0.5">Studio Vibe</p></div><span class="text-[7px] sm:text-[8px] font-bold text-orange-500 bg-orange-500/[0.14] px-1.5 py-0.5 rounded">Arte</span></div>
+                    <div class="bg-[#161618] border border-white/[0.06] border-l-[3px] border-l-blue-500 rounded-[9px] p-2.5 flex justify-between items-center"><div><p class="text-[10px] sm:text-[11px] font-semibold">Adesivo ×50</p><p class="text-[8px] text-zinc-500 mt-0.5">Bar do Zé</p></div><span class="text-[7px] sm:text-[8px] font-bold text-blue-500 bg-blue-500/[0.14] px-1.5 py-0.5 rounded">Impr.</span></div>
+                    <div class="bg-[#161618] border border-white/[0.06] border-l-[3px] border-l-emerald-500 rounded-[9px] p-2.5 flex justify-between items-center"><div><p class="text-[10px] sm:text-[11px] font-semibold">Placa PS ×3</p><p class="text-[8px] text-zinc-500 mt-0.5">Ótica Vista</p></div><span class="text-[7px] sm:text-[8px] font-bold text-emerald-500 bg-emerald-500/[0.14] px-1.5 py-0.5 rounded">✓</span></div>
+                  </div>
+                </div>
+                <div class="flex justify-around py-3 border-t border-white/[0.06]">
+                  <div class="w-4 h-1 rounded-sm bg-orange-500"></div>
+                  <div class="w-4 h-1 rounded-sm bg-zinc-700"></div>
+                  <div class="w-4 h-1 rounded-sm bg-zinc-700"></div>
+                  <div class="w-4 h-1 rounded-sm bg-zinc-700"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ═══ STATS ═══ -->
     <section class="py-20 relative">
       <div class="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-transparent to-orange-600/5"></div>
@@ -439,6 +539,11 @@ const faqs = [
   0%, 100% { transform: translateY(0) rotate(2deg); }
   50% { transform: translateY(-9px) rotate(2deg); }
 }
+@keyframes float-phone {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(12px); }
+}
 .animate-float-left { animation: float-left 8s ease-in-out infinite; }
 .animate-float-right { animation: float-right 9s ease-in-out infinite; }
+.animate-float-phone { animation: float-phone 8s ease-in-out infinite; }
 </style>
