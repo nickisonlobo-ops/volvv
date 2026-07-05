@@ -33,5 +33,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, message: error.message })
   }
 
+  // Invalida cache de credenciais para este phone_number_id
+  invalidateWhatsAppCache(phone_number_id)
+
   return data
 })

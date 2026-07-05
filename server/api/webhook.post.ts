@@ -49,7 +49,7 @@ async function persistMessage(supabase: ReturnType<typeof useSupabaseServer>, ev
   const conversationId = await upsertConversation(supabase, ev)
   if (!conversationId) return
 
-  const mediaUrl = ev.mediaId ? await resolveMediaUrl(ev.mediaId) : null
+  const mediaUrl = ev.mediaId ? await resolveMediaUrl(ev.mediaId, ev.phoneNumberId) : null
 
   const { data: inserted, error } = await supabase
     .from('messages')
