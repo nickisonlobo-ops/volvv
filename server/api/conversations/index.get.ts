@@ -33,6 +33,10 @@ export default defineEventHandler(async (event) => {
   // Filtra por phone_number_id se encontrou config
   if (phoneNumberId) {
     query = query.eq('phone_number_id', phoneNumberId)
+  } else {
+    // Sem config = sem WhatsApp = lista vazia
+    console.log(`[conversations] empresa sem config, retornando vazio`)
+    return []
   }
 
   const { data, error } = await query.range(offset, offset + limit - 1)
