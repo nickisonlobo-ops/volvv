@@ -22,11 +22,16 @@ export default defineNuxtPlugin(() => {
   const empresaId = useState<number | null>('empresa_id', () => null)
   const pusher = new Pusher(key, { cluster })
 
-  // Canal global para status (fallback)
+  // Canal global para status e mensagens (fallback)
   const globalChannel = pusher.subscribe('chat')
   globalChannel.bind('message:status', (data: any) => {
     if (data?.waMessageId && data?.status) {
       chat.onRealtimeStatus(data.waMessageId, data.status)
+    }
+  })
+  globalChannel.bind('message:new', (data: any) => {
+    if (data?.conversation && data?.message) {
+      chat.onRealtimeMessage(data.conversation, data.message)
     }
   })
 
