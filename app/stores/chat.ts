@@ -49,8 +49,19 @@ export const useChatStore = defineStore('chat', () => {
     loadingConversas.value = true
     try {
       const offset = reset ? 0 : conversas.value.length
+      // Resolve empresa_id do localStorage
+      let empresaId = ''
+      try {
+        const tema = localStorage.getItem('empresa_tema')
+        if (tema) empresaId = JSON.parse(tema).empresa_id || JSON.parse(tema).id || ''
+        if (!empresaId) {
+          const perfil = localStorage.getItem('perfil_data')
+          if (perfil) empresaId = JSON.parse(perfil).empresa_id || ''
+        }
+      } catch {}
+
       const rows = await $fetch<ConversationRow[]>('/api/conversations', {
-        query: { limit: CONV_PAGE, offset },
+        query: { limit: CONV_PAGE, offset, empresa_id: empresaId || undefined },
       })
       const mapped = rows.map(mapConversa)
       conversas.value = reset ? mapped : [...conversas.value, ...mapped]
