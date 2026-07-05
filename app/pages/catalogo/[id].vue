@@ -38,7 +38,7 @@
 
       <!-- Grid de Produtos -->
       <div v-else-if="produtosFiltrados.length" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        <div v-for="p in produtosFiltrados" :key="p.id" class="rounded-2xl overflow-hidden shadow-sm border cursor-pointer hover:shadow-lg transition-shadow" :style="{ background: cardBg, borderColor: 'rgba(0,0,0,0.06)' }" @click="abrirProduto(p)">
+        <div v-for="p in produtosFiltrados" :key="p.id" class="rounded-2xl overflow-hidden shadow-sm border cursor-pointer hover:shadow-lg transition-shadow" :style="{ background: cardBg, borderColor: 'rgba(0,0,0,0.06)' }" @click="$router.push(`/catalogo/${empresaId}/produto/${p.id}`)">
           <div class="aspect-square bg-gray-100 overflow-hidden">
             <img v-if="p.imagem_url" :src="p.imagem_url" class="w-full h-full object-cover" />
             <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
