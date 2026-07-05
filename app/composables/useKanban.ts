@@ -266,29 +266,30 @@ export function useKanban(pipelineTipo: PipelineTipo) {
     let phoneNumberId: string | null = null
 
     if (empresaId.value) {
-      const { data: cfg } = await supabase
+      const { data: cfg, error: cfgErr } = await supabase
         .from('whatsapp_config')
         .select('phone_number_id')
         .eq('empresa_id', empresaId.value)
         .eq('ativo', true)
         .maybeSingle()
+      
+      if (cfgErr) console.warn('[kanban-wpp] erro ao buscar config:', cfgErr.message)
       phoneNumberId = cfg?.phone_number_id ?? null
     }
 
     let query = supabase
       .from('conversations')
       .select('id, contact_name, wa_id, last_message_preview, last_message_at, etapa_id, unread_count, phone_number_id')
+      .order('last_message_at', { ascending: false, nullsFirst: false })
 
     if (phoneNumberId) {
       query = query.eq('phone_number_id', phoneNumberId)
-    } else if (empresaId.value) {
-      // Empresa sem config = sem cards
-      return []
     }
 
     const { data, error } = await query
 
     if (error) {
+      console.error('[kanban-wpp] erro ao carregar conversas:', error.message)
       throw new Error(`Erro ao carregar conversas: ${error.message}`)
     }
 
