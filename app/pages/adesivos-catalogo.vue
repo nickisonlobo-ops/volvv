@@ -343,7 +343,7 @@
                 <!-- Composição de Materiais -->
                 <div class="flex flex-col gap-3">
                   <div class="flex items-center justify-between">
-                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Composição de Materiais *</label>
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Composição de Materiais</label>
                     <button
                       type="button"
                       class="inline-flex items-center gap-1 text-xs font-bold text-teal-600 hover:text-teal-800 transition-colors"
@@ -867,9 +867,10 @@ function validarFormulaRow(idx: number) {
 function validarTodasComposicoes(): boolean {
   let valid = true
 
+  // Composicao agora e opcional - se nao tem, tudo ok
   if (form.composicoes.length === 0) {
-    formErrors.composicoes = 'Adicione pelo menos um material à composição'
-    return false
+    formErrors.composicoes = ''
+    return true
   }
 
   formErrors.composicoes = ''
