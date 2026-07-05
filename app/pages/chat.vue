@@ -50,7 +50,7 @@
           </div>
         </div>
       </div>
-      <KanbanBoard pipeline-tipo="whatsapp" @card-click="onKanbanCardClick" />
+      <KanbanBoard :key="kanbanRefreshKey" pipeline-tipo="whatsapp" @card-click="onKanbanCardClick" />
     </div>
 
     <!-- Modal conversa (kanban) -->
@@ -125,6 +125,14 @@ onMounted(async () => {
 const viewMode = ref<'chat' | 'kanban'>('chat')
 const mobileConversaAberta = ref(false)
 const store = useChatStore()
+const kanbanRefreshKey = ref(0)
+
+// Refresh kanban quando conversas mudam (nova mensagem via Pusher)
+watch(() => store.conversas, () => {
+  if (viewMode.value === 'kanban') {
+    kanbanRefreshKey.value++
+  }
+}, { deep: false })
 
 const conversasView = computed(() =>
   store.conversas.map((c, idx) => ({
