@@ -3,7 +3,7 @@
     <div class="max-w-4xl mx-auto text-center mb-12 px-4">
       <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">Depoimentos</p>
       <h2 class="text-3xl sm:text-5xl font-bold text-white mb-4">Quem usa, recomenda</h2>
-      <p class="text-lg text-white/50">Empresas que transformaram sua gestao com o Volvv</p>
+      <p class="text-lg text-white/50">Empresas que transformaram sua gestao com o SignPRO</p>
     </div>
 
     <!-- So renderiza quando visivel -->
@@ -101,15 +101,15 @@ const isMobile = ref(false)
 onMounted(() => { isMobile.value = window.innerWidth < 640 })
 
 const testimonials = [
-  { name: 'Ricardo Souza', role: 'Adesivos Express', body: 'O Volvv organizou toda nossa producao. Antes perdiamos OS no papel, agora tudo no kanban.', img: 'https://randomuser.me/api/portraits/men/32.jpg' },
-  { name: 'Amanda Costa', role: 'Studio Visual', body: 'O CRM com WhatsApp integrado mudou nosso atendimento. Respondemos 3x mais rapido.', img: 'https://randomuser.me/api/portraits/women/44.jpg' },
-  { name: 'Carlos Eduardo', role: 'Sign Pro', body: 'Controle financeiro + producao num so lugar. Cancelei 3 ferramentas depois do Volvv.', img: 'https://randomuser.me/api/portraits/men/51.jpg' },
-  { name: 'Juliana Rocha', role: 'Arte & Cor', body: 'Meus clientes acompanham a OS pelo link. Reduziu ligacoes de cobranca em 80%.', img: 'https://randomuser.me/api/portraits/women/68.jpg' },
-  { name: 'Fernando Lima', role: 'Mega Print', body: 'O agendamento online economiza 2h por dia da minha secretaria. Essencial.', img: 'https://randomuser.me/api/portraits/men/22.jpg' },
-  { name: 'Patricia Gomes', role: 'Clinica Bella', body: 'Uso para gerenciar pacientes e agendamentos. Interface linda e facil de usar.', img: 'https://randomuser.me/api/portraits/women/53.jpg' },
-  { name: 'Lucas Martins', role: 'Auto Center JL', body: 'O e-commerce integrado me deu um canal de vendas novo sem custo extra.', img: 'https://randomuser.me/api/portraits/men/85.jpg' },
-  { name: 'Beatriz Santos', role: 'Atelie BS', body: 'Comecei no plano basico e ja estou no Pro. O sistema cresce junto comigo.', img: 'https://randomuser.me/api/portraits/women/45.jpg' },
-  { name: 'Marcos Vinicius', role: 'MV Comunicacao', body: 'Suporte rapido e o sistema nunca caiu. Confianca total pro meu negocio.', img: 'https://randomuser.me/api/portraits/men/61.jpg' },
+  { name: 'Ricardo Souza', role: 'Adesivos Express — SP', body: 'O SignPRO organizou toda nossa producao. Antes perdiamos OS no papel, agora tudo no kanban.', img: 'https://randomuser.me/api/portraits/men/32.jpg' },
+  { name: 'Amanda Costa', role: 'Studio Visual — RJ', body: 'O CRM com WhatsApp integrado mudou nosso atendimento. Respondemos 3x mais rapido.', img: 'https://randomuser.me/api/portraits/women/44.jpg' },
+  { name: 'Carlos Eduardo', role: 'CE Comunicacao Visual — MG', body: 'Controle financeiro + producao num so lugar. Cancelei 3 ferramentas depois do SignPRO.', img: 'https://randomuser.me/api/portraits/men/51.jpg' },
+  { name: 'Juliana Rocha', role: 'Arte & Cor Graficas — PR', body: 'Meus clientes acompanham a OS pelo link. Reduziu ligacoes de cobranca em 80%.', img: 'https://randomuser.me/api/portraits/women/68.jpg' },
+  { name: 'Fernando Lima', role: 'Mega Print — Campinas', body: 'O agendamento online economiza 2h por dia da minha secretaria. Essencial para grafica.', img: 'https://randomuser.me/api/portraits/men/22.jpg' },
+  { name: 'Patricia Gomes', role: 'PG Sinalizacao — Salvador', body: 'Gerencio toda producao de placas e faixas pelo SignPRO. Nao troco por nada.', img: 'https://randomuser.me/api/portraits/women/53.jpg' },
+  { name: 'Lucas Martins', role: 'Plotag Adesivos — Curitiba', body: 'O kanban de producao mudou tudo. Sei exatamente o que esta em cada etapa.', img: 'https://randomuser.me/api/portraits/men/85.jpg' },
+  { name: 'Beatriz Santos', role: 'BS Graficas Rapidas — BH', body: 'Comecei no plano basico e ja estou no Pro. O sistema cresce junto comigo.', img: 'https://randomuser.me/api/portraits/women/45.jpg' },
+  { name: 'Marcos Vinicius', role: 'MV Comunicacao Visual — DF', body: 'Suporte rapido e o sistema nunca caiu. Confianca total pro meu negocio.', img: 'https://randomuser.me/api/portraits/men/61.jpg' },
 ]
 
 const col1 = [...testimonials.slice(0, 5), ...testimonials.slice(0, 5)]

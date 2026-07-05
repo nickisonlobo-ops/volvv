@@ -48,64 +48,122 @@
     </nav>
 
     <!-- ═══ HERO ═══ -->
-    <section class="relative min-h-screen flex items-center justify-center pt-24 pb-20 overflow-hidden">
-      <!-- Background effects -->
-      <div class="absolute inset-0 pointer-events-none">
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full opacity-20 blur-[160px]" style="background: radial-gradient(circle, #ea580c, transparent 70%)"></div>
-        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full opacity-10 blur-[120px]" style="background: radial-gradient(circle, #3b82f6, transparent 70%)"></div>
-        <div class="absolute top-0 right-0 w-[400px] h-[400px] rounded-full opacity-10 blur-[100px]" style="background: radial-gradient(circle, #f97316, transparent 70%)"></div>
-        <!-- Grid overlay -->
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 60px 60px;"></div>
-      </div>
+    <section class="relative overflow-hidden pb-0">
+      <!-- Glow pulse background -->
+      <div class="absolute top-10 left-1/2 -translate-x-1/2 w-[900px] max-w-full h-[520px] pointer-events-none" style="background: radial-gradient(ellipse, rgba(249,115,22,0.22), transparent 62%); filter: blur(40px); animation: glowpulse 7s ease-in-out infinite;"></div>
 
-      <div class="relative z-10 max-w-5xl mx-auto px-6 sm:px-10 text-center">
+      <!-- Text content -->
+      <div class="relative z-10 text-center pt-28 sm:pt-32 px-6">
         <!-- Badge -->
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
-          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-          <span class="text-xs font-medium text-white/70">Sistema #1 para comunicação visual em Portugal</span>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/[0.09] mb-7">
+          <span class="w-[7px] h-[7px] rounded-full bg-emerald-500 shadow-[0_0_10px_#22c55e]"></span>
+          <span class="text-xs font-semibold text-zinc-300">Sistema #1 para comunicação visual em Portugal</span>
         </div>
 
         <!-- Headline -->
-        <h1 class="font-bold tracking-tight leading-[1.05] mb-7">
-          <span class="block text-[clamp(2.5rem,7vw,5rem)] text-white">Gerencie sua produção</span>
-          <span class="block text-[clamp(2.5rem,7vw,5rem)] bg-gradient-to-r from-orange-400 via-orange-400 to-orange-500 bg-clip-text text-transparent">do orçamento à entrega</span>
+        <h1 class="font-['Sora'] font-extrabold tracking-tight leading-[1.02] mb-5 mx-auto max-w-[900px]">
+          <span class="block text-[clamp(2.2rem,6.5vw,4.5rem)] text-stone-50">Gerencie sua produção</span>
+          <span class="block text-[clamp(2.2rem,6.5vw,4.5rem)] text-orange-500">do orçamento à entrega</span>
         </h1>
 
         <!-- Sub -->
-        <p class="text-lg sm:text-xl text-white/50 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+        <p class="text-base sm:text-lg leading-relaxed text-zinc-400 max-w-[580px] mx-auto mb-8">
           Orçamentos, ordens de serviço, kanban de produção, financeiro e CRM.
           Tudo num só lugar para gráficas e empresas de comunicação visual.
         </p>
 
         <!-- CTAs -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+        <div class="flex flex-wrap gap-3.5 justify-center mb-4">
           <a href="/login"
-            class="group inline-flex items-center gap-2 text-base font-semibold px-8 py-4 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-105 transition-all duration-200">
-            Começar grátis — 7 dias
-            <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+            class="inline-flex items-center gap-2.5 px-7 py-4 rounded-xl font-bold text-[15px] text-[#0a0a0b] bg-gradient-to-br from-orange-400 to-orange-600 shadow-[0_10px_30px_rgba(249,115,22,0.4)] hover:shadow-[0_14px_40px_rgba(249,115,22,0.55)] hover:scale-[1.02] transition-all duration-200">
+            Começar grátis — 7 dias <span class="text-[17px]">→</span>
           </a>
           <a href="#funcionalidades"
-            class="inline-flex items-center gap-2 text-base font-medium px-8 py-4 rounded-full border border-white/15 text-white/80 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all duration-200">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z"/></svg>
-            Ver como funciona
+            class="inline-flex items-center gap-2.5 px-6 py-4 rounded-xl font-semibold text-[15px] text-stone-50 bg-white/[0.04] border border-white/[0.12] hover:bg-white/[0.07] hover:border-white/20 transition-all duration-200">
+            ▶ Ver como funciona
           </a>
         </div>
 
-        <!-- Social proof -->
-        <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
-          <div class="flex items-center gap-2">
-            <div class="flex -space-x-2">
-              <div v-for="(c, i) in 4" :key="i" class="w-8 h-8 rounded-full border-2 border-[#0a0a0f] bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-[10px] font-bold text-white">{{ ['R','M','L','F'][i] }}</div>
+        <!-- Social proof line -->
+        <p class="text-[13px] font-medium text-zinc-500">Sem cartão de crédito · +200 empresas ativas · <span class="text-amber-400">★</span> 4.9</p>
+      </div>
+
+      <!-- Product cluster -->
+      <div class="relative mx-auto mt-11 w-[1080px] max-w-[96%] h-[320px] sm:h-[420px]">
+        <!-- Main dashboard card -->
+        <div class="absolute left-1/2 top-0 -translate-x-1/2 w-full max-w-[820px] bg-gradient-to-b from-[#161618] to-[#111113] border border-white/10 rounded-t-2xl shadow-[0_-10px_80px_rgba(249,115,22,0.12),0_40px_90px_rgba(0,0,0,0.6)] overflow-hidden">
+          <!-- Browser dots -->
+          <div class="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06]">
+            <div class="w-[11px] h-[11px] rounded-full bg-orange-500"></div>
+            <div class="w-[11px] h-[11px] rounded-full bg-zinc-700"></div>
+            <div class="w-[11px] h-[11px] rounded-full bg-zinc-700"></div>
+            <span class="text-[11px] text-zinc-500 ml-2.5">Produção — SignPRO</span>
+          </div>
+          <!-- Kanban grid -->
+          <div class="p-4 sm:p-5 grid grid-cols-4 gap-3">
+            <div class="text-[10.5px] font-bold text-zinc-500 uppercase tracking-wider">Aguardando</div>
+            <div class="text-[10.5px] font-bold text-zinc-500 uppercase tracking-wider">Arte</div>
+            <div class="text-[10.5px] font-bold text-zinc-500 uppercase tracking-wider">Impressão</div>
+            <div class="text-[10.5px] font-bold text-zinc-500 uppercase tracking-wider">Acabamento</div>
+            <!-- Cards row 1 -->
+            <div class="bg-[#1c1c1f] border border-white/[0.06] border-l-[3px] border-l-zinc-500 rounded-lg p-2.5">
+              <p class="text-xs font-semibold text-zinc-200">Fachada ACM</p>
+              <p class="text-[10px] text-zinc-500 mt-1">Padaria Sol · €690</p>
             </div>
-            <span class="font-medium">+200 empresas ativas</span>
+            <div class="bg-[#1c1c1f] border border-white/[0.06] border-l-[3px] border-l-orange-500 rounded-lg p-2.5">
+              <p class="text-xs font-semibold text-zinc-200">Banner 3×1m</p>
+              <p class="text-[10px] text-zinc-500 mt-1">Studio Vibe · €480</p>
+            </div>
+            <div class="bg-[#1c1c1f] border border-white/[0.06] border-l-[3px] border-l-blue-500 rounded-lg p-2.5">
+              <p class="text-xs font-semibold text-zinc-200">Adesivo vinil ×50</p>
+              <p class="text-[10px] text-zinc-500 mt-1">Bar do Zé · €320</p>
+            </div>
+            <div class="bg-[#1c1c1f] border border-white/[0.06] border-l-[3px] border-l-emerald-500 rounded-lg p-2.5">
+              <p class="text-xs font-semibold text-zinc-200">Placa PS ×3</p>
+              <p class="text-[10px] text-emerald-500 mt-1">✓ Pronto p/ entrega</p>
+            </div>
+            <!-- Cards row 2 -->
+            <div class="hidden sm:block bg-[#1c1c1f] border border-white/[0.06] border-l-[3px] border-l-zinc-500 rounded-lg p-2.5">
+              <p class="text-xs font-semibold text-zinc-200">Wind banner</p>
+              <p class="text-[10px] text-zinc-500 mt-1">Ótica Vista · €210</p>
+            </div>
+            <div class="hidden sm:block bg-[#1c1c1f] border border-white/[0.06] border-l-[3px] border-l-orange-500 rounded-lg p-2.5">
+              <p class="text-xs font-semibold text-zinc-200">Cartões ×1000</p>
+              <p class="text-[10px] text-zinc-500 mt-1">Adv. Lima · €180</p>
+            </div>
           </div>
-          <div class="flex items-center gap-1.5">
-            <svg v-for="s in 5" :key="s" class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <span class="font-medium text-white/50">4.9 de satisfação</span>
+        </div>
+
+        <!-- Floating orçamento card (left) -->
+        <div class="hidden sm:block absolute left-0 top-[110px] w-[238px] bg-[#18181a]/95 border border-white/[0.12] rounded-[14px] p-4 shadow-[0_30px_70px_rgba(0,0,0,0.65)] z-[3] animate-float-left">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Orçamento #1042</span>
+            <span class="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">Aprovado</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span>Sem cartão de crédito</span>
+          <p class="text-xs font-semibold text-zinc-200 mb-2.5">Studio Vibe</p>
+          <div class="flex justify-between text-[10.5px] text-zinc-400 mb-1.5"><span>Banner ×2</span><span>€480</span></div>
+          <div class="flex justify-between text-[10.5px] text-zinc-400 mb-2.5"><span>Adesivo ×50</span><span>€320</span></div>
+          <div class="h-px bg-white/[0.08] mb-2.5"></div>
+          <div class="flex justify-between items-baseline">
+            <span class="text-[11px] text-zinc-500">Total</span>
+            <span class="font-['Sora'] font-extrabold text-[17px] text-orange-500">€1.490</span>
+          </div>
+        </div>
+
+        <!-- Floating financeiro card (right) -->
+        <div class="hidden sm:block absolute right-0 top-[150px] w-[222px] bg-[#18181a]/95 border border-white/[0.12] rounded-[14px] p-4 shadow-[0_30px_70px_rgba(0,0,0,0.65)] z-[3] animate-float-right">
+          <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Faturamento · Jun</p>
+          <div class="flex items-baseline gap-2 mb-3">
+            <span class="font-['Sora'] font-extrabold text-[23px] text-stone-50">€84,2k</span>
+            <span class="text-[10.5px] font-bold text-emerald-500">▲ 18%</span>
+          </div>
+          <div class="flex items-end gap-[5px] h-[50px]">
+            <div class="flex-1 h-[40%] bg-zinc-700 rounded-[3px]"></div>
+            <div class="flex-1 h-[55%] bg-zinc-700 rounded-[3px]"></div>
+            <div class="flex-1 h-[46%] bg-zinc-600 rounded-[3px]"></div>
+            <div class="flex-1 h-[66%] bg-zinc-600 rounded-[3px]"></div>
+            <div class="flex-1 h-[78%] bg-zinc-500 rounded-[3px]"></div>
+            <div class="flex-1 h-full bg-gradient-to-t from-orange-500 to-orange-400 rounded-[3px]"></div>
           </div>
         </div>
       </div>
@@ -352,12 +410,6 @@ const steps = [
   { svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>', title: 'Comece a produzir', desc: 'Orçamentos, encomendas e financeiro organizados. Aceda a partir de qualquer lugar.' },
 ]
 
-const reviews = [
-  { name: 'António Ferreira', role: 'Gráfica Lusitana — Lisboa', text: 'Acabei com as folhas de Excel. Agora faço orçamentos em 2 minutos e o cliente recebe logo pelo WhatsApp.' },
-  { name: 'Marta Oliveira', role: 'VisuArt — Porto', text: 'O kanban de produção mudou tudo. Sei exatamente o que está em cada fase e nunca mais atrasei uma entrega.' },
-  { name: 'Pedro Santos', role: 'PrintMax — Braga', text: 'Tenho 4 operadores e o controlo ficou perfeito. Cada um sabe o que fazer sem eu precisar de andar atrás.' },
-]
-
 const plans = [
   { name: 'Starter', desc: 'Para quem está a começar', price: '€97', period: '/mês', featured: false, url: '/login', cta: 'Começar grátis', items: ['Até 2 utilizadores', 'Orçamentos ilimitados', 'OS e kanban', 'Financeiro básico', 'Suporte via WhatsApp'] },
   { name: 'Profissional', desc: 'O mais completo', price: '€197', period: '/mês', featured: true, url: '/login', cta: 'Começar grátis', items: ['Até 10 utilizadores', 'Tudo do Starter', 'Dashboard avançado', 'Consultor IA', 'Comissões e equipa', 'Relatórios PDF'] },
@@ -373,3 +425,20 @@ const faqs = [
   { q: 'Tem contrato de fidelização?', a: 'Não. Cancele quando quiser, sem multa. Sem letras pequenas.' },
 ]
 </script>
+
+<style scoped>
+@keyframes glowpulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
+@keyframes float-left {
+  0%, 100% { transform: translateY(0) rotate(-2.5deg); }
+  50% { transform: translateY(-11px) rotate(-2.5deg); }
+}
+@keyframes float-right {
+  0%, 100% { transform: translateY(0) rotate(2deg); }
+  50% { transform: translateY(-9px) rotate(2deg); }
+}
+.animate-float-left { animation: float-left 8s ease-in-out infinite; }
+.animate-float-right { animation: float-right 9s ease-in-out infinite; }
+</style>
