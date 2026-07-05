@@ -13,6 +13,7 @@ interface MsgCache {
 export const useChatStore = defineStore('chat', () => {
   /* ---------- empresa_id (multi-tenant) ---------- */
   const currentEmpresaId = useState<number | null>('empresa_id', () => null)
+  let lastLoadedEmpresaId: number | null = null
 
   /* ---------- conversas ---------- */
   const conversas = ref<Conversa[]>([])
@@ -34,15 +35,20 @@ export const useChatStore = defineStore('chat', () => {
 
   /* ---------- conversas: carga + paginação ---------- */
   async function loadConversas() {
-    // já cacheado: não refaz, só garante uma conversa ativa
-    if (conversasLoaded.value) {
+    // Se empresa_id mudou, força reload
+    const empId = currentEmpresaId.value
+    if (conversasLoaded.value && lastLoadedEmpresaId === empId) {
       if (!activeId.value && conversas.value.length) selectConversa(conversas.value[0]!.id)
       return
     }
     conversas.value = []
     hasMoreConversas.value = true
+    activeId.value = ''
+    // Limpa cache de mensagens
+    Object.keys(msgCache).forEach(k => delete msgCache[k])
     await loadMoreConversas(true)
     conversasLoaded.value = true
+    lastLoadedEmpresaId = empId
     if (!activeId.value && conversas.value.length) selectConversa(conversas.value[0]!.id)
   }
 

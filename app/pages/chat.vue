@@ -78,6 +78,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useChatStore } from '~/stores/chat'
+import { useEmpresa } from '~/composables/useEmpresa'
 import type { KanbanCard } from '~/composables/useKanban'
 import '~/assets/chat.css'
 
@@ -85,7 +86,10 @@ definePageMeta({ layout: 'default' })
 
 // Tema segue o tema global da empresa automaticamente
 const chatTheme = ref('dark')
-onMounted(() => {
+const { loadEmpresa } = useEmpresa()
+
+onMounted(async () => {
+  await loadEmpresa()
   store.loadConversas()
 })
 
