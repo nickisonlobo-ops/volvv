@@ -80,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useChatStore } from '~/stores/chat'
 import { useEmpresa } from '~/composables/useEmpresa'
 import type { KanbanCard } from '~/composables/useKanban'
@@ -94,7 +94,20 @@ const { loadEmpresa } = useEmpresa()
 
 onMounted(async () => {
   await loadEmpresa()
-  store.loadConversas()
+  // Garante que empresa_id carregou antes de buscar conversas
+  const empId = useState<number | null>('empresa_id')
+  if (empId.value) {
+    store.loadConversas()
+  } else {
+    // Aguarda o empresa_id ficar disponível (max 3s)
+    const stop = watch(empId, (val) => {
+      if (val) {
+        store.loadConversas()
+        stop()
+      }
+    }, { immediate: true })
+    setTimeout(() => stop(), 3000)
+  }
 })
 
 const viewMode = ref<'chat' | 'kanban'>('chat')
