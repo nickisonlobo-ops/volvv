@@ -160,6 +160,7 @@ const allNavSections = [
       { to: '/adesivos-catalogo', icon: 'catalog', label: 'Catálogo', minPerfil: 'all' },
       { to: '/adesivos-materiais', icon: 'layers', label: 'Materiais', minPerfil: 'all' },
       { to: '/adesivos-estoque', icon: 'cube', label: 'Estoque', minPerfil: 'all' },
+      { to: '/ecommerce', icon: 'cart', label: 'E-commerce', minPerfil: 'manager' },
     ],
   },
   {
