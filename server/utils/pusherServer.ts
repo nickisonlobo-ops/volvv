@@ -23,19 +23,14 @@ function getPusher(): Pusher | null {
   return client
 }
 
-/** Nova mensagem (recebida ou echo) -> front. Publica no canal da empresa E no global. */
+/** Nova mensagem (recebida ou echo) -> front. Publica SOMENTE no canal da empresa. */
 export async function publishNewMessage(conversation: ConversationRow, message: MessageRow) {
   const pusher = getPusher()
   if (!pusher) return
 
   const channel = channelFor(conversation.phone_number_id)
   try {
-    // Publica no canal específico da empresa
     await pusher.trigger(channel, 'message:new', { conversation, message })
-    // Publica também no canal global (fallback para clientes que ainda não migraram)
-    if (channel !== 'chat') {
-      await pusher.trigger('chat', 'message:new', { conversation, message })
-    }
   } catch (e) {
     console.error('[pusher] publishNewMessage:', e)
   }
