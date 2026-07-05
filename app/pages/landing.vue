@@ -135,29 +135,29 @@
         </div>
 
         <!-- Floating orçamento card (left) -->
-        <div class="hidden sm:block absolute left-0 top-[110px] w-[238px] bg-[#18181a]/95 border border-white/[0.12] rounded-[14px] p-4 shadow-[0_30px_70px_rgba(0,0,0,0.65)] z-[3] animate-float-left">
-          <div class="flex justify-between items-center mb-3">
-            <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Orçamento #1042</span>
-            <span class="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">Aprovado</span>
+        <div class="absolute left-0 top-[60px] sm:top-[110px] w-[180px] sm:w-[238px] bg-[#18181a]/95 border border-white/[0.12] rounded-[14px] p-3 sm:p-4 shadow-[0_30px_70px_rgba(0,0,0,0.65)] z-[3] animate-float-left">
+          <div class="flex justify-between items-center mb-2 sm:mb-3">
+            <span class="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Orçamento #1042</span>
+            <span class="text-[8px] sm:text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">Aprovado</span>
           </div>
-          <p class="text-xs font-semibold text-zinc-200 mb-2.5">Studio Vibe</p>
-          <div class="flex justify-between text-[10.5px] text-zinc-400 mb-1.5"><span>Banner ×2</span><span>R$ 480</span></div>
-          <div class="flex justify-between text-[10.5px] text-zinc-400 mb-2.5"><span>Adesivo ×50</span><span>R$ 320</span></div>
-          <div class="h-px bg-white/[0.08] mb-2.5"></div>
+          <p class="text-[11px] sm:text-xs font-semibold text-zinc-200 mb-2">Studio Vibe</p>
+          <div class="flex justify-between text-[9.5px] sm:text-[10.5px] text-zinc-400 mb-1"><span>Banner ×2</span><span>R$ 480</span></div>
+          <div class="flex justify-between text-[9.5px] sm:text-[10.5px] text-zinc-400 mb-2"><span>Adesivo ×50</span><span>R$ 320</span></div>
+          <div class="h-px bg-white/[0.08] mb-2"></div>
           <div class="flex justify-between items-baseline">
-            <span class="text-[11px] text-zinc-500">Total</span>
-            <span class="font-['Sora'] font-extrabold text-[17px] text-orange-500">R$ 1.490</span>
+            <span class="text-[10px] sm:text-[11px] text-zinc-500">Total</span>
+            <span class="font-['Sora'] font-extrabold text-[14px] sm:text-[17px] text-orange-500">R$ 1.490</span>
           </div>
         </div>
 
         <!-- Floating financeiro card (right) -->
-        <div class="hidden sm:block absolute right-0 top-[150px] w-[222px] bg-[#18181a]/95 border border-white/[0.12] rounded-[14px] p-4 shadow-[0_30px_70px_rgba(0,0,0,0.65)] z-[3] animate-float-right">
-          <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Faturamento · Jun</p>
-          <div class="flex items-baseline gap-2 mb-3">
-            <span class="font-['Sora'] font-extrabold text-[23px] text-stone-50">R$ 84,2k</span>
-            <span class="text-[10.5px] font-bold text-emerald-500">▲ 18%</span>
+        <div class="absolute right-0 top-[180px] sm:top-[150px] w-[170px] sm:w-[222px] bg-[#18181a]/95 border border-white/[0.12] rounded-[14px] p-3 sm:p-4 shadow-[0_30px_70px_rgba(0,0,0,0.65)] z-[3] animate-float-right">
+          <p class="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 sm:mb-2">Faturamento · Jun</p>
+          <div class="flex items-baseline gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+            <span class="font-['Sora'] font-extrabold text-[18px] sm:text-[23px] text-stone-50">R$ 84,2k</span>
+            <span class="text-[9.5px] sm:text-[10.5px] font-bold text-emerald-500">▲ 18%</span>
           </div>
-          <div class="flex items-end gap-[5px] h-[50px]">
+          <div class="flex items-end gap-[4px] sm:gap-[5px] h-[40px] sm:h-[50px]">
             <div class="flex-1 h-[40%] bg-zinc-700 rounded-[3px]"></div>
             <div class="flex-1 h-[55%] bg-zinc-700 rounded-[3px]"></div>
             <div class="flex-1 h-[46%] bg-zinc-600 rounded-[3px]"></div>
