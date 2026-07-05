@@ -159,7 +159,7 @@ const conversaAtivaView = computed(() => {
 
 const mensagensView = computed(() =>
   store.mensagens.filter(m => m.type === 'msg').map((m: any) => {
-    const base = { de: m.from, hora: m.time }
+    const base = { de: m.from, hora: m.time, status: m.status }
     switch (m.kind) {
       case 'text': return { ...base, tipo: 'texto', texto: m.text }
       case 'image': return { ...base, tipo: 'imagem', url: m.url, legenda: m.caption }

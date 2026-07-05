@@ -260,7 +260,7 @@
 }
 
 /* ===== Bolhas ===== */
-.chat-im-row { display: flex; }
+.chat-im-row { display: flex; margin-bottom: 2px; }
 .chat-im-row.out { justify-content: flex-end; }
 .chat-im-row.in { justify-content: flex-start; }
 
@@ -503,4 +503,20 @@
   ring: none !important;
   --tw-ring-shadow: none !important;
   --tw-ring-color: transparent !important;
+}
+
+/* ===== Status Ticks (sent/delivered/read) ===== */
+.chat-status-tick {
+  display: inline-flex;
+  margin-left: 2px;
+  color: var(--chat-text-2);
+}
+.chat-status-tick.read {
+  color: #53bdeb;
+}
+.chat-status-tick.delivered {
+  color: var(--chat-text-2);
+}
+.chat-status-tick.sent {
+  color: var(--chat-text-2);
 }

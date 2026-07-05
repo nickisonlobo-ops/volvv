@@ -1,11 +1,11 @@
 <template>
   <div class="chat-im-row" :class="mensagem.de">
     <!-- Texto -->
-    <TextMessage v-if="mensagem.tipo === 'texto'" :de="mensagem.de" :texto="mensagem.texto" :hora="mensagem.hora" />
+    <TextMessage v-if="mensagem.tipo === 'texto'" :de="mensagem.de" :texto="mensagem.texto" :hora="mensagem.hora" :status="mensagem.status" />
     <!-- Áudio -->
     <AudioMessage v-else-if="mensagem.tipo === 'audio'" :de="mensagem.de" :url="mensagem.url" :duracao="mensagem.duracao || '0:00'" :hora="mensagem.hora" :avatar-url="mensagem.avatarUrl" />
     <!-- Imagem -->
-    <ImageMessage v-else-if="mensagem.tipo === 'imagem'" :de="mensagem.de" :url="mensagem.url" :hora="mensagem.hora" :legenda="mensagem.legenda" />
+    <ImageMessage v-else-if="mensagem.tipo === 'imagem'" :de="mensagem.de" :url="mensagem.url" :hora="mensagem.hora" :legenda="mensagem.legenda" :status="mensagem.status" />
     <!-- Vídeo -->
     <VideoMessage v-else-if="mensagem.tipo === 'video'" :de="mensagem.de" :url="mensagem.url" :hora="mensagem.hora" :legenda="mensagem.legenda" />
     <!-- Documento -->
