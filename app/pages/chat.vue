@@ -60,16 +60,16 @@
       </Transition>
       <Transition name="fade">
         <div v-if="modalConversaAberto" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click.self="modalConversaAberto = false">
-          <div class="chat-page rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden" data-theme="dark" style="height: 85vh; flex-direction: column; display: flex; border-radius: 16px;">
-            <div class="flex items-center justify-between px-5 py-3 bg-[#202c33] flex-shrink-0">
+          <div class="chat-page rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden" :data-theme="chatTheme" style="height: 85vh; flex-direction: column; display: flex; border-radius: 16px;">
+            <div class="flex items-center justify-between px-5 py-3 flex-shrink-0" style="background: var(--chat-header);">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-[#25d366] flex items-center justify-center text-white font-bold text-sm">{{ modalConversaNome?.charAt(0)?.toUpperCase() || '?' }}</div>
+                <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" style="background: var(--chat-accent); color: #fff;">{{ modalConversaNome?.charAt(0)?.toUpperCase() || '?' }}</div>
                 <div>
-                  <p class="text-white font-semibold text-sm">{{ modalConversaNome }}</p>
-                  <p class="text-[#8696a0] text-xs">online</p>
+                  <p class="font-semibold text-sm" style="color: var(--chat-text);">{{ modalConversaNome }}</p>
+                  <p class="text-xs" style="color: var(--chat-text-2);">online</p>
                 </div>
               </div>
-              <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg text-[#aebac1] hover:text-white hover:bg-white/10" @click="modalConversaAberto = false">
+              <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10" style="color: var(--chat-icon);" @click="modalConversaAberto = false">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
               </button>
             </div>
