@@ -1,8 +1,10 @@
 import Pusher from 'pusher'
 import type { ConversationRow, MessageRow } from '../../app/types/database'
 
-/** Canal único por ora (single inbox). TODO: por número -> `inbox-${phoneNumberId}`. */
-const CHANNEL = 'chat'
+/** Canal por empresa para isolamento multi-tenant */
+function channelFor(phoneNumberId?: string): string {
+  return phoneNumberId ? `chat-${phoneNumberId}` : 'chat'
+}
 
 let client: Pusher | null = null
 
@@ -21,19 +23,21 @@ function getPusher(): Pusher | null {
   return client
 }
 
-/** Nova mensagem (recebida ou echo) -> front. */
+/** Nova mensagem (recebida ou echo) -> front. Publica no canal da empresa. */
 export async function publishNewMessage(conversation: ConversationRow, message: MessageRow) {
+  const channel = channelFor(conversation.phone_number_id)
   try {
-    await getPusher()?.trigger(CHANNEL, 'message:new', { conversation, message })
+    await getPusher()?.trigger(channel, 'message:new', { conversation, message })
   } catch (e) {
     console.error('[pusher] publishNewMessage:', e)
   }
 }
 
-/** Atualização de status (sent/delivered/read) -> front. */
+/** Atualização de status (sent/delivered/read) -> front. Publica em todos (global) por simplicidade. */
 export async function publishStatus(waMessageId: string, status: string) {
   try {
-    await getPusher()?.trigger(CHANNEL, 'message:status', { waMessageId, status })
+    // Status vai no canal global (não sabemos o phone_number_id aqui facilmente)
+    await getPusher()?.trigger('chat', 'message:status', { waMessageId, status })
   } catch (e) {
     console.error('[pusher] publishStatus:', e)
   }
