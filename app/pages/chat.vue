@@ -127,6 +127,13 @@ const mobileConversaAberta = ref(false)
 const store = useChatStore()
 const kanbanRefreshKey = ref(0)
 
+// Quando store.conversas mudar (nova msg via Pusher) e estamos no kanban, refresh
+watch(() => store.conversas.length, () => {
+  if (viewMode.value === 'kanban') {
+    kanbanRefreshKey.value++
+  }
+})
+
 const conversasView = computed(() =>
   store.conversas.map((c, idx) => ({
     id: idx, _realId: c.id, nome: c.name, hora: c.time, previa: c.preview, foto: c.img || '', cor: c.color || '#374151', naoLidas: 0,
