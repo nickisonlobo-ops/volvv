@@ -1,12 +1,13 @@
 <template>
-  <section class="py-20 overflow-hidden relative">
+  <section ref="sectionRef" class="py-20 overflow-hidden relative">
     <div class="max-w-4xl mx-auto text-center mb-12 px-4">
       <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">Depoimentos</p>
       <h2 class="text-3xl sm:text-5xl font-bold text-white mb-4">Quem usa, recomenda</h2>
       <p class="text-lg text-white/50">Empresas que transformaram sua gestao com o Volvv</p>
     </div>
 
-    <div class="relative flex h-[500px] sm:h-[550px] w-full max-w-[1100px] mx-auto flex-row items-center justify-center overflow-hidden gap-4" style="perspective: 800px;">
+    <!-- So renderiza quando visivel -->
+    <div v-if="isVisible" class="relative flex h-[500px] sm:h-[550px] w-full max-w-[1100px] mx-auto flex-row items-center justify-center overflow-hidden gap-4" style="perspective: 800px;">
       <div class="flex flex-row items-center gap-5" style="transform: translateX(-50px) translateZ(-50px) rotateX(10deg) rotateY(-8deg) rotateZ(10deg);">
         <!-- Coluna 1 -->
         <div class="flex flex-col gap-4 animate-marquee-down">
@@ -75,6 +76,27 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const sectionRef = ref<HTMLElement | null>(null)
+const isVisible = ref(false)
+let observer: IntersectionObserver | null = null
+
+onMounted(() => {
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        isVisible.value = true
+        observer?.disconnect()
+      }
+    },
+    { rootMargin: '200px' }
+  )
+  if (sectionRef.value) observer.observe(sectionRef.value)
+})
+
+onUnmounted(() => { observer?.disconnect() })
+
 const testimonials = [
   { name: 'Ricardo Souza', role: 'Adesivos Express', body: 'O Volvv organizou toda nossa producao. Antes perdiamos OS no papel, agora tudo no kanban.', img: 'https://randomuser.me/api/portraits/men/32.jpg' },
   { name: 'Amanda Costa', role: 'Studio Visual', body: 'O CRM com WhatsApp integrado mudou nosso atendimento. Respondemos 3x mais rapido.', img: 'https://randomuser.me/api/portraits/women/44.jpg' },
