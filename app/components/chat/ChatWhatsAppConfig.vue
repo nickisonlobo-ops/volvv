@@ -84,6 +84,9 @@ const config = ref<any>(null)
 const salvando = ref(false)
 const copiado = ref(false)
 
+// Usa o mesmo useState que useEmpresa
+const currentEmpresaId = useState<number | null>('empresa_id', () => null)
+
 const form = reactive({
   datafy_api_url: 'https://cloud.datafyapi.com.br',
   datafy_token: '',
@@ -98,29 +101,11 @@ const webhookUrl = computed(() => {
   return 'https://app-volvv.arepen.easypanel.host/api/webhook'
 })
 
-// Carrega empresa_id do localStorage
-function getEmpresaId(): string {
-  try {
-    const data = localStorage.getItem('empresa_tema') || localStorage.getItem('empresa_data')
-    if (data) {
-      const parsed = JSON.parse(data)
-      return parsed.empresa_id || parsed.id || ''
-    }
-    // Fallback: buscar do perfil
-    const perfil = localStorage.getItem('perfil_data')
-    if (perfil) {
-      return JSON.parse(perfil).empresa_id || ''
-    }
-  } catch {}
-  return ''
-}
-
 onMounted(async () => {
-  const empresaId = getEmpresaId()
-  if (!empresaId) return
+  if (!currentEmpresaId.value) return
 
   try {
-    const data = await $fetch('/api/whatsapp-config', { query: { empresa_id: empresaId } })
+    const data = await $fetch('/api/whatsapp-config', { query: { empresa_id: currentEmpresaId.value } })
     if (data) {
       config.value = data
       form.datafy_api_url = (data as any).datafy_api_url || 'https://cloud.datafyapi.com.br'
@@ -134,15 +119,14 @@ onMounted(async () => {
 })
 
 async function salvar() {
-  const empresaId = getEmpresaId()
-  if (!empresaId) return alert('Empresa não identificada. Faça login novamente.')
+  if (!currentEmpresaId.value) return alert('Empresa não identificada. Faça login novamente.')
 
   salvando.value = true
   try {
     const res = await $fetch('/api/whatsapp-config', {
       method: 'POST',
       body: {
-        empresa_id: empresaId,
+        empresa_id: currentEmpresaId.value,
         datafy_api_url: form.datafy_api_url,
         datafy_token: form.datafy_token,
         phone_number_id: form.phone_number_id,
