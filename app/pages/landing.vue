@@ -135,7 +135,7 @@
         </div>
 
         <!-- Floating orçamento card (left) -->
-        <div class="absolute left-0 top-[60px] sm:top-[110px] w-[180px] sm:w-[238px] bg-[#18181a]/95 border border-white/[0.12] rounded-[14px] p-3 sm:p-4 shadow-[0_30px_70px_rgba(0,0,0,0.65)] z-[3] animate-float-left">
+        <div class="absolute left-0 top-[180px] sm:top-[110px] w-[180px] sm:w-[238px] bg-[#18181a]/95 border border-white/[0.12] rounded-[14px] p-3 sm:p-4 shadow-[0_30px_70px_rgba(0,0,0,0.65)] z-[3] animate-float-left">
           <div class="flex justify-between items-center mb-2 sm:mb-3">
             <span class="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Orçamento #1042</span>
             <span class="text-[8px] sm:text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">Aprovado</span>
