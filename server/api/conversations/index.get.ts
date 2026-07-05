@@ -1,9 +1,6 @@
 /**
  * Lista de conversas paginada, filtrada pelo phone_number_id da empresa.
  * Query: ?empresa_id=X&limit=20&offset=0
- *
- * Se empresa_id for informado, busca o phone_number_id na whatsapp_config
- * e filtra as conversas. Se não informado, retorna todas (backward compat temporário).
  */
 export default defineEventHandler(async (event) => {
   const q = getQuery(event)
@@ -25,6 +22,7 @@ export default defineEventHandler(async (event) => {
       .maybeSingle()
 
     phoneNumberId = cfg?.phone_number_id ?? null
+    console.log(`[conversations] empresa_id=${empresaId} -> phone_number_id=${phoneNumberId}`)
   }
 
   let query = supabase
@@ -35,9 +33,6 @@ export default defineEventHandler(async (event) => {
   // Filtra por phone_number_id se encontrou config
   if (phoneNumberId) {
     query = query.eq('phone_number_id', phoneNumberId)
-  } else if (empresaId) {
-    // Empresa informada mas sem config -> retorna todas conversas (pode ser phone_number_id diferente)
-    // Não bloqueia mais — mostra o que tem
   }
 
   const { data, error } = await query.range(offset, offset + limit - 1)
@@ -45,5 +40,7 @@ export default defineEventHandler(async (event) => {
   if (error) {
     throw createError({ statusCode: 500, statusMessage: error.message })
   }
+
+  console.log(`[conversations] retornando ${data?.length ?? 0} conversas`)
   return data ?? []
 })
