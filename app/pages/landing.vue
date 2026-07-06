@@ -346,9 +346,9 @@
         <div class="text-center mb-16">
           <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">Planos</p>
           <h2 class="text-3xl sm:text-5xl font-bold tracking-tight mb-4">Investimento que se paga em 1 semana</h2>
-          <p class="text-white/50 max-w-sm mx-auto">A partir de R$97/mês. Cancele quando quiser.</p>
+          <p class="text-white/50 max-w-sm mx-auto">Planos por faturamento. Cancele quando quiser.</p>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 items-start">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-start">
           <div v-for="plan in plans" :key="plan.name"
             class="relative rounded-2xl p-7 flex flex-col gap-5 transition-all duration-300"
             :class="plan.featured
@@ -383,7 +383,7 @@
             </a>
           </div>
         </div>
-        <p class="text-center text-xs text-white/30 mt-8">✅ 7 dias grátis em todos os planos · Sem cartão de crédito · Cancele quando quiser</p>
+        <p class="text-center text-xs text-white/30 mt-8">✅ 14 dias grátis em todos os planos · Sem cartão de crédito · Cancele quando quiser · Preços por faturamento mensal da empresa</p>
       </div>
     </section>
 
@@ -511,9 +511,11 @@ const steps = [
 ]
 
 const plans = [
-  { name: 'Starter', desc: 'Para quem está começando', price: 'R$97', period: '/mês', featured: false, url: '/login', cta: 'Começar grátis', items: ['Até 2 usuários', 'Orçamentos ilimitados', 'OS e kanban', 'Financeiro básico', 'Suporte via WhatsApp'] },
-  { name: 'Profissional', desc: 'O mais completo', price: 'R$197', period: '/mês', featured: true, url: '/login', cta: 'Começar grátis', items: ['Até 10 usuários', 'Tudo do Starter', 'Dashboard avançado', 'Consultor IA', 'Comissões e equipe', 'Relatórios PDF'] },
-  { name: 'Enterprise', desc: 'Para grandes operações', price: 'Sob consulta', period: '', featured: false, url: 'https://wa.me/5511940527609', cta: 'Falar com consultor', items: ['Usuários ilimitados', 'Tudo do Profissional', 'API e integrações', 'Onboarding dedicado', 'SLA prioritário'] },
+  { name: 'Starter', desc: 'Até R$ 30k/mês de faturamento', price: 'R$197', period: '/mês', featured: false, url: '/login', cta: 'Começar grátis', items: ['Até 3 usuários', 'CRM + Kanban de clientes', 'Orçamentos e OS ilimitados', 'Financeiro básico', 'E-commerce (1 loja)', 'Suporte via WhatsApp'] },
+  { name: 'Essencial', desc: 'R$ 30k a R$ 50k/mês', price: 'R$397', period: '/mês', featured: false, url: '/login', cta: 'Começar grátis', items: ['Até 5 usuários', 'Tudo do Starter', 'WhatsApp integrado (1 número)', 'Kanban de produção', 'Agendamentos', 'Dashboard avançado'] },
+  { name: 'Profissional', desc: 'R$ 50k a R$ 200k/mês', price: 'R$797', period: '/mês', featured: true, url: '/login', cta: 'Começar grátis', items: ['Até 15 usuários', 'Tudo do Essencial', 'Marketing completo', 'Consultor IA', 'Comissões e equipe', 'Automações', 'Relatórios PDF'] },
+  { name: 'Business', desc: 'R$ 200k a R$ 500k/mês', price: 'R$1.397', period: '/mês', featured: false, url: '/login', cta: 'Começar grátis', items: ['Até 30 usuários', 'Tudo do Profissional', 'WhatsApp multi-atendente', 'Múltiplas lojas', 'Integrações Meta/Google Ads', 'API aberta', 'Suporte prioritário'] },
+  { name: 'Enterprise', desc: 'Acima de R$ 500k/mês', price: 'R$2.197', period: '/mês', featured: false, url: 'https://wa.me/5511940527609', cta: 'Falar com consultor', items: ['Usuários ilimitados', 'Tudo do Business', 'White-label', 'Onboarding dedicado', 'SLA 99.9%', 'Gerente de sucesso'] },
 ]
 
 const faqs = [

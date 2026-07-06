@@ -166,6 +166,7 @@ const allNavSections = [
   {
     title: 'Inteligência',
     items: [
+      { to: '/marketing', icon: 'chart', label: 'Marketing', minPerfil: 'manager' },
       { to: '/consultor', icon: 'brain', label: 'Consultor de Negócios', minPerfil: 'manager' },
     ],
   },
