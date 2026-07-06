@@ -866,6 +866,144 @@
 
       </div><!-- end TAB: FATURAÇÃO -->
 
+      <!-- ═══ TAB: MARKETING ═══ -->
+      <div v-show="activeTab === 'marketing'" class="space-y-6">
+
+        <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+          <div>
+            <h2 class="text-base font-bold text-gray-800">Integrações de Marketing</h2>
+            <p class="text-xs text-gray-500 mt-1">Conecte suas contas de anúncio para o dashboard puxar dados reais. Os tokens ficam guardados no servidor e nunca são exibidos novamente.</p>
+          </div>
+
+          <div v-for="p in PLATAFORMAS_MKT" :key="p.id" class="rounded-2xl border border-gray-100 p-5 space-y-4">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <span class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm font-bold" :style="{ background: p.cor }">{{ p.badge }}</span>
+                <div>
+                  <p class="text-sm font-bold text-gray-800">{{ p.label }}</p>
+                  <p class="text-[11px] text-gray-400">{{ p.help }}</p>
+                </div>
+              </div>
+              <div v-if="mktStatus(p.id)?.status === 'conectado'" class="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-full shrink-0">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span class="text-[11px] font-bold text-green-700">Conectado</span>
+              </div>
+              <div v-else-if="mktStatus(p.id)?.status === 'erro'" class="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-full shrink-0">
+                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                <span class="text-[11px] font-bold text-red-700">Erro</span>
+              </div>
+              <div v-else class="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-full shrink-0">
+                <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                <span class="text-[11px] font-bold text-gray-500">Não configurado</span>
+              </div>
+            </div>
+
+            <!-- Conectado -->
+            <div v-if="mktStatus(p.id)?.status === 'conectado'" class="flex items-center justify-between gap-3 pt-3 border-t border-gray-100">
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">Conta</p>
+                <p class="text-sm font-bold text-gray-800">{{ mktStatus(p.id)?.conta_nome || mktStatus(p.id)?.account_id || '—' }}</p>
+              </div>
+              <button type="button" class="px-4 py-2 rounded-lg text-xs font-bold text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 transition-colors" @click="desconectarMkt(p.id)">Desconectar</button>
+            </div>
+
+            <!-- Formulário de conexão -->
+            <div v-else class="space-y-3 pt-3 border-t border-gray-100">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1">
+                  <label class="text-xs font-bold text-gray-500">{{ p.accountLabel }}</label>
+                  <input v-model="mktForm[p.id].account_id" type="text" :placeholder="p.accountPlaceholder" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-xs font-bold text-gray-500">Access Token</label>
+                  <input v-model="mktForm[p.id].access_token" type="password" placeholder="Cole o token aqui" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all font-mono" />
+                </div>
+              </div>
+              <div v-if="mktError[p.id] || mktStatus(p.id)?.erro_msg" class="text-xs text-red-600 font-medium bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                {{ mktError[p.id] || mktStatus(p.id)?.erro_msg }}
+              </div>
+              <button
+                type="button"
+                class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
+                style="background: var(--color-primary, #f97316)"
+                :disabled="mktLoading[p.id] || !mktForm[p.id].account_id || !mktForm[p.id].access_token"
+                @click="conectarMkt(p.id)"
+              >
+                <span v-if="mktLoading[p.id]" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
+                {{ mktLoading[p.id] ? 'Validando...' : 'Conectar' }}
+              </button>
+            </div>
+          </div>
+        </section>
+      </div><!-- end TAB: MARKETING -->
+
+      <!-- ═══ TAB: WHATSAPP ═══ -->
+      <div v-show="activeTab === 'whatsapp'" class="space-y-6">
+        <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              </span>
+              <div>
+                <h2 class="text-base font-bold text-gray-800">Configuração WhatsApp</h2>
+                <p class="text-xs text-gray-500 mt-1">Conecte seu número via Datafy API para receber e enviar mensagens.</p>
+              </div>
+            </div>
+            <div v-if="wppConfig?.ativo" class="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-full shrink-0">
+              <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              <span class="text-[11px] font-bold text-green-700">Conectado</span>
+            </div>
+            <div v-else class="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-full shrink-0">
+              <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+              <span class="text-[11px] font-bold text-gray-500">Não configurado</span>
+            </div>
+          </div>
+
+          <div class="space-y-4 pt-3 border-t border-gray-100">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500">API URL</label>
+                <input v-model="wppForm.datafy_api_url" type="url" placeholder="https://cloud.datafyapi.com.br" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500">Token da Instância (Bearer)</label>
+                <input v-model="wppForm.datafy_token" type="password" placeholder="sk_live_xxxxxxxx..." autocomplete="off" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all font-mono" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500">Phone Number ID</label>
+                <input v-model="wppForm.phone_number_id" type="text" placeholder="1205697689289632" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500">Número exibido (opcional)</label>
+                <input v-model="wppForm.display_phone_number" type="text" placeholder="+55 11 94052-7609" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all" />
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-gray-500">Webhook URL</label>
+              <div class="flex gap-2">
+                <input :value="wppWebhookUrl" type="text" readonly class="flex-1 rounded-lg border border-gray-200 px-3 py-2.5 text-sm bg-gray-100 text-gray-600 cursor-default" />
+                <button type="button" class="px-4 py-2 rounded-lg bg-gray-100 text-xs font-bold text-gray-600 hover:bg-gray-200 transition-colors" @click="copiarWppWebhook">{{ wppCopiado ? '✓ Copiado' : 'Copiar' }}</button>
+              </div>
+              <p class="text-[10px] text-gray-400 mt-1">Configure esta URL no painel Datafy como webhook de recebimento.</p>
+            </div>
+
+            <div v-if="wppError" class="text-xs text-red-600 font-medium bg-red-50 border border-red-200 rounded-lg px-3 py-2">{{ wppError }}</div>
+
+            <button
+              type="button"
+              class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/25"
+              :disabled="wppSalvando || !wppForm.datafy_token || !wppForm.phone_number_id"
+              @click="salvarWpp"
+            >
+              <span v-if="wppSalvando" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
+              {{ wppSalvando ? 'Salvando...' : 'Salvar configuração' }}
+            </button>
+          </div>
+        </section>
+      </div><!-- end TAB: WHATSAPP -->
+
     </template>
   </main>
   </div>
@@ -882,12 +1020,14 @@ import { useBilling } from '~/composables/useBilling'
 defineOptions({ name: 'ConfiguracoesPage' })
 
 // ── Tab Navigation ───────────────────────────────────────────────────────────
-const activeTab = ref<'empresa' | 'visual' | 'horarios' | 'faturacao'>('empresa')
+const activeTab = ref<'empresa' | 'visual' | 'horarios' | 'marketing' | 'whatsapp' | 'faturacao'>('empresa')
 
 const tabs = [
   { id: 'empresa' as const, label: 'Empresa', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />' },
   { id: 'visual' as const, label: 'Personalização', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008z" />' },
   { id: 'horarios' as const, label: 'Horários', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />' },
+  { id: 'marketing' as const, label: 'Marketing', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46" />' },
+  { id: 'whatsapp' as const, label: 'WhatsApp', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />' },
 ]
 
 // Tab faturação (só aparece quando pais = PT)
@@ -1138,6 +1278,120 @@ const {
 
 const billingForm = reactive({ accountName: '', apiKey: '' })
 
+// ── Integrações de Marketing (Meta / Google Ads / GA4) ───────────────
+type PlatMkt = 'meta' | 'google_ads' | 'ga4'
+const PLATAFORMAS_MKT: {
+  id: PlatMkt; label: string; help: string; badge: string; cor: string
+  accountLabel: string; accountPlaceholder: string
+}[] = [
+  { id: 'meta', label: 'Meta Ads (Instagram + Facebook)', help: 'Access token de longa duração + ID da conta de anúncio', badge: 'M', cor: '#1877f2', accountLabel: 'ID da Conta (act_...)', accountPlaceholder: 'act_1234567890' },
+  { id: 'google_ads', label: 'Google Ads', help: 'Customer ID + token OAuth (developer token no servidor)', badge: 'G', cor: '#4285f4', accountLabel: 'Customer ID', accountPlaceholder: '123-456-7890' },
+  { id: 'ga4', label: 'Google Analytics 4', help: 'Property ID + token OAuth', badge: 'A', cor: '#f59e0b', accountLabel: 'Property ID', accountPlaceholder: 'properties/123456789' },
+]
+interface MktIntegracao { plataforma: PlatMkt; conta_nome: string | null; account_id: string | null; status: string; erro_msg: string | null }
+const mktIntegracoes = ref<MktIntegracao[]>([])
+const mktForm = reactive<Record<PlatMkt, { account_id: string; access_token: string }>>({
+  meta: { account_id: '', access_token: '' },
+  google_ads: { account_id: '', access_token: '' },
+  ga4: { account_id: '', access_token: '' },
+})
+const mktLoading = reactive<Record<PlatMkt, boolean>>({ meta: false, google_ads: false, ga4: false })
+const mktError = reactive<Record<PlatMkt, string | null>>({ meta: null, google_ads: null, ga4: null })
+
+function mktStatus(id: PlatMkt): MktIntegracao | undefined {
+  return mktIntegracoes.value.find((i) => i.plataforma === id)
+}
+async function loadMktIntegracoes() {
+  if (!empresaId.value) return
+  try {
+    mktIntegracoes.value = await $fetch<MktIntegracao[]>('/api/marketing/integracoes', { query: { empresa_id: empresaId.value } })
+  } catch { mktIntegracoes.value = [] }
+}
+async function conectarMkt(id: PlatMkt) {
+  if (!empresaId.value) return
+  mktError[id] = null
+  mktLoading[id] = true
+  try {
+    const res = await $fetch<{ status: string; erro_msg: string | null }>('/api/marketing/integracoes', {
+      method: 'POST',
+      body: {
+        empresa_id: empresaId.value,
+        plataforma: id,
+        account_id: mktForm[id].account_id.trim(),
+        access_token: mktForm[id].access_token.trim(),
+      },
+    })
+    if (res.status !== 'conectado') mktError[id] = res.erro_msg || 'Falha ao conectar.'
+    else { mktForm[id].account_id = ''; mktForm[id].access_token = '' }
+    await loadMktIntegracoes()
+  } catch (e: any) {
+    mktError[id] = e?.data?.statusMessage || e?.message || 'Erro ao conectar.'
+  } finally {
+    mktLoading[id] = false
+  }
+}
+async function desconectarMkt(id: PlatMkt) {
+  if (!empresaId.value) return
+  try {
+    await $fetch(`/api/marketing/integracoes/${id}`, { method: 'DELETE', query: { empresa_id: empresaId.value } })
+    await loadMktIntegracoes()
+  } catch { /* ignore */ }
+}
+
+// ── Configuração WhatsApp (Datafy) ───────────────────────────────────
+const wppConfig = ref<any>(null)
+const wppSalvando = ref(false)
+const wppError = ref<string | null>(null)
+const wppCopiado = ref(false)
+const wppForm = reactive({
+  datafy_api_url: 'https://cloud.datafyapi.com.br',
+  datafy_token: '',
+  phone_number_id: '',
+  display_phone_number: '',
+})
+const wppWebhookUrl = computed(() =>
+  typeof window !== 'undefined' ? `${window.location.origin}/api/webhook` : '/api/webhook',
+)
+async function loadWppConfig() {
+  if (!empresaId.value) return
+  try {
+    const data = await $fetch<any>('/api/whatsapp-config', { query: { empresa_id: empresaId.value } })
+    if (data) {
+      wppConfig.value = data
+      wppForm.datafy_api_url = data.datafy_api_url || 'https://cloud.datafyapi.com.br'
+      wppForm.datafy_token = data.datafy_token || ''
+      wppForm.phone_number_id = data.phone_number_id || ''
+      wppForm.display_phone_number = data.display_phone_number || ''
+    }
+  } catch { /* sem config ainda */ }
+}
+async function salvarWpp() {
+  if (!empresaId.value) { wppError.value = 'Empresa não identificada.'; return }
+  wppError.value = null
+  wppSalvando.value = true
+  try {
+    wppConfig.value = await $fetch('/api/whatsapp-config', {
+      method: 'POST',
+      body: {
+        empresa_id: empresaId.value,
+        datafy_api_url: wppForm.datafy_api_url,
+        datafy_token: wppForm.datafy_token,
+        phone_number_id: wppForm.phone_number_id,
+        display_phone_number: wppForm.display_phone_number,
+      },
+    })
+  } catch (e: any) {
+    wppError.value = e?.data?.message || e?.data?.statusMessage || e?.message || 'Erro ao salvar.'
+  } finally {
+    wppSalvando.value = false
+  }
+}
+function copiarWppWebhook() {
+  navigator.clipboard.writeText(wppWebhookUrl.value)
+  wppCopiado.value = true
+  setTimeout(() => { wppCopiado.value = false }, 2000)
+}
+
 async function handleConnectBilling() {
   const { ok, error } = await connectAccount(billingForm.accountName.trim(), billingForm.apiKey.trim())
   if (ok) {
@@ -1222,6 +1476,8 @@ onMounted(async () => {
     await loadBillingStatus()
     await loadInvoices()
   }
+  // Carrega integrações de marketing + WhatsApp
+  await Promise.all([loadMktIntegracoes(), loadWppConfig()])
   // Só habilita o watcher de preview depois de carregar os dados salvos
   nextTick(() => { formLoaded.value = true })
 })
