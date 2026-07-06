@@ -14,6 +14,10 @@
         <button v-if="activeTab === 'planejamento'" class="mkt-btn-primary" @click="abrirTarefa()">+ Nova tarefa</button>
         <button v-else-if="activeTab === 'conteudo' || activeTab === 'calendario'" class="mkt-btn-primary" @click="abrirConteudo()">+ Novo conteúdo</button>
         <button v-else-if="activeTab === 'automacao'" class="mkt-btn-primary" @click="abrirAutomacao()">+ Nova automação</button>
+        <template v-else-if="activeTab === 'campanhas'">
+          <button class="mkt-btn-ghost" @click="abrirCampanha()">+ Campanha</button>
+          <button class="mkt-btn-primary" @click="abrirAnuncio()">+ Novo anúncio</button>
+        </template>
         <NuxtLink v-else to="/configuracoes" class="mkt-btn-primary" style="text-decoration: none;">Configurar integrações</NuxtLink>
       </div>
     </div>
@@ -269,7 +273,11 @@
 
     <!-- ═══════════ CAMPANHAS ═══════════ -->
     <template v-else-if="activeTab === 'campanhas'">
-      <div class="mkt-card" style="padding: 0; overflow: hidden;">
+      <div v-if="acaoErro" class="mkt-connect-banner" style="background:#fde8e8;border-color:#f5c6c6;color:#c02b2b;">
+        <span style="flex:1;font-size:12.5px;font-weight:600;">{{ acaoErro }}</span>
+        <button class="mkt-link danger" @click="acaoErro = null">Fechar</button>
+      </div>
+      <div class="mkt-card" style="padding: 0; overflow: visible;">
         <div v-if="campanhas.length === 0" class="mkt-empty-block">
           <div class="mkt-empty-icon">📣</div>
           <h2>Nenhuma campanha</h2>
@@ -277,16 +285,77 @@
           <NuxtLink to="/configuracoes" class="mkt-link">Conectar Meta / Google</NuxtLink>
         </div>
         <table v-else class="mkt-data-table">
-          <thead><tr><th>Campanha</th><th>Canal</th><th class="right">Investimento</th><th class="right">Resultado</th><th class="right">ROI</th><th>Status</th></tr></thead>
+          <thead><tr><th>Campanha</th><th>Canal</th><th class="right">Investimento</th><th class="right">Resultado</th><th class="right">ROI</th><th>Status</th><th></th></tr></thead>
           <tbody>
-            <tr v-for="(c, i) in campanhas" :key="i">
-              <td class="mkt-td-title">{{ c.icone }} {{ c.nome }}</td>
-              <td class="mkt-cell-mono" style="text-transform: capitalize;">{{ c.canal }}</td>
-              <td class="mkt-cell-mono right">{{ fmtBRL(c.investimento) }}</td>
-              <td class="right">{{ c.resultado }}</td>
-              <td class="mkt-cell-roi right">{{ c.roi }}</td>
-              <td><span class="mkt-tag" :style="statusTag(c.status)">{{ c.status }}</span></td>
-            </tr>
+            <template v-for="(c, i) in campanhas" :key="i">
+              <tr>
+                <td class="mkt-td-title">
+                  <button v-if="c.plataforma === 'meta'" class="mkt-caret" :class="{ open: estruturaAberta === c.id }" @click="toggleEstrutura(c)">▸</button>
+                  {{ c.icone }} {{ c.nome }}
+                </td>
+                <td class="mkt-cell-mono" style="text-transform: capitalize;">{{ c.canal }}</td>
+                <td class="mkt-cell-mono right">{{ fmtBRL(c.investimento) }}</td>
+                <td class="right">{{ c.resultado }}</td>
+                <td class="mkt-cell-roi right">{{ c.roi }}</td>
+                <td><span class="mkt-tag" :style="statusTag(c.status)">{{ c.status }}</span></td>
+                <td class="mkt-td-actions" style="position: relative;">
+                  <span v-if="acaoLoad === c.id" class="mkt-mini-spin"></span>
+                  <template v-else-if="c.plataforma === 'meta'">
+                    <button class="mkt-link" @click="togglePausar(c)">{{ c.status === 'ativa' ? 'Pausar' : 'Reativar' }}</button>
+                    <button class="mkt-icon-btn" @click="menuAberto = menuAberto === c.id ? null : c.id">⋯</button>
+                    <div v-if="menuAberto === c.id" class="mkt-menu">
+                      <button @click="abrirEditar('campanha', c)">Editar</button>
+                      <button @click="abrirBudget(c)">Editar orçamento</button>
+                      <button @click="duplicarObjeto('campanha', c.id)">Duplicar</button>
+                      <button class="danger" @click="excluirCampanha(c)">Excluir campanha</button>
+                    </div>
+                  </template>
+                  <span v-else class="mkt-cell-menu">—</span>
+                </td>
+              </tr>
+              <!-- Hierarquia expandida -->
+              <tr v-if="estruturaAberta === c.id" class="mkt-estrutura-row">
+                <td colspan="7">
+                  <div v-if="estruturaLoad === c.id" class="mkt-estrutura-load"><span class="mkt-mini-spin"></span> Carregando conjuntos…</div>
+                  <div v-else-if="estruturaCache[c.id]?.erro" class="mkt-estrutura-erro">{{ estruturaCache[c.id].erro }}</div>
+                  <div v-else-if="!estruturaCache[c.id]?.adsets?.length" class="mkt-estrutura-vazio">Nenhum conjunto nesta campanha ainda.</div>
+                  <div v-else class="mkt-estrutura">
+                    <div v-for="aset in estruturaCache[c.id].adsets" :key="aset.id" class="mkt-adset">
+                      <div class="mkt-adset-head">
+                        <span class="mkt-adset-icon">▣</span>
+                        <span class="mkt-adset-nome">{{ aset.nome }}</span>
+                        <span v-if="aset.orcamentoDiario" class="mkt-adset-budget">{{ fmtBRL(aset.orcamentoDiario) }}/dia</span>
+                        <span class="mkt-tag" :style="statusTag(aset.status)">{{ aset.status }}</span>
+                        <span class="mkt-adset-actions">
+                          <span v-if="acaoLoad === aset.id" class="mkt-mini-spin"></span>
+                          <template v-else>
+                            <button class="mkt-link" @click="toggleObjeto(c.id, aset)">{{ aset.status === 'ativa' ? 'Pausar' : 'Reativar' }}</button>
+                            <button class="mkt-link" @click="abrirEditar('conjunto', aset, c.id)">Editar</button>
+                            <button class="mkt-link" @click="duplicarObjeto('conjunto', aset.id, c.id)">Duplicar</button>
+                            <button class="mkt-link danger" @click="excluirObjeto(c.id, aset, 'conjunto')">Excluir</button>
+                          </template>
+                        </span>
+                      </div>
+                      <div v-for="ad in aset.ads" :key="ad.id" class="mkt-ad">
+                        <span class="mkt-ad-icon">▪</span>
+                        <span class="mkt-ad-nome">{{ ad.nome }}</span>
+                        <span class="mkt-tag" :style="statusTag(ad.status)">{{ ad.status }}</span>
+                        <span class="mkt-adset-actions">
+                          <span v-if="acaoLoad === ad.id" class="mkt-mini-spin"></span>
+                          <template v-else>
+                            <button class="mkt-link" @click="toggleObjeto(c.id, ad)">{{ ad.status === 'ativa' ? 'Pausar' : 'Reativar' }}</button>
+                            <button class="mkt-link" @click="abrirEditar('anuncio', ad, c.id)">Editar</button>
+                            <button class="mkt-link" @click="duplicarObjeto('anuncio', ad.id, c.id)">Duplicar</button>
+                            <button class="mkt-link danger" @click="excluirObjeto(c.id, ad, 'anúncio')">Excluir</button>
+                          </template>
+                        </span>
+                      </div>
+                      <div v-if="!aset.ads.length" class="mkt-ad mkt-ad-vazio">Sem anúncios neste conjunto.</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
@@ -476,6 +545,344 @@
         </div>
       </Transition>
     </Teleport>
+
+    <!-- ═══ MODAL EDITAR ORÇAMENTO (Meta) ═══ -->
+    <Teleport to="body">
+      <Transition name="mkt-fade">
+        <div v-if="modalBudget" class="mkt-modal-overlay" @click.self="modalBudget = false">
+          <div class="mkt-modal">
+            <h3>Editar orçamento</h3>
+            <p class="mkt-card-sub">{{ budgetForm.nome }}</p>
+            <div class="mkt-modal-grid">
+              <select v-model="budgetForm.tipo" class="mkt-input"><option value="diario">Diário</option><option value="total">Total (vitalício)</option></select>
+              <input v-model.number="budgetForm.valor" type="number" min="1" step="1" placeholder="Valor em R$" class="mkt-input" />
+            </div>
+            <p class="mkt-card-sub" style="font-size:11px;">Aplica na campanha (CBO). Requer orçamento definido na campanha.</p>
+            <p v-if="acaoErro" class="mkt-modal-error">{{ acaoErro }}</p>
+            <div class="mkt-modal-actions">
+              <button class="mkt-btn-ghost" @click="modalBudget = false">Cancelar</button>
+              <button class="mkt-btn-primary" :disabled="saving || !budgetForm.valor" @click="salvarBudget">{{ saving ? 'Salvando…' : 'Aplicar' }}</button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- ═══ MODAL NOVA CAMPANHA (Meta) ═══ -->
+    <Teleport to="body">
+      <Transition name="mkt-fade">
+        <div v-if="modalCampanha" class="mkt-modal-overlay" @click.self="modalCampanha = false">
+          <div class="mkt-modal">
+            <h3>Nova campanha</h3>
+            <input v-model="campanhaForm.nome" type="text" placeholder="Nome da campanha" class="mkt-input" />
+            <div class="mkt-modal-grid">
+              <select v-model="campanhaForm.objetivo" class="mkt-input"><option v-for="o in OBJETIVOS" :key="o.v" :value="o.v">{{ o.l }}</option></select>
+              <input v-model.number="campanhaForm.orcamento" type="number" min="1" step="1" placeholder="Orçamento diário R$ (opcional)" class="mkt-input" />
+            </div>
+            <label class="mkt-check"><input v-model="campanhaForm.ativar" type="checkbox" /> Já criar ativa (senão fica pausada)</label>
+            <p class="mkt-card-sub" style="font-size:11px;">Cria a campanha na Meta. Conjuntos e anúncios você monta no Gerenciador.</p>
+            <p v-if="acaoErro" class="mkt-modal-error">{{ acaoErro }}</p>
+            <div class="mkt-modal-actions">
+              <button class="mkt-btn-ghost" @click="modalCampanha = false">Cancelar</button>
+              <button class="mkt-btn-primary" :disabled="saving || !campanhaForm.nome" @click="salvarCampanha">{{ saving ? 'Criando…' : 'Criar campanha' }}</button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- ═══ WIZARD: NOVO ANÚNCIO COMPLETO (Meta) ═══ -->
+    <Teleport to="body">
+      <Transition name="mkt-fade">
+        <div v-if="modalAnuncio" class="mkt-modal-overlay" @click.self="modalAnuncio = false">
+          <MarketingWizardLayout :step="wizardStep" :total-steps="4" :steps="[{title:'Campanha',sub:'Objetivo e estrutura'},{title:'Criativo',sub:'Texto, mídia e destino'},{title:'Segmentação',sub:'Público e orçamento'},{title:'Revisão',sub:'Confirmar e publicar'}]" @go="wizardStep = $event" @close="modalAnuncio = false">
+            <h3 v-if="anuncioOk" class="mkt-modal-ok">{{ anuncioOk }}</h3>
+
+            <template v-else>
+              <!-- STEP 1: Campanha -->
+              <div v-show="wizardStep === 1">
+              <h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Campanha</h2>
+              <p class="mkt-card-sub" style="margin-bottom:20px;">Onde este anúncio vai viver. Comece do zero ou aproveite uma campanha que já roda.</p>
+              <select v-model="anuncioForm.campanha_id" class="mkt-input">
+                <option value="">➕ Criar nova campanha</option>
+                <option v-for="c in campanhas" :key="c.id" :value="c.id">{{ c.nome }}</option>
+              </select>
+              <div v-if="!anuncioForm.campanha_id" class="mkt-modal-grid">
+                <input v-model="anuncioForm.campanha_nome" type="text" placeholder="Nome da campanha (opcional)" class="mkt-input" />
+                <select v-model="anuncioForm.objetivo" class="mkt-input"><option v-for="o in OBJETIVOS" :key="o.v" :value="o.v">{{ o.l }}</option></select>
+              </div>
+
+              <div class="mkt-form-label">Anúncio</div>
+              </div><!-- end step 1 -->
+
+              <!-- STEP 2: Criativo -->
+              <div v-show="wizardStep === 2">
+              <h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Criativo</h2>
+              <p class="mkt-card-sub" style="margin-bottom:20px;">O que as pessoas vão ver. Acompanhe na prévia ao lado enquanto escreve.</p>
+              <div class="mkt-form-label">Anúncio</div>
+              <input v-model="anuncioForm.nome" type="text" placeholder="Nome do anúncio" class="mkt-input" />
+              <input v-model="anuncioForm.link" type="url" placeholder="Link de destino (https://…)" class="mkt-input" />
+              <textarea v-model="anuncioForm.mensagem" rows="2" placeholder="Texto principal do anúncio" class="mkt-input"></textarea>
+              <div class="mkt-modal-grid">
+                <input v-model="anuncioForm.titulo" type="text" placeholder="Título (headline)" class="mkt-input" />
+                <select v-model="anuncioForm.cta" class="mkt-input"><option v-for="c in CTAS" :key="c.v" :value="c.v">{{ c.l }}</option></select>
+              </div>
+
+              <div class="mkt-form-label">Mídia</div>
+              <div class="mkt-seg">
+                <button type="button" v-for="f in [{v:'imagem',l:'Imagem'},{v:'video',l:'Vídeo'},{v:'carrossel',l:'Carrossel'}]" :key="f.v" :class="{ active: anuncioForm.formato === f.v }" @click="anuncioForm.formato = f.v as any">{{ f.l }}</button>
+              </div>
+
+              <!-- Imagem única -->
+              <template v-if="anuncioForm.formato === 'imagem'">
+                <label class="mkt-file">
+                  <input type="file" accept="image/*" @change="onImagemFile" hidden />
+                  <span>{{ anuncioForm.imagem_nome || 'Enviar imagem do computador' }}</span>
+                </label>
+                <input v-model="anuncioForm.imagem_url" type="url" placeholder="…ou cole a URL da imagem" class="mkt-input" :disabled="!!anuncioForm.imagem_base64" />
+              </template>
+
+              <!-- Vídeo -->
+              <template v-else-if="anuncioForm.formato === 'video'">
+                <label class="mkt-file">
+                  <input type="file" accept="video/*" @change="onVideoFile" hidden :disabled="uploadVideoLoad" />
+                  <span v-if="uploadVideoLoad"><span class="mkt-mini-spin"></span> Enviando vídeo…</span>
+                  <span v-else>{{ anuncioForm.video_file_nome || 'Enviar vídeo do computador' }}</span>
+                </label>
+                <input v-model="anuncioForm.video_url" type="url" placeholder="…ou cole a URL do vídeo (mp4)" class="mkt-input" :disabled="!!anuncioForm.video_id" />
+                <input v-model="anuncioForm.video_thumb_url" type="url" placeholder="URL da capa/thumbnail (obrigatória)" class="mkt-input" />
+              </template>
+
+              <!-- Carrossel -->
+              <template v-else>
+                <div v-for="(card, idx) in anuncioForm.cards" :key="idx" class="mkt-card-row">
+                  <div class="mkt-card-row-head"><span>Cartão {{ idx + 1 }}</span><button v-if="anuncioForm.cards.length > 2" type="button" class="mkt-link danger" @click="rmCard(idx)">remover</button></div>
+                  <input v-model="card.imagem_url" type="url" placeholder="URL da imagem" class="mkt-input" />
+                  <div class="mkt-modal-grid">
+                    <input v-model="card.titulo" type="text" placeholder="Título" class="mkt-input" />
+                    <input v-model="card.link" type="url" placeholder="Link (opcional)" class="mkt-input" />
+                  </div>
+                </div>
+                <button v-if="anuncioForm.cards.length < 10" type="button" class="mkt-link" @click="addCard">+ Adicionar cartão</button>
+              </template>
+
+              <div class="mkt-form-label">Segmentação e orçamento</div>
+              </div><!-- end step 2 -->
+
+              <!-- STEP 3: Segmentação -->
+              <div v-show="wizardStep === 3">
+              <h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Segmentação e orçamento</h2>
+              <p class="mkt-card-sub" style="margin-bottom:20px;">Quem vê o anúncio e quanto você investe por dia.</p>
+              <div class="mkt-modal-grid">
+                <input v-model.number="anuncioForm.orcamento" type="number" min="1" placeholder="Orçamento diário R$" class="mkt-input" />
+                <input v-model="anuncioForm.paises" type="text" placeholder="Países (ex: BR,PT)" class="mkt-input" />
+              </div>
+              <div class="mkt-modal-grid">
+                <input v-model.number="anuncioForm.idade_min" type="number" min="13" max="65" placeholder="Idade mín." class="mkt-input" />
+                <input v-model.number="anuncioForm.idade_max" type="number" min="13" max="65" placeholder="Idade máx." class="mkt-input" />
+              </div>
+              <select v-model="anuncioForm.genero" class="mkt-input"><option value="0">Todos os gêneros</option><option value="1">Masculino</option><option value="2">Feminino</option></select>
+
+              <!-- Interesses -->
+              <div class="mkt-interesses">
+                <div v-if="anuncioForm.interesses.length" class="mkt-chips">
+                  <span v-for="it in anuncioForm.interesses" :key="it.id" class="mkt-chip">{{ it.name }}<button type="button" @click="rmAlvo('interesses', it.id)">×</button></span>
+                </div>
+                <div class="mkt-autocomplete">
+                  <input v-model="picker.interesses.busca" type="text" placeholder="Buscar interesse (ex: futebol, moda…)" class="mkt-input" @input="buscarPicker('interesses')" />
+                  <div v-if="picker.interesses.res.length" class="mkt-ac-list">
+                    <button v-for="r in picker.interesses.res" :key="r.id" type="button" @click="addAlvo('interesses', r)">{{ r.nome }}<span v-if="r.tamanho"> · {{ (r.tamanho/1000000).toFixed(1) }}M</span></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conversão (só objetivos Leads/Vendas) -->
+              <template v-if="objetivoConversao">
+                <div class="mkt-form-label">Conversão (pixel)</div>
+                <div class="mkt-modal-grid">
+                  <select v-if="metaRecursos?.pixels?.length" v-model="anuncioForm.pixel_id" class="mkt-input">
+                    <option value="">Selecione o pixel…</option>
+                    <option v-for="px in metaRecursos.pixels" :key="px.id" :value="px.id">{{ px.nome }}</option>
+                  </select>
+                  <input v-else v-model="anuncioForm.pixel_id" type="text" placeholder="Pixel ID" class="mkt-input" />
+                  <select v-model="anuncioForm.evento_conversao" class="mkt-input"><option v-for="ev in EVENTOS_PIXEL" :key="ev" :value="ev">{{ ev }}</option></select>
+                </div>
+              </template>
+
+              <!-- Toggle avançado -->
+              <button type="button" class="mkt-adv-toggle" @click="mostrarAvancado = !mostrarAvancado">
+                {{ mostrarAvancado ? '▾' : '▸' }} Opções avançadas (lance, agendamento, posicionamentos, segmentação detalhada)
+              </button>
+
+              <template v-if="mostrarAvancado">
+                <!-- Orçamento & lance -->
+                <div class="mkt-form-label">Orçamento & lance</div>
+                <div class="mkt-modal-grid">
+                  <select v-model="anuncioForm.tipo_orcamento" class="mkt-input"><option value="diario">Orçamento diário</option><option value="total">Orçamento total</option></select>
+                  <input v-if="anuncioForm.tipo_orcamento === 'total'" v-model.number="anuncioForm.orcamento_total" type="number" min="1" placeholder="Total R$" class="mkt-input" />
+                  <input v-else v-model.number="anuncioForm.orcamento" type="number" min="1" placeholder="Diário R$" class="mkt-input" />
+                </div>
+                <div class="mkt-modal-grid">
+                  <select v-model="anuncioForm.bid_strategy" class="mkt-input"><option v-for="b in BID_STRATEGIES" :key="b.v" :value="b.v">{{ b.l }}</option></select>
+                  <input v-if="anuncioForm.bid_strategy !== 'LOWEST_COST_WITHOUT_CAP'" v-model.number="anuncioForm.bid_amount" type="number" min="1" placeholder="Lance/CPA alvo R$" class="mkt-input" />
+                </div>
+                <div class="mkt-modal-grid">
+                  <select v-model="anuncioForm.optimization_goal" class="mkt-input"><option v-for="o in OPT_GOALS" :key="o.v" :value="o.v">{{ o.l }}</option></select>
+                  <select v-model="anuncioForm.billing_event" class="mkt-input"><option value="IMPRESSIONS">Cobrar por impressão</option><option value="LINK_CLICKS">Cobrar por clique</option></select>
+                </div>
+
+                <!-- Agendamento -->
+                <div class="mkt-form-label">Agendamento</div>
+                <div class="mkt-modal-grid">
+                  <label class="mkt-mini-label">Início<input v-model="anuncioForm.inicio" type="datetime-local" class="mkt-input" /></label>
+                  <label class="mkt-mini-label">Término<input v-model="anuncioForm.fim" type="datetime-local" class="mkt-input" /></label>
+                </div>
+
+                <!-- Posicionamentos -->
+                <div class="mkt-form-label">Posicionamentos</div>
+                <div class="mkt-seg">
+                  <button type="button" :class="{ active: anuncioForm.posicionamento === 'auto' }" @click="anuncioForm.posicionamento = 'auto'">Automático (Advantage+)</button>
+                  <button type="button" :class="{ active: anuncioForm.posicionamento === 'manual' }" @click="anuncioForm.posicionamento = 'manual'">Manual</button>
+                </div>
+                <template v-if="anuncioForm.posicionamento === 'manual'">
+                  <div class="mkt-checks">
+                    <span class="mkt-checks-label">Plataformas:</span>
+                    <label v-for="p in ['facebook','instagram','audience_network','messenger']" :key="p"><input type="checkbox" :value="p" v-model="anuncioForm.plataformas" /> {{ p }}</label>
+                  </div>
+                  <div class="mkt-checks">
+                    <span class="mkt-checks-label">Facebook:</span>
+                    <label v-for="p in POS_FACEBOOK" :key="p"><input type="checkbox" :value="p" v-model="anuncioForm.pos_facebook" /> {{ p }}</label>
+                  </div>
+                  <div class="mkt-checks">
+                    <span class="mkt-checks-label">Instagram:</span>
+                    <label v-for="p in POS_INSTAGRAM" :key="p"><input type="checkbox" :value="p" v-model="anuncioForm.pos_instagram" /> {{ p }}</label>
+                  </div>
+                  <div class="mkt-checks">
+                    <span class="mkt-checks-label">Dispositivos:</span>
+                    <label v-for="p in ['mobile','desktop']" :key="p"><input type="checkbox" :value="p" v-model="anuncioForm.dispositivos" /> {{ p }}</label>
+                  </div>
+                </template>
+
+                <!-- Segmentação detalhada -->
+                <div class="mkt-form-label">Segmentação detalhada</div>
+                <!-- Cidades -->
+                <div v-if="anuncioForm.cidades.length" class="mkt-chips">
+                  <span v-for="c in anuncioForm.cidades" :key="c.key" class="mkt-chip">📍 {{ c.nome }}<button type="button" @click="rmAlvo('cidades', c.key)">×</button></span>
+                </div>
+                <div class="mkt-autocomplete">
+                  <input v-model="picker.cidades.busca" type="text" placeholder="Cidades/regiões (deixe vazio = país todo)" class="mkt-input" @input="buscarPicker('cidades')" />
+                  <div v-if="picker.cidades.res.length" class="mkt-ac-list"><button v-for="r in picker.cidades.res" :key="r.key" type="button" @click="addAlvo('cidades', r)">{{ r.nome }}</button></div>
+                </div>
+                <input v-if="anuncioForm.cidades.length" v-model.number="anuncioForm.raio_km" type="number" min="1" max="80" placeholder="Raio (km)" class="mkt-input" />
+
+                <!-- Comportamentos -->
+                <div v-if="anuncioForm.comportamentos.length" class="mkt-chips">
+                  <span v-for="it in anuncioForm.comportamentos" :key="it.id" class="mkt-chip">{{ it.name }}<button type="button" @click="rmAlvo('comportamentos', it.id)">×</button></span>
+                </div>
+                <div class="mkt-autocomplete">
+                  <input v-model="picker.comportamentos.busca" type="text" placeholder="Comportamentos (ex: viajantes, compradores…)" class="mkt-input" @input="buscarPicker('comportamentos')" />
+                  <div v-if="picker.comportamentos.res.length" class="mkt-ac-list"><button v-for="r in picker.comportamentos.res" :key="r.id" type="button" @click="addAlvo('comportamentos', r)">{{ r.nome }}</button></div>
+                </div>
+
+                <!-- Idiomas -->
+                <div v-if="anuncioForm.idiomas.length" class="mkt-chips">
+                  <span v-for="l in anuncioForm.idiomas" :key="l.id" class="mkt-chip">{{ l.nome }}<button type="button" @click="rmAlvo('idiomas', l.id)">×</button></span>
+                </div>
+                <div class="mkt-autocomplete">
+                  <input v-model="picker.idiomas.busca" type="text" placeholder="Idiomas (ex: português, inglês…)" class="mkt-input" @input="buscarPicker('idiomas')" />
+                  <div v-if="picker.idiomas.res.length" class="mkt-ac-list"><button v-for="r in picker.idiomas.res" :key="r.id" type="button" @click="addAlvo('idiomas', r)">{{ r.nome }}</button></div>
+                </div>
+
+                <!-- Exclusões -->
+                <div v-if="anuncioForm.exclusoes.length" class="mkt-chips">
+                  <span v-for="it in anuncioForm.exclusoes" :key="it.id" class="mkt-chip" style="background:#fde8e8;color:#c02b2b;">excluir: {{ it.name }}<button type="button" @click="rmAlvo('exclusoes', it.id)">×</button></span>
+                </div>
+                <div class="mkt-autocomplete">
+                  <input v-model="picker.exclusoes.busca" type="text" placeholder="Excluir interesses (opcional)" class="mkt-input" @input="buscarPicker('exclusoes')" />
+                  <div v-if="picker.exclusoes.res.length" class="mkt-ac-list"><button v-for="r in picker.exclusoes.res" :key="r.id" type="button" @click="addAlvo('exclusoes', r)">{{ r.nome }}</button></div>
+                </div>
+
+                <!-- Públicos personalizados -->
+                <template v-if="metaAudiences.length">
+                  <div class="mkt-checks">
+                    <span class="mkt-checks-label">Incluir públicos:</span>
+                    <label v-for="a in metaAudiences" :key="a.id"><input type="checkbox" :checked="anuncioForm.publicos_incluir.includes(a.id)" @change="togglePub('publicos_incluir', a.id)" /> {{ a.nome }}</label>
+                  </div>
+                  <div class="mkt-checks">
+                    <span class="mkt-checks-label">Excluir públicos:</span>
+                    <label v-for="a in metaAudiences" :key="a.id"><input type="checkbox" :checked="anuncioForm.publicos_excluir.includes(a.id)" @change="togglePub('publicos_excluir', a.id)" /> {{ a.nome }}</label>
+                  </div>
+                </template>
+              </template>
+
+              <div class="mkt-form-label">Publicação</div>
+              </div><!-- end step 3 -->
+
+              <!-- STEP 4: Revisão -->
+              <div v-show="wizardStep === 4">
+              <h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Revisão</h2>
+              <p class="mkt-card-sub" style="margin-bottom:20px;">Confira tudo antes de criar. Nada é publicado sem a sua confirmação.</p>
+              <div class="mkt-form-label">Publicação</div>
+              <span v-if="recursosLoad" class="mkt-card-sub">Carregando páginas…</span>
+              <template v-else-if="metaRecursos?.paginas?.length">
+                <select v-model="anuncioForm.page_id" class="mkt-input" @change="onPaginaChange">
+                  <option value="">Selecione a Página do Facebook…</option>
+                  <option v-for="pg in metaRecursos.paginas" :key="pg.id" :value="pg.id">{{ pg.nome }}</option>
+                </select>
+                <p v-if="paginaSel?.instagram" class="mkt-card-sub" style="font-size:11px;">📸 Instagram vinculado: @{{ paginaSel.instagram.usuario }} (será incluído)</p>
+              </template>
+              <input v-else v-model="anuncioForm.page_id" type="text" placeholder="Page ID (vazio = usa o da integração)" class="mkt-input" />
+              <label class="mkt-check"><input v-model="anuncioForm.ativar" type="checkbox" /> Publicar ativo agora (senão fica pausado)</label>
+
+              <p v-if="acaoErro" class="mkt-modal-error">{{ acaoErro }}</p>
+            </div><!-- end step 4 -->
+            </template>
+
+            <!-- Footer action slot -->
+            <template #footer-action>
+              <button v-if="wizardStep < 4 && !anuncioOk" class="wz-btn-primary" @click="wizardStep++">Continuar →</button>
+              <button v-if="wizardStep === 4 && !anuncioOk" class="wz-btn-primary" :disabled="saving" @click="salvarAnuncio">{{ saving ? 'Criando…' : '✓ Criar anúncio' }}</button>
+              <button v-if="anuncioOk" class="wz-btn-ghost" @click="modalAnuncio = false">Fechar</button>
+            </template>
+
+            <!-- Preview slot -->
+            <template #preview>
+              <div style="background:#fff;border:1px solid #e6eaf0;border-radius:12px;padding:12px;margin-top:8px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><div style="width:32px;height:32px;border-radius:50%;background:#2457e6;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;">S</div><div><strong style="font-size:12px;">SIGNPRO</strong><br/><span style="font-size:10px;color:#8a97a6;">Patrocinado</span></div></div>
+                <div style="background:#f0f2f5;border-radius:8px;height:180px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><span style="font-size:10px;color:#8a97a6;">SUA MÍDIA · 1080×1080</span></div>
+                <p style="font-size:12px;color:#22303d;margin-bottom:10px;line-height:1.4;">{{ anuncioForm.mensagem || 'O texto principal do seu anúncio aparece aqui, exatamente como no feed.' }}</p>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#f0f2f5;border-radius:8px;"><div><span style="font-size:9px;color:#8a97a6;text-transform:uppercase;">{{ anuncioForm.link ? 'seusite.com.br' : 'SEUSITE.COM.BR' }}</span><br/><strong style="font-size:12px;">{{ anuncioForm.titulo || 'Seu título (headline)' }}</strong></div><button style="padding:4px 10px;border-radius:4px;background:#2457e6;color:#fff;border:none;font-size:10px;font-weight:600;">Saiba mais</button></div>
+              </div>
+            </template>
+          </MarketingWizardLayout>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- ═══ MODAL EDITAR (campanha/conjunto/anúncio) ═══ -->
+    <Teleport to="body">
+      <Transition name="mkt-fade">
+        <div v-if="modalEditar" class="mkt-modal-overlay" @click.self="modalEditar = false">
+          <div class="mkt-modal">
+            <h3>Editar {{ editForm.nivel === 'campanha' ? 'campanha' : editForm.nivel === 'conjunto' ? 'conjunto' : 'anúncio' }}</h3>
+            <input v-model="editForm.nome" type="text" placeholder="Nome" class="mkt-input" />
+            <select v-model="editForm.status" class="mkt-input"><option value="ACTIVE">Ativo</option><option value="PAUSED">Pausado</option></select>
+            <template v-if="editForm.nivel !== 'anuncio'">
+              <div class="mkt-modal-grid">
+                <select v-model="editForm.tipo" class="mkt-input"><option value="diario">Orçamento diário</option><option value="total">Orçamento total</option></select>
+                <input v-model.number="editForm.valor" type="number" min="1" placeholder="Valor R$ (opcional)" class="mkt-input" />
+              </div>
+              <input v-if="editForm.nivel === 'conjunto'" v-model.number="editForm.bid" type="number" min="1" placeholder="Lance/CPA alvo R$ (opcional)" class="mkt-input" />
+            </template>
+            <p v-if="acaoErro" class="mkt-modal-error">{{ acaoErro }}</p>
+            <div class="mkt-modal-actions">
+              <button class="mkt-btn-ghost" @click="modalEditar = false">Cancelar</button>
+              <button class="mkt-btn-primary" :disabled="saving || !editForm.nome" @click="salvarEditar">{{ saving ? 'Salvando…' : 'Salvar' }}</button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -511,7 +918,7 @@ interface Overview {
   kpis: { leads: number; oportunidades: number; clientes: number; receita: number | null; roi: string | null }
   funil: { nome: string; qtd: number; cor: string; conv: string }[]
   canais: { nome: string; qtd: number; cor: string }[]
-  campanhas: { nome: string; canal: string; icone: string; investimento: number; resultado: string; roi: string; status: string }[]
+  campanhas: { id: string; plataforma: string; nome: string; canal: string; icone: string; investimento: number; resultado: string; roi: string; status: string }[]
   midiaPaga: { investimento: number; cliques: number; cpc: number; conversoes: number; serie: { data: string; valor: number }[] } | null
 }
 
@@ -690,6 +1097,450 @@ function statusPill(s: string) {
   if (s === 'ativa') return { background: '#e7f6ef', color: '#0b7a4b', dot: '#0fa06e' }
   if (s === 'pausada') return { background: '#fdf2dd', color: '#a06508', dot: '#d8920b' }
   return { background: '#eef1f5', color: '#6b7a8a', dot: '#94a3b8' }
+}
+
+// ── Ações Meta (campanhas) ──
+type Campanha = Overview['campanhas'][number]
+const acaoLoad = ref<string | null>(null) // id da campanha em ação
+const acaoErro = ref<string | null>(null)
+const menuAberto = ref<string | null>(null) // id da campanha com menu aberto
+
+async function acaoMeta(payload: Record<string, unknown>): Promise<boolean> {
+  if (!empresaId.value) return false
+  acaoErro.value = null
+  try {
+    await $fetch('/api/marketing/acao', { method: 'POST', body: { empresa_id: empresaId.value, plataforma: 'meta', ...payload } })
+    return true
+  } catch (e: any) {
+    acaoErro.value = e?.data?.message || e?.data?.statusMessage || e?.message || 'Falha na ação.'
+    return false
+  }
+}
+async function togglePausar(c: Campanha) {
+  menuAberto.value = null
+  acaoLoad.value = c.id
+  const novo = c.status === 'ativa' ? 'PAUSED' : 'ACTIVE'
+  const ok = await acaoMeta({ acao: 'status', objeto_id: c.id, status: novo })
+  acaoLoad.value = null
+  if (ok) await fetchOverview()
+}
+async function excluirCampanha(c: Campanha) {
+  menuAberto.value = null
+  if (!confirm(`Excluir a campanha "${c.nome}"? Esta ação é irreversível na Meta.`)) return
+  acaoLoad.value = c.id
+  const ok = await acaoMeta({ acao: 'excluir', objeto_id: c.id })
+  acaoLoad.value = null
+  if (ok) await fetchOverview()
+}
+
+// ── Hierarquia: conjuntos + anúncios de uma campanha ──
+interface Estrutura { ok?: boolean; erro?: string; adsets: { id: string; nome: string; status: string; orcamentoDiario: number | null; ads: { id: string; nome: string; status: string }[] }[] }
+const estruturaAberta = ref<string | null>(null)
+const estruturaLoad = ref<string | null>(null)
+const estruturaCache = reactive<Record<string, Estrutura>>({})
+async function carregarEstrutura(campanhaId: string) {
+  estruturaLoad.value = campanhaId
+  try {
+    estruturaCache[campanhaId] = await $fetch<Estrutura>('/api/marketing/estrutura', { query: { empresa_id: empresaId.value, campanha_id: campanhaId } })
+  } catch (e: any) {
+    estruturaCache[campanhaId] = { erro: e?.data?.message || e?.data?.statusMessage || 'Falha ao carregar.', adsets: [] }
+  }
+  estruturaLoad.value = null
+}
+async function toggleEstrutura(c: Campanha) {
+  if (estruturaAberta.value === c.id) { estruturaAberta.value = null; return }
+  estruturaAberta.value = c.id
+  if (!estruturaCache[c.id]) await carregarEstrutura(c.id)
+}
+async function toggleObjeto(campanhaId: string, obj: { id: string; status: string }) {
+  acaoLoad.value = obj.id
+  const novo = obj.status === 'ativa' ? 'PAUSED' : 'ACTIVE'
+  const ok = await acaoMeta({ acao: 'status', objeto_id: obj.id, status: novo })
+  acaoLoad.value = null
+  if (ok) await carregarEstrutura(campanhaId)
+}
+async function excluirObjeto(campanhaId: string, obj: { id: string; nome: string }, tipo: string) {
+  if (!confirm(`Excluir ${tipo} "${obj.nome}"? Irreversível na Meta.`)) return
+  acaoLoad.value = obj.id
+  const ok = await acaoMeta({ acao: 'excluir', objeto_id: obj.id })
+  acaoLoad.value = null
+  if (ok) await carregarEstrutura(campanhaId)
+}
+
+// ── Editar / Duplicar (campanha/conjunto/anúncio) ──
+type NivelMeta = 'campanha' | 'conjunto' | 'anuncio'
+async function reload(nivel: NivelMeta, campanhaId?: string) {
+  if (nivel === 'campanha') await fetchOverview()
+  else if (campanhaId) await carregarEstrutura(campanhaId)
+}
+async function duplicarObjeto(nivel: NivelMeta, id: string, campanhaId?: string) {
+  menuAberto.value = null
+  acaoLoad.value = id
+  acaoErro.value = null
+  try {
+    await $fetch('/api/marketing/duplicar', { method: 'POST', body: { empresa_id: empresaId.value, id, nivel } })
+    await reload(nivel, campanhaId)
+  } catch (e: any) {
+    acaoErro.value = e?.data?.message || e?.data?.statusMessage || 'Falha ao duplicar.'
+  } finally { acaoLoad.value = null }
+}
+
+const modalEditar = ref(false)
+const editForm = reactive<{ id: string; nivel: NivelMeta; campanhaId: string; nome: string; status: string; tipo: 'diario' | 'total'; valor: number | null; bid: number | null }>({ id: '', nivel: 'campanha', campanhaId: '', nome: '', status: 'ACTIVE', tipo: 'diario', valor: null, bid: null })
+function abrirEditar(nivel: NivelMeta, obj: any, campanhaId = '') {
+  menuAberto.value = null
+  acaoErro.value = null
+  editForm.id = obj.id; editForm.nivel = nivel; editForm.campanhaId = campanhaId
+  editForm.nome = obj.nome || obj.name || ''
+  editForm.status = obj.status === 'ativa' ? 'ACTIVE' : 'PAUSED'
+  editForm.tipo = 'diario'
+  editForm.valor = obj.orcamentoDiario ?? null
+  editForm.bid = null
+  modalEditar.value = true
+}
+async function salvarEditar() {
+  if (!empresaId.value) return
+  saving.value = true; acaoErro.value = null
+  const campos: Record<string, unknown> = { name: editForm.nome, status: editForm.status }
+  if (editForm.valor && editForm.valor > 0) campos[editForm.tipo === 'total' ? 'lifetime_budget_reais' : 'daily_budget_reais'] = editForm.valor
+  if (editForm.nivel === 'conjunto' && editForm.bid && editForm.bid > 0) campos.bid_amount_reais = editForm.bid
+  try {
+    await $fetch('/api/marketing/editar', { method: 'POST', body: { empresa_id: empresaId.value, id: editForm.id, nivel: editForm.nivel, campos } })
+    modalEditar.value = false
+    await reload(editForm.nivel, editForm.campanhaId)
+  } catch (e: any) {
+    acaoErro.value = e?.data?.message || e?.data?.statusMessage || 'Falha ao editar.'
+  } finally { saving.value = false }
+}
+
+// Modal editar orçamento
+const modalBudget = ref(false)
+const budgetForm = reactive<{ id: string; nome: string; valor: number | null; tipo: 'diario' | 'total' }>({ id: '', nome: '', valor: null, tipo: 'diario' })
+function abrirBudget(c: Campanha) {
+  menuAberto.value = null
+  acaoErro.value = null
+  budgetForm.id = c.id; budgetForm.nome = c.nome; budgetForm.valor = null; budgetForm.tipo = 'diario'
+  modalBudget.value = true
+}
+async function salvarBudget() {
+  if (!budgetForm.valor || budgetForm.valor <= 0) { acaoErro.value = 'Informe um valor válido.'; return }
+  saving.value = true
+  const ok = await acaoMeta({ acao: 'budget', objeto_id: budgetForm.id, valor: budgetForm.valor, tipo: budgetForm.tipo })
+  saving.value = false
+  if (ok) { modalBudget.value = false; await fetchOverview() }
+}
+
+// Modal criar campanha
+const modalCampanha = ref(false)
+const campanhaForm = reactive<{ nome: string; objetivo: string; orcamento: number | null; ativar: boolean }>({ nome: '', objetivo: 'OUTCOME_TRAFFIC', orcamento: null, ativar: false })
+const OBJETIVOS = [
+  { v: 'OUTCOME_TRAFFIC', l: 'Tráfego' },
+  { v: 'OUTCOME_LEADS', l: 'Leads' },
+  { v: 'OUTCOME_SALES', l: 'Vendas' },
+  { v: 'OUTCOME_ENGAGEMENT', l: 'Engajamento' },
+  { v: 'OUTCOME_AWARENESS', l: 'Reconhecimento' },
+]
+function abrirCampanha() {
+  acaoErro.value = null
+  campanhaForm.nome = ''; campanhaForm.objetivo = 'OUTCOME_TRAFFIC'; campanhaForm.orcamento = null; campanhaForm.ativar = false
+  modalCampanha.value = true
+}
+async function salvarCampanha() {
+  if (!campanhaForm.nome) { acaoErro.value = 'Informe o nome.'; return }
+  saving.value = true
+  const ok = await acaoMeta({ acao: 'criar', nome: campanhaForm.nome, objetivo: campanhaForm.objetivo, orcamento_diario: campanhaForm.orcamento || undefined, ativar: campanhaForm.ativar })
+  saving.value = false
+  if (ok) { modalCampanha.value = false; await fetchOverview() }
+}
+
+// Wizard: criar anúncio COMPLETO (campanha→conjunto→criativo→anúncio)
+const modalAnuncio = ref(false)
+const wizardStep = ref(1) // 1=Campanha, 2=Criativo, 3=Segmentação, 4=Revisão
+const anuncioOk = ref<string | null>(null)
+const CTAS = [
+  { v: 'LEARN_MORE', l: 'Saiba mais' },
+  { v: 'SHOP_NOW', l: 'Comprar agora' },
+  { v: 'SIGN_UP', l: 'Cadastre-se' },
+  { v: 'BOOK_TRAVEL', l: 'Reservar' },
+  { v: 'CONTACT_US', l: 'Fale conosco' },
+  { v: 'GET_OFFER', l: 'Ver oferta' },
+  { v: 'SUBSCRIBE', l: 'Assinar' },
+  { v: 'WHATSAPP_MESSAGE', l: 'Enviar WhatsApp' },
+]
+interface CardCarrossel { imagem_url: string; titulo: string; link: string }
+const anuncioForm = reactive({
+  campanha_id: '',        // '' = nova campanha
+  campanha_nome: '',
+  objetivo: 'OUTCOME_TRAFFIC',
+  nome: '',
+  orcamento: null as number | null,
+  paises: 'BR',
+  idade_min: 18,
+  idade_max: 65,
+  genero: '0',            // 0=todos 1=masc 2=fem
+  formato: 'imagem' as 'imagem' | 'video' | 'carrossel',
+  page_id: '',
+  link: '',
+  mensagem: '',
+  titulo: '',
+  descricao: '',
+  cta: 'LEARN_MORE',
+  imagem_url: '',
+  imagem_base64: '',
+  imagem_nome: '',        // nome do arquivo (feedback)
+  video_url: '',
+  video_thumb_url: '',
+  video_id: '',
+  cards: [] as CardCarrossel[],
+  pixel_id: '',
+  evento_conversao: 'PURCHASE',
+  instagram_actor_id: '',
+  interesses: [] as { id: string; name: string }[],
+  // ── avançado ──
+  tipo_orcamento: 'diario' as 'diario' | 'total',
+  orcamento_total: null as number | null,
+  bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
+  bid_amount: null as number | null,
+  billing_event: 'IMPRESSIONS',
+  optimization_goal: '',
+  inicio: '',
+  fim: '',
+  video_file_nome: '',
+  comportamentos: [] as { id: string; name: string }[],
+  exclusoes: [] as { id: string; name: string }[],
+  cidades: [] as { key: string; nome: string }[],
+  raio_km: 10,
+  idiomas: [] as { id: string; nome: string }[],
+  publicos_incluir: [] as string[],
+  publicos_excluir: [] as string[],
+  posicionamento: 'auto' as 'auto' | 'manual',
+  plataformas: [] as string[],
+  pos_facebook: [] as string[],
+  pos_instagram: [] as string[],
+  dispositivos: [] as string[],
+})
+const mostrarAvancado = ref(false)
+const EVENTOS_PIXEL = ['PURCHASE', 'LEAD', 'COMPLETE_REGISTRATION', 'ADD_TO_CART', 'INITIATE_CHECKOUT', 'CONTACT']
+const BID_STRATEGIES = [
+  { v: 'LOWEST_COST_WITHOUT_CAP', l: 'Menor custo (automático)' },
+  { v: 'COST_CAP', l: 'Limite de custo (CPA alvo)' },
+  { v: 'LOWEST_COST_WITH_BID_CAP', l: 'Limite de lance' },
+]
+const OPT_GOALS = [
+  { v: '', l: 'Padrão do objetivo' },
+  { v: 'LINK_CLICKS', l: 'Cliques no link' },
+  { v: 'LANDING_PAGE_VIEWS', l: 'Visitas à página' },
+  { v: 'IMPRESSIONS', l: 'Impressões' },
+  { v: 'REACH', l: 'Alcance' },
+  { v: 'OFFSITE_CONVERSIONS', l: 'Conversões' },
+  { v: 'THRUPLAY', l: 'Reproduções de vídeo' },
+]
+const POS_FACEBOOK = ['feed', 'story', 'reels', 'marketplace', 'video_feeds', 'right_hand_column', 'search']
+const POS_INSTAGRAM = ['stream', 'story', 'reels', 'explore', 'explore_home']
+
+// Recursos da conta (páginas, pixels, IG) para dropdowns
+const metaRecursos = ref<{ paginas: { id: string; nome: string; instagram?: { id: string; usuario: string } | null }[]; pixels: { id: string; nome: string }[]; conta?: { moeda?: string } } | null>(null)
+const recursosLoad = ref(false)
+async function loadRecursos() {
+  if (!empresaId.value || metaRecursos.value) return
+  recursosLoad.value = true
+  try { metaRecursos.value = await $fetch('/api/marketing/meta-recursos', { query: { empresa_id: empresaId.value } }) } catch { /* sem recursos */ }
+  recursosLoad.value = false
+}
+const paginaSel = computed(() => metaRecursos.value?.paginas.find((p) => p.id === anuncioForm.page_id))
+function onPaginaChange() {
+  // vincula a conta Instagram da página selecionada (se houver)
+  anuncioForm.instagram_actor_id = paginaSel.value?.instagram?.id || ''
+}
+
+// Públicos personalizados (carregados junto com recursos)
+const metaAudiences = ref<{ id: string; nome: string; tipo?: string }[]>([])
+async function loadAudiences() {
+  if (!empresaId.value || metaAudiences.value.length) return
+  try {
+    const r = await $fetch<{ audiences: { id: string; nome: string; tipo?: string }[] }>('/api/marketing/meta-recursos', { query: { empresa_id: empresaId.value, tipo: 'audiences' } })
+    metaAudiences.value = r.audiences || []
+  } catch { /* sem públicos */ }
+}
+
+// ── Picker genérico de segmentação (interesses/comportamentos/cidades/idiomas/exclusões) ──
+type PickerTipo = 'interesses' | 'comportamentos' | 'cidades' | 'idiomas' | 'exclusoes'
+const picker = reactive<Record<PickerTipo, { busca: string; res: any[] }>>({
+  interesses: { busca: '', res: [] },
+  comportamentos: { busca: '', res: [] },
+  cidades: { busca: '', res: [] },
+  idiomas: { busca: '', res: [] },
+  exclusoes: { busca: '', res: [] },
+})
+const pickerTimers: Record<string, any> = {}
+// mapeia tipo do picker → query do endpoint + shape do resultado
+function buscarPicker(tipo: PickerTipo) {
+  clearTimeout(pickerTimers[tipo])
+  const q = picker[tipo].busca.trim()
+  if (q.length < 2) { picker[tipo].res = []; return }
+  pickerTimers[tipo] = setTimeout(async () => {
+    try {
+      const query: Record<string, unknown> = { empresa_id: empresaId.value, q }
+      if (tipo === 'comportamentos') query.tipo = 'comportamentos'
+      else if (tipo === 'cidades') query.tipo = 'localidades'
+      else if (tipo === 'idiomas') query.tipo = 'idiomas'
+      const r = await $fetch<any>('/api/marketing/meta-recursos', { query })
+      picker[tipo].res = r.interesses || r.resultados || []
+    } catch { picker[tipo].res = [] }
+  }, 350)
+}
+function addAlvo(tipo: PickerTipo, it: any) {
+  if (tipo === 'cidades') {
+    if (!anuncioForm.cidades.find((x) => x.key === it.key)) anuncioForm.cidades.push({ key: it.key, nome: it.nome })
+  } else if (tipo === 'idiomas') {
+    if (!anuncioForm.idiomas.find((x) => x.id === it.id)) anuncioForm.idiomas.push({ id: it.id, nome: it.nome })
+  } else {
+    const alvo = anuncioForm[tipo] as { id: string; name: string }[]
+    if (!alvo.find((x) => x.id === it.id)) alvo.push({ id: it.id, name: it.nome })
+  }
+  picker[tipo].busca = ''; picker[tipo].res = []
+}
+function rmAlvo(tipo: PickerTipo, id: string) {
+  if (tipo === 'cidades') anuncioForm.cidades = anuncioForm.cidades.filter((x) => x.key !== id)
+  else if (tipo === 'idiomas') anuncioForm.idiomas = anuncioForm.idiomas.filter((x) => x.id !== id)
+  else (anuncioForm[tipo] as { id: string }[]) = (anuncioForm[tipo] as { id: string }[]).filter((x) => x.id !== id)
+}
+function togglePub(lista: 'publicos_incluir' | 'publicos_excluir', id: string) {
+  const arr = anuncioForm[lista]
+  const i = arr.indexOf(id)
+  if (i >= 0) arr.splice(i, 1); else arr.push(id)
+}
+function abrirAnuncio() {
+  acaoErro.value = null
+  anuncioOk.value = null
+  wizardStep.value = 1
+  mostrarAvancado.value = false
+  Object.assign(anuncioForm, {
+    campanha_id: '', campanha_nome: '', objetivo: 'OUTCOME_TRAFFIC', nome: '', orcamento: null,
+    paises: 'BR', idade_min: 18, idade_max: 65, genero: '0', formato: 'imagem', page_id: '', link: '', mensagem: '',
+    titulo: '', descricao: '', cta: 'LEARN_MORE', imagem_url: '', imagem_base64: '', imagem_nome: '',
+    video_url: '', video_thumb_url: '', video_id: '', video_file_nome: '', cards: [{ imagem_url: '', titulo: '', link: '' }, { imagem_url: '', titulo: '', link: '' }],
+    pixel_id: '', evento_conversao: 'PURCHASE', instagram_actor_id: '', interesses: [],
+    tipo_orcamento: 'diario', orcamento_total: null, bid_strategy: 'LOWEST_COST_WITHOUT_CAP', bid_amount: null,
+    billing_event: 'IMPRESSIONS', optimization_goal: '', inicio: '', fim: '',
+    comportamentos: [], exclusoes: [], cidades: [], raio_km: 10, idiomas: [], publicos_incluir: [], publicos_excluir: [],
+    posicionamento: 'auto', plataformas: [], pos_facebook: [], pos_instagram: [], dispositivos: [],
+  })
+  anuncioForm.video_id = ''
+  for (const k of Object.keys(picker) as PickerTipo[]) { picker[k].busca = ''; picker[k].res = [] }
+  modalAnuncio.value = true
+  loadRecursos()
+  loadAudiences()
+}
+// Upload de vídeo por arquivo → retorna video_id
+const uploadVideoLoad = ref(false)
+async function onVideoFile(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file || !empresaId.value) return
+  if (file.size > 200 * 1024 * 1024) { acaoErro.value = 'Vídeo acima de 200MB.'; return }
+  uploadVideoLoad.value = true
+  acaoErro.value = null
+  try {
+    const fd = new FormData()
+    fd.append('empresa_id', String(empresaId.value))
+    fd.append('file', file)
+    const r = await $fetch<{ id: string }>('/api/marketing/upload-video', { method: 'POST', body: fd })
+    anuncioForm.video_id = r.id
+    anuncioForm.video_file_nome = file.name + ' (enviado)'
+    anuncioForm.video_url = ''
+  } catch (e: any) {
+    acaoErro.value = e?.data?.message || e?.data?.statusMessage || 'Falha no upload do vídeo.'
+  } finally {
+    uploadVideoLoad.value = false
+  }
+}
+function onImagemFile(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  if (file.size > 8 * 1024 * 1024) { acaoErro.value = 'Imagem acima de 8MB.'; return }
+  const reader = new FileReader()
+  reader.onload = () => { anuncioForm.imagem_base64 = String(reader.result); anuncioForm.imagem_nome = file.name; anuncioForm.imagem_url = '' }
+  reader.readAsDataURL(file)
+}
+function addCard() { if (anuncioForm.cards.length < 10) anuncioForm.cards.push({ imagem_url: '', titulo: '', link: '' }) }
+function rmCard(idx: number) { if (anuncioForm.cards.length > 2) anuncioForm.cards.splice(idx, 1) }
+const objetivoConversao = computed(() => anuncioForm.objetivo === 'OUTCOME_SALES' || anuncioForm.objetivo === 'OUTCOME_LEADS')
+async function salvarAnuncio() {
+  if (!empresaId.value) return
+  const temOrcamento = anuncioForm.tipo_orcamento === 'total' ? !!anuncioForm.orcamento_total : !!anuncioForm.orcamento
+  if (!anuncioForm.nome || !anuncioForm.link || !anuncioForm.mensagem || !temOrcamento) {
+    acaoErro.value = 'Preencha nome, link, mensagem e orçamento.'
+    return
+  }
+  if (anuncioForm.tipo_orcamento === 'total' && !anuncioForm.fim) {
+    acaoErro.value = 'Orçamento total exige data de término (aba Avançado → Agendamento).'
+    return
+  }
+  acaoErro.value = null
+  anuncioOk.value = null
+  saving.value = true
+  try {
+    const manual = anuncioForm.posicionamento === 'manual'
+    const res = await $fetch<{ adId?: string }>('/api/marketing/anuncio', {
+      method: 'POST',
+      body: {
+        empresa_id: empresaId.value,
+        campanha_id: anuncioForm.campanha_id || undefined,
+        campanha_nome: anuncioForm.campanha_id ? undefined : (anuncioForm.campanha_nome || anuncioForm.nome),
+        objetivo: anuncioForm.objetivo,
+        nome: anuncioForm.nome,
+        orcamento_diario: anuncioForm.tipo_orcamento === 'diario' ? anuncioForm.orcamento : undefined,
+        orcamento_total: anuncioForm.tipo_orcamento === 'total' ? anuncioForm.orcamento_total : undefined,
+        bid_strategy: anuncioForm.bid_strategy,
+        bid_amount: (anuncioForm.bid_strategy !== 'LOWEST_COST_WITHOUT_CAP') ? anuncioForm.bid_amount : undefined,
+        optimization_goal: anuncioForm.optimization_goal || undefined,
+        billing_event: anuncioForm.billing_event,
+        inicio: anuncioForm.inicio || undefined,
+        fim: anuncioForm.fim || undefined,
+        paises: anuncioForm.paises.split(',').map((p) => p.trim().toUpperCase()).filter(Boolean),
+        cidades: anuncioForm.cidades.length ? anuncioForm.cidades.map((c) => c.key) : undefined,
+        raio_km: anuncioForm.cidades.length ? anuncioForm.raio_km : undefined,
+        idade_min: anuncioForm.idade_min,
+        idade_max: anuncioForm.idade_max,
+        generos: anuncioForm.genero === '0' ? undefined : [Number(anuncioForm.genero)],
+        idiomas: anuncioForm.idiomas.length ? anuncioForm.idiomas.map((l) => Number(l.id)) : undefined,
+        interesses: anuncioForm.interesses.length ? anuncioForm.interesses : undefined,
+        comportamentos: anuncioForm.comportamentos.length ? anuncioForm.comportamentos : undefined,
+        exclusoes: anuncioForm.exclusoes.length ? anuncioForm.exclusoes : undefined,
+        publicos_incluir: anuncioForm.publicos_incluir.length ? anuncioForm.publicos_incluir : undefined,
+        publicos_excluir: anuncioForm.publicos_excluir.length ? anuncioForm.publicos_excluir : undefined,
+        plataformas: manual && anuncioForm.plataformas.length ? anuncioForm.plataformas : undefined,
+        pos_facebook: manual && anuncioForm.pos_facebook.length ? anuncioForm.pos_facebook : undefined,
+        pos_instagram: manual && anuncioForm.pos_instagram.length ? anuncioForm.pos_instagram : undefined,
+        dispositivos: manual && anuncioForm.dispositivos.length ? anuncioForm.dispositivos : undefined,
+        formato: anuncioForm.formato,
+        page_id: anuncioForm.page_id || undefined,
+        link: anuncioForm.link,
+        mensagem: anuncioForm.mensagem,
+        titulo: anuncioForm.titulo || undefined,
+        descricao: anuncioForm.descricao || undefined,
+        cta: anuncioForm.cta,
+        imagem_url: anuncioForm.imagem_url || undefined,
+        imagem_base64: anuncioForm.imagem_base64 || undefined,
+        video_id: anuncioForm.video_id || undefined,
+        video_url: anuncioForm.video_url || undefined,
+        video_thumb_url: anuncioForm.video_thumb_url || undefined,
+        cards: anuncioForm.formato === 'carrossel'
+          ? anuncioForm.cards.filter((c) => c.imagem_url).map((c) => ({ imagemUrl: c.imagem_url, titulo: c.titulo || undefined, link: c.link || undefined }))
+          : undefined,
+        pixel_id: objetivoConversao.value && anuncioForm.pixel_id ? anuncioForm.pixel_id : undefined,
+        evento_conversao: objetivoConversao.value ? anuncioForm.evento_conversao : undefined,
+        instagram_actor_id: anuncioForm.instagram_actor_id || undefined,
+        ativar: anuncioForm.ativar,
+      },
+    })
+    anuncioOk.value = `Anúncio criado (${anuncioForm.ativar ? 'ativo' : 'pausado'})! ID ${res.adId || ''}`
+    await fetchOverview()
+  } catch (e: any) {
+    acaoErro.value = e?.data?.message || e?.data?.statusMessage || e?.message || 'Falha ao criar anúncio.'
+  } finally {
+    saving.value = false
+  }
 }
 
 const GATILHOS: Record<string, string> = { novo_lead: 'novo lead', lead_qualificado: 'lead qualificado', proposta_enviada: 'proposta enviada', cliente_convertido: 'cliente convertido' }
@@ -929,6 +1780,13 @@ onMounted(async () => {
 .mkt-td-sub { font-size: 11px; color: #98a4b3; margin-top: 2px; }
 .mkt-td-actions { text-align: right; white-space: nowrap; }
 .mkt-td-actions .mkt-link { margin-left: 12px; }
+.mkt-icon-btn { margin-left: 10px; color: #6b7a8a; font-weight: 700; font-size: 15px; background: none; border: none; cursor: pointer; padding: 0 4px; border-radius: 6px; }
+.mkt-icon-btn:hover { background: #eef1f5; }
+.mkt-menu { position: absolute; right: 10px; top: 100%; z-index: 20; margin-top: 2px; background: #fff; border: 1px solid #e6eaf0; border-radius: 10px; box-shadow: 0 8px 24px rgba(16,24,40,0.14); padding: 5px; min-width: 168px; display: flex; flex-direction: column; }
+.mkt-menu button { text-align: left; padding: 8px 10px; font-size: 12px; font-weight: 600; color: #33404e; background: none; border: none; border-radius: 7px; cursor: pointer; }
+.mkt-menu button:hover { background: #f4f6f9; }
+.mkt-menu button.danger { color: #e04545; }
+.mkt-mini-spin { display: inline-block; width: 14px; height: 14px; border: 2px solid #dbe4f5; border-top-color: #2457e6; border-radius: 50%; animation: mkt-spin 0.7s linear infinite; }
 .mkt-dot-inline { width: 9px; height: 9px; border-radius: 3px; flex: none; }
 .mkt-tag { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; text-transform: capitalize; }
 /* Empty block */
@@ -959,6 +1817,50 @@ onMounted(async () => {
 /* Modal */
 .mkt-modal-overlay { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(15,23,32,0.42); }
 .mkt-modal { background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(16,24,40,0.28); width: 100%; max-width: 460px; padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+.mkt-modal-lg { max-width: 540px; max-height: 90vh; overflow-y: auto; gap: 9px; }
+.mkt-form-label { font-size: 10.5px; font-weight: 700; color: #8a97a6; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 6px; }
+.mkt-modal-ok { font-size: 12.5px; color: #0b7a4b; background: #e7f6ef; border: 1px solid #b8e6cf; border-radius: 8px; padding: 10px 12px; font-weight: 600; }
+.mkt-seg { display: flex; gap: 6px; background: #f4f6f9; border-radius: 10px; padding: 4px; }
+.mkt-seg button { flex: 1; padding: 7px; border: none; background: none; border-radius: 7px; font-size: 12px; font-weight: 600; color: #6b7a8a; cursor: pointer; }
+.mkt-seg button.active { background: #fff; color: #2457e6; box-shadow: 0 1px 3px rgba(16,24,40,0.1); }
+.mkt-file { display: block; padding: 10px 12px; border: 1px dashed #c3cedd; border-radius: 10px; background: #f8fafc; font-size: 12.5px; color: #6b7a8a; cursor: pointer; text-align: center; }
+.mkt-file:hover { border-color: #2457e6; color: #2457e6; }
+.mkt-card-row { border: 1px solid #eef1f5; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.mkt-card-row-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; color: #8a97a6; }
+/* Hierarquia (conjuntos/anúncios) */
+.mkt-caret { border: none; background: none; color: #98a4b3; cursor: pointer; font-size: 11px; margin-right: 4px; transition: transform 0.15s; display: inline-block; }
+.mkt-caret.open { transform: rotate(90deg); color: #2457e6; }
+.mkt-estrutura-row td { background: #f9fbfe; padding: 12px 18px 14px 40px !important; }
+.mkt-estrutura-load, .mkt-estrutura-erro, .mkt-estrutura-vazio { font-size: 12px; color: #8a97a6; display: flex; align-items: center; gap: 8px; }
+.mkt-estrutura-erro { color: #c02b2b; }
+.mkt-estrutura { display: flex; flex-direction: column; gap: 10px; }
+.mkt-adset { border: 1px solid #e6eaf0; border-radius: 10px; background: #fff; padding: 10px 12px; }
+.mkt-adset-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mkt-adset-icon { color: #2457e6; font-size: 12px; }
+.mkt-adset-nome { font-size: 12.5px; font-weight: 600; color: #22303d; flex: 1; min-width: 120px; }
+.mkt-adset-budget { font-size: 11px; color: #6b7a8a; font-variant-numeric: tabular-nums; }
+.mkt-adset-actions { display: inline-flex; align-items: center; gap: 4px; }
+.mkt-ad { display: flex; align-items: center; gap: 8px; padding: 7px 8px 7px 22px; margin-top: 6px; border-top: 1px dashed #eef1f5; }
+.mkt-ad-icon { color: #98a4b3; font-size: 10px; }
+.mkt-ad-nome { font-size: 12px; color: #33404e; flex: 1; min-width: 120px; }
+.mkt-ad-vazio { color: #b0bac6; font-size: 11px; font-style: italic; }
+/* Chips + autocomplete de interesses */
+.mkt-interesses { display: flex; flex-direction: column; gap: 6px; }
+.mkt-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.mkt-chip { display: inline-flex; align-items: center; gap: 5px; background: #eef3fd; color: #2457e6; font-size: 11.5px; font-weight: 600; padding: 3px 6px 3px 9px; border-radius: 999px; }
+.mkt-chip button { border: none; background: none; color: #2457e6; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+.mkt-autocomplete { position: relative; }
+.mkt-ac-list { position: absolute; left: 0; right: 0; top: 100%; margin-top: 3px; z-index: 30; background: #fff; border: 1px solid #e6eaf0; border-radius: 10px; box-shadow: 0 8px 24px rgba(16,24,40,0.14); max-height: 200px; overflow-y: auto; padding: 4px; }
+.mkt-ac-list button { display: block; width: 100%; text-align: left; padding: 8px 10px; font-size: 12px; color: #33404e; background: none; border: none; border-radius: 7px; cursor: pointer; }
+.mkt-ac-list button:hover { background: #f4f6f9; }
+.mkt-ac-list button span { color: #98a4b3; font-size: 11px; }
+/* Avançado no wizard */
+.mkt-adv-toggle { text-align: left; width: 100%; padding: 9px 12px; margin-top: 4px; border: 1px dashed #cddbfa; border-radius: 10px; background: #f8fafc; color: #2457e6; font-size: 12px; font-weight: 600; cursor: pointer; }
+.mkt-adv-toggle:hover { background: #eef3fd; }
+.mkt-mini-label { display: flex; flex-direction: column; gap: 3px; font-size: 10.5px; font-weight: 600; color: #8a97a6; }
+.mkt-checks { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 4px 0; }
+.mkt-checks-label { font-size: 11px; font-weight: 700; color: #8a97a6; width: 100%; }
+.mkt-checks label { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: #33404e; text-transform: capitalize; }
 .mkt-modal h3 { font-size: 15px; font-weight: 700; color: #0f1720; }
 .mkt-input { width: 100%; border: 1px solid #e6eaf0; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #33404e; background: #f8fafc; font-family: inherit; }
 .mkt-input:focus { outline: none; border-color: #2457e6; box-shadow: 0 0 0 3px rgba(36,87,230,0.12); }
