@@ -358,7 +358,7 @@
         <div class="text-center mb-16">
           <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">Planos</p>
           <h2 class="text-3xl sm:text-5xl font-bold tracking-tight mb-4">Investimento que se paga numa semana</h2>
-          <p class="text-white/50 max-w-sm mx-auto">A partir de €97/mês. Cancele quando quiser.</p>
+          <p class="text-white/50 max-w-sm mx-auto">Planos que crescem com a sua empresa. Cancele quando quiser.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 items-start">
           <div v-for="plan in plans" :key="plan.name"
@@ -395,7 +395,7 @@
             </a>
           </div>
         </div>
-        <p class="text-center text-xs text-white/30 mt-8">✅ 7 dias grátis em todos os planos · Sem cartão de crédito · Cancele quando quiser</p>
+        <p class="text-center text-xs text-white/30 mt-8">✅ 14 dias grátis em todos os planos · Sem cartão de crédito · Cancele quando quiser</p>
       </div>
     </section>
 
@@ -523,9 +523,9 @@ const steps = [
 ]
 
 const plans = [
-  { name: 'Starter', desc: 'Para quem está a começar', price: '€97', period: '/mês', featured: false, url: '/login', cta: 'Começar grátis', items: ['Até 2 utilizadores', 'Orçamentos ilimitados', 'OS e kanban', 'Financeiro básico', 'Suporte via WhatsApp'] },
-  { name: 'Profissional', desc: 'O mais completo', price: '€197', period: '/mês', featured: true, url: '/login', cta: 'Começar grátis', items: ['Até 10 utilizadores', 'Tudo do Starter', 'Dashboard avançado', 'Consultor IA', 'Comissões e equipa', 'Relatórios PDF'] },
-  { name: 'Enterprise', desc: 'Para grandes operações', price: 'Sob consulta', period: '', featured: false, url: 'https://wa.me/5511940527609', cta: 'Falar com consultor', items: ['Utilizadores ilimitados', 'Tudo do Profissional', 'API e integrações', 'Onboarding dedicado', 'SLA prioritário'] },
+  { name: 'Essencial', desc: 'Gestão core + faturamento', price: '€97', period: '/mês', featured: false, url: '/login', cta: 'Começar grátis', items: ['CRM + Kanban de clientes', 'Orçamentos e OS ilimitados', 'Financeiro (pagar/receber)', 'Agendamentos', 'E-commerce (1 loja)', 'Suporte via WhatsApp'] },
+  { name: 'Profissional', desc: '+ produção + Consultor IA + Marketing', price: '€197', period: '/mês', featured: true, url: '/login', cta: 'Começar grátis', items: ['Tudo do Essencial', 'WhatsApp integrado', 'Kanban de produção', 'Estoque e materiais', 'Marketing completo', 'Consultor IA', 'Comissões e equipa'] },
+  { name: 'Enterprise', desc: '+ omnichannel, anúncios, e-commerce, IA', price: '€359', period: '/mês', featured: false, url: 'https://wa.me/5511940527609', cta: 'Falar com consultor', items: ['Tudo do Profissional', 'WhatsApp multi-atendente', 'Integrações Meta/Google Ads', 'Múltiplas lojas e-commerce', 'IA de atendimento', 'API aberta', 'Onboarding dedicado'] },
 ]
 
 const faqs = [
