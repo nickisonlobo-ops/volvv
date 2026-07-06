@@ -1,439 +1,364 @@
 <template>
-  <div class="min-h-full p-4 sm:p-8">
-    <!-- Header premium -->
-    <div class="relative rounded-3xl overflow-hidden mb-8 shadow-2xl">
-      <div class="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700" />
-      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_55%)]" />
-      <div class="absolute bottom-0 right-0 w-[300px] h-[200px] opacity-10" style="background: radial-gradient(circle, #fff, transparent 70%);"></div>
-      <div class="relative px-5 sm:px-8 pt-6 sm:pt-8 pb-6 sm:pb-8">
-        <div class="flex flex-wrap items-start justify-between gap-4">
-          <div class="flex items-center gap-4">
-            <div class="flex items-center justify-center w-12 sm:w-16 h-12 sm:h-16 rounded-2xl bg-white/[0.12] backdrop-blur-md border border-white/20 shadow-xl">
-              <svg class="w-6 sm:w-8 h-6 sm:h-8 text-white" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605"/></svg>
-            </div>
-            <div>
-              <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Marketing</h1>
-              <p class="text-sm text-white/70 mt-0.5">Acompanhe leads, campanhas e resultados</p>
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <button class="inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-sm transition-all" @click="activeTab = 'campanhas'; showNovaCompanha = true">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              Nova Campanha
-            </button>
-          </div>
+  <div class="mkt-page">
+    <!-- Top bar -->
+    <div class="mkt-topbar">
+      <div>
+        <h1 class="mkt-title">Marketing</h1>
+        <p class="mkt-subtitle">Gerencie todas as estratégias e ações de marketing da sua empresa</p>
+      </div>
+      <div class="mkt-topbar-right">
+        <div class="mkt-date-pill">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+          01/07/2026 - 31/07/2026
         </div>
-
-        <!-- Stats premium -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-7">
-          <div class="group bg-white/[0.08] hover:bg-white/[0.14] backdrop-blur-md rounded-2xl p-4 border border-white/10 transition-all duration-300">
-            <div class="flex items-center justify-between mb-2">
-              <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
-              </div>
-              <span class="text-[10px] font-bold text-emerald-300 bg-emerald-400/10 px-1.5 py-0.5 rounded">+{{ stats.novos7d }}</span>
-            </div>
-            <p class="text-2xl sm:text-3xl font-extrabold text-white leading-none">{{ stats.total }}</p>
-            <p class="text-[11px] text-white/50 font-medium mt-1">Total de Leads</p>
-          </div>
-          <div class="group bg-white/[0.08] hover:bg-white/[0.14] backdrop-blur-md rounded-2xl p-4 border border-white/10 transition-all duration-300">
-            <div class="flex items-center justify-between mb-2">
-              <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
-              </div>
-              <span class="text-[10px] font-bold text-white/60">{{ stats.taxaConversao }}%</span>
-            </div>
-            <p class="text-2xl sm:text-3xl font-extrabold text-white leading-none">{{ stats.convertidos }}</p>
-            <p class="text-[11px] text-white/50 font-medium mt-1">Conversões</p>
-          </div>
-          <div class="group bg-white/[0.08] hover:bg-white/[0.14] backdrop-blur-md rounded-2xl p-4 border border-white/10 transition-all duration-300">
-            <div class="flex items-center justify-between mb-2">
-              <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              </div>
-            </div>
-            <p class="text-2xl sm:text-3xl font-extrabold text-white leading-none">R$12</p>
-            <p class="text-[11px] text-white/50 font-medium mt-1">Custo / Lead</p>
-          </div>
-          <div class="group bg-white/[0.08] hover:bg-white/[0.14] backdrop-blur-md rounded-2xl p-4 border border-white/10 transition-all duration-300">
-            <div class="flex items-center justify-between mb-2">
-              <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
-              </div>
-              <span class="text-[10px] font-bold text-amber-300">{{ campanhasAgendadas }} agendadas</span>
-            </div>
-            <p class="text-2xl sm:text-3xl font-extrabold text-white leading-none">{{ campanhasAtivas }}</p>
-            <p class="text-[11px] text-white/50 font-medium mt-1">Campanhas Ativas</p>
-          </div>
-        </div>
+        <button class="mkt-btn-primary">+ Nova ação</button>
       </div>
     </div>
 
-    <!-- Tabs estilizadas -->
-    <div class="flex gap-1 mb-7 p-1.5 bg-white rounded-2xl border border-gray-100 shadow-sm w-fit">
-      <button v-for="tab in tabs" :key="tab.id" class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200"
-        :class="activeTab === tab.id ? 'bg-gradient-to-r from-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-500/25' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'"
-        @click="activeTab = tab.id">{{ tab.label }}</button>
+    <!-- Tabs -->
+    <div class="mkt-tabs">
+      <button v-for="tab in tabs" :key="tab.id" class="mkt-tab" :class="{ active: activeTab === tab.id }" @click="activeTab = tab.id">
+        {{ tab.label }}
+        <span v-if="activeTab === tab.id" class="mkt-tab-bar"></span>
+      </button>
     </div>
 
-    <!-- ═══ TAB: DASHBOARD ═══ -->
-    <div v-show="activeTab === 'dashboard'" class="space-y-6">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <!-- Leads por canal -->
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <div class="flex items-center justify-between mb-5">
-            <h3 class="text-sm font-bold text-gray-800">Leads por Canal de Aquisição</h3>
-            <span class="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-md">últimos 30d</span>
-          </div>
-          <div class="space-y-3.5">
-            <div v-for="canal in canalStats" :key="canal.nome" class="group flex items-center gap-3">
-              <div class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px]" :style="{ background: canal.cor + '15', color: canal.cor }">{{ canal.emoji }}</div>
-              <span class="w-20 text-xs font-semibold text-gray-600">{{ canal.nome }}</span>
-              <div class="flex-1 h-2.5 bg-gray-50 rounded-full overflow-hidden">
-                <div class="h-full rounded-full transition-all duration-700 group-hover:opacity-90" :style="{ width: canal.pct + '%', background: `linear-gradient(90deg, ${canal.cor}, ${canal.cor}dd)` }"></div>
-              </div>
-              <span class="text-xs font-extrabold text-gray-700 w-8 text-right">{{ canal.qtd }}</span>
-            </div>
-          </div>
+    <template v-if="activeTab === 'visao'">
+    <!-- KPI ROW -->
+    <div class="mkt-kpi-row">
+      <div v-for="k in kpis" :key="k.label" class="mkt-kpi-card">
+        <div class="mkt-kpi-icon" :style="{ background: k.iconBg }">
+          <svg class="w-[18px] h-[18px]" :style="{ color: k.iconColor }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" v-html="k.svg"></svg>
         </div>
-
-        <!-- Funil de conversão premium -->
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <div class="flex items-center justify-between mb-5">
-            <h3 class="text-sm font-bold text-gray-800">Funil de Conversão</h3>
-            <span class="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-md">{{ stats.taxaConversao }}% geral</span>
-          </div>
-          <div class="space-y-3">
-            <div v-for="(etapa, i) in funilEtapas" :key="etapa.nome" class="relative">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[10px] font-extrabold shadow-md" :style="{ background: etapa.cor }">{{ etapa.qtd }}</div>
-                <div class="flex-1">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="text-xs font-semibold text-gray-700">{{ etapa.nome }}</span>
-                    <span v-if="i > 0" class="text-[10px] font-bold" :style="{ color: etapa.cor }">{{ etapa.taxa }}%</span>
-                  </div>
-                  <div class="h-2 bg-gray-50 rounded-full overflow-hidden">
-                    <div class="h-full rounded-full transition-all duration-1000" :style="{ width: etapa.pct + '%', background: `linear-gradient(90deg, ${etapa.cor}, ${etapa.cor}aa)` }"></div>
-                  </div>
-                </div>
-              </div>
-              <div v-if="i < funilEtapas.length - 1" class="ml-4 h-3 border-l-2 border-dashed border-gray-200"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ROI + Tempo médio -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl border border-emerald-100 p-5">
-          <p class="text-[11px] text-emerald-600 font-bold uppercase tracking-wider mb-1">ROI de Marketing</p>
-          <p class="text-3xl font-extrabold text-emerald-700">320%</p>
-          <p class="text-xs text-emerald-500 mt-1">Para cada R$1 investido, retorna R$3,20</p>
-        </div>
-        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 p-5">
-          <p class="text-[11px] text-blue-600 font-bold uppercase tracking-wider mb-1">Tempo Médio Conversão</p>
-          <p class="text-3xl font-extrabold text-blue-700">14 <span class="text-lg">dias</span></p>
-          <p class="text-xs text-blue-500 mt-1">Lead → Orçamento → Venda</p>
-        </div>
-        <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-100 p-5">
-          <p class="text-[11px] text-amber-600 font-bold uppercase tracking-wider mb-1">Melhor Canal</p>
-          <p class="text-xl font-extrabold text-amber-700">{{ canalStats[0]?.nome || 'Instagram' }}</p>
-          <p class="text-xs text-amber-500 mt-1">{{ canalStats[0]?.qtd || 0 }} leads no período</p>
-        </div>
-      </div>
-
-      <!-- Comparativo mensal -->
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-        <div class="flex items-center justify-between mb-5">
-          <h3 class="text-sm font-bold text-gray-800">Leads por Mês</h3>
-          <span class="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-md">2026</span>
-        </div>
-        <div class="flex items-end gap-2 sm:gap-3 h-32">
-          <div v-for="mes in comparativoMensal" :key="mes.label" class="flex-1 flex flex-col items-center gap-1.5">
-            <span class="text-[10px] font-bold text-gray-500">{{ mes.qtd }}</span>
-            <div class="w-full rounded-t-lg transition-all duration-700 hover:opacity-80" :style="{ height: mes.pct + '%', background: 'linear-gradient(180deg, var(--color-primary, #7c3aed), var(--color-primary, #7c3aed)88)' }"></div>
-            <span class="text-[10px] font-semibold text-gray-400">{{ mes.label }}</span>
-          </div>
-        </div>
+        <div class="mkt-kpi-label">{{ k.label }}</div>
+        <div class="mkt-kpi-value">{{ k.valor }}</div>
+        <div class="mkt-kpi-change" :class="{ up: k.up }">{{ k.up ? '↑' : '↓' }} {{ k.variacao }} <span>vs mês ant.</span></div>
+        <svg class="mkt-kpi-spark" viewBox="0 0 140 40" preserveAspectRatio="none">
+          <path :d="k.areaPath" :fill="k.iconColor + '12'" />
+          <path :d="k.linePath" fill="none" :stroke="k.iconColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
       </div>
     </div>
 
-    <!-- ═══ TAB: CAMPANHAS ═══ -->
-    <div v-show="activeTab === 'campanhas'" class="space-y-6">
-      <!-- Tipos de campanha cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div v-for="tipo in tiposCampanha" :key="tipo.id" class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-lg hover:border-gray-200 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer" @click="showNovaCompanha = true">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110" :class="tipo.bgClass">
-            <svg class="w-5 h-5" :class="tipo.iconClass" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" v-html="tipo.svg"></svg>
+    <!-- ROW 2: Funil + Receita x Investimento -->
+    <div class="mkt-row">
+      <!-- FUNIL -->
+      <div class="mkt-card" style="flex: 5 1 380px;">
+        <div class="mkt-card-header">
+          <h2>Funil de Marketing</h2>
+          <select class="mkt-select"><option>Todos os canais</option></select>
+        </div>
+        <div class="mkt-funil-grid">
+          <div v-for="(e, i) in funilData" :key="e.nome" class="mkt-funil-row">
+            <div class="mkt-funil-info">
+              <span class="mkt-funil-name">{{ e.nome }}</span>
+              <span class="mkt-funil-qtd">{{ e.qtd.toLocaleString('pt-BR') }}</span>
+            </div>
+            <div class="mkt-funil-bar-wrap">
+              <div class="mkt-funil-bar" :style="{ width: e.pct + '%', background: e.grad }"></div>
+              <span class="mkt-funil-conv">{{ e.conv }}</span>
+            </div>
+            <span class="mkt-funil-badge" :class="{ green: e.drop }">{{ e.drop }}</span>
           </div>
-          <h4 class="text-sm font-bold text-gray-800 mb-1">{{ tipo.nome }}</h4>
-          <p class="text-xs text-gray-400 leading-relaxed">{{ tipo.desc }}</p>
-          <div class="mt-3 flex items-center gap-1 text-[10px] font-bold text-violet-500 opacity-0 group-hover:opacity-100 transition-opacity">
-            Criar <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-          </div>
+        </div>
+        <div class="mkt-funil-footer">
+          <span>Conversão visitante → cliente</span>
+          <span class="mkt-funil-footer-val">0,48%</span>
         </div>
       </div>
 
-      <!-- Lista de campanhas -->
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-gray-800">Campanhas Recentes</h3>
-          <span class="text-[10px] text-gray-400 font-medium">{{ campanhas.length }} total</span>
-        </div>
-        <div v-if="!campanhas.length" class="text-center py-16">
-          <div class="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-3">
-            <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
-          </div>
-          <p class="text-sm text-gray-400">Nenhuma campanha criada ainda</p>
-          <p class="text-xs text-gray-300 mt-1">Clique em um dos tipos acima para começar</p>
-        </div>
-        <div v-else class="divide-y divide-gray-50">
-          <div v-for="c in campanhas" :key="c.id" class="px-6 py-4 flex items-center gap-4 hover:bg-gray-50/50 transition-colors cursor-pointer">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm" :class="c.tipo === 'whatsapp' ? 'bg-green-50 border border-green-100' : c.tipo === 'email' ? 'bg-blue-50 border border-blue-100' : 'bg-amber-50 border border-amber-100'">
-              <span class="text-base">{{ c.tipo === 'whatsapp' ? '💬' : c.tipo === 'email' ? '📧' : '📱' }}</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-bold text-gray-800 truncate">{{ c.nome }}</p>
-              <p class="text-[11px] text-gray-400 mt-0.5">{{ c.destinatarios }} destinatários · {{ formatDate(c.created_at) }}</p>
-            </div>
-            <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide" :class="campanhaStatusClass(c.status)">{{ c.status }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ TAB: INTEGRAÇÕES ═══ -->
-    <div v-show="activeTab === 'integracoes'" class="space-y-5">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div v-for="integ in integracoes" :key="integ.id" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm" :class="integ.bgClass">{{ integ.emoji }}</div>
-            <div class="flex-1">
-              <h4 class="text-sm font-bold text-gray-800">{{ integ.nome }}</h4>
-              <p class="text-[11px] text-gray-400 mt-0.5 leading-relaxed">{{ integ.desc }}</p>
-            </div>
-          </div>
-          <div class="flex items-center justify-between pt-3 border-t border-gray-50">
-            <div class="flex items-center gap-1.5">
-              <div class="w-2 h-2 rounded-full" :class="integ.ativo ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'"></div>
-              <span class="text-[11px] font-bold" :class="integ.ativo ? 'text-emerald-600' : 'text-gray-400'">{{ integ.ativo ? 'Conectado' : 'Desconectado' }}</span>
-            </div>
-            <button class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold transition-all" :class="integ.ativo ? 'bg-red-50 text-red-500 hover:bg-red-100 border border-red-100' : 'bg-violet-50 text-violet-600 hover:bg-violet-100 border border-violet-100'">
-              {{ integ.ativo ? 'Desconectar' : 'Conectar' }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pixel -->
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
-            <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
-          </div>
+      <!-- RECEITA x INVESTIMENTO -->
+      <div class="mkt-card" style="flex: 7 1 440px;">
+        <div class="mkt-card-header">
           <div>
-            <h3 class="text-sm font-bold text-gray-800">Pixel de Conversão</h3>
-            <p class="text-xs text-gray-400">Cole este código no seu e-commerce para rastrear conversões</p>
+            <h2>Receita × Investimento</h2>
+            <p class="mkt-card-sub">Evolução diária consolidada — R$ mil</p>
+          </div>
+          <div class="mkt-chart-legend">
+            <span class="mkt-legend-item"><span class="mkt-legend-line" style="background:#2457e6"></span>Receita</span>
+            <span class="mkt-legend-item"><span class="mkt-legend-dash"></span>Investimento</span>
           </div>
         </div>
-        <div class="bg-gray-900 rounded-xl p-4 font-mono text-[11px] text-emerald-400 leading-relaxed overflow-x-auto">
-          <span class="text-gray-500">&lt;!-- SignPRO Pixel --&gt;</span><br/>
-          &lt;script&gt;<br/>
-          &nbsp;&nbsp;!function(s,i,g,n){s.SignPRO=n;s[n]=s[n]||function()<br/>
-          &nbsp;&nbsp;{(s[n].q=s[n].q||[]).push(arguments)};<br/>
-          &nbsp;&nbsp;var e=i.createElement('script');e.async=1;<br/>
-          &nbsp;&nbsp;e.src=g;i.head.appendChild(e)}<br/>
-          &nbsp;&nbsp;(window,document,'/pixel.js','sp');<br/>
-          &nbsp;&nbsp;sp('init','<span class="text-amber-400">{{ empresaId }}</span>');<br/>
-          &nbsp;&nbsp;sp('track','PageView');<br/>
-          &lt;/script&gt;
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ TAB: RELATÓRIOS ═══ -->
-    <div v-show="activeTab === 'relatorios'" class="space-y-6">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-center hover:shadow-md transition-all">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mx-auto mb-3">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          </div>
-          <p class="text-xl font-extrabold text-gray-800">R$ 12,50</p>
-          <p class="text-[10px] text-gray-400 font-semibold uppercase mt-1">Custo por Lead</p>
-        </div>
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-center hover:shadow-md transition-all">
-          <div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center mx-auto mb-3">
-            <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
-          </div>
-          <p class="text-lg font-extrabold text-gray-800">{{ canalStats[0]?.nome || '—' }}</p>
-          <p class="text-[10px] text-gray-400 font-semibold uppercase mt-1">Melhor Canal</p>
-        </div>
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-center hover:shadow-md transition-all">
-          <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center mx-auto mb-3">
-            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          </div>
-          <p class="text-xl font-extrabold text-gray-800">14d</p>
-          <p class="text-[10px] text-gray-400 font-semibold uppercase mt-1">Tempo Conversão</p>
-        </div>
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-center hover:shadow-md transition-all">
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center mx-auto mb-3">
-            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
-          </div>
-          <p class="text-xl font-extrabold text-emerald-600">320%</p>
-          <p class="text-[10px] text-gray-400 font-semibold uppercase mt-1">ROI</p>
-        </div>
-      </div>
-
-      <!-- Gráfico mensal premium -->
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-sm font-bold text-gray-800">Comparativo Mensal de Leads</h3>
-          <div class="flex gap-3 text-[10px] font-bold">
-            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm" style="background: var(--color-primary, #7c3aed)"></span> Leads</span>
-            <span class="flex items-center gap-1 text-gray-400"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span> Convertidos</span>
-          </div>
-        </div>
-        <div class="flex items-end gap-3 sm:gap-5 h-40">
-          <div v-for="mes in comparativoMensal" :key="mes.label" class="flex-1 flex flex-col items-center gap-2">
-            <div class="w-full flex flex-col items-center gap-1" style="height: 120px;">
-              <div class="w-full max-w-[28px] rounded-lg transition-all duration-700 mt-auto" :style="{ height: mes.pct + '%', background: 'linear-gradient(180deg, var(--color-primary, #7c3aed), var(--color-primary, #7c3aed)77)' }"></div>
-            </div>
-            <div class="text-center">
-              <p class="text-[10px] font-extrabold text-gray-600">{{ mes.qtd }}</p>
-              <p class="text-[9px] font-semibold text-gray-400">{{ mes.label }}</p>
-            </div>
+        <div class="mkt-chart-area">
+          <svg viewBox="0 0 640 180" preserveAspectRatio="none" class="mkt-chart-svg">
+            <defs><linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2457e6" stop-opacity="0.12"/><stop offset="100%" stop-color="#2457e6" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="160" x2="640" y2="160" stroke="#eef1f5" stroke-width="1"/>
+            <line x1="0" y1="120" x2="640" y2="120" stroke="#eef1f5" stroke-width="1"/>
+            <line x1="0" y1="80" x2="640" y2="80" stroke="#eef1f5" stroke-width="1"/>
+            <line x1="0" y1="40" x2="640" y2="40" stroke="#eef1f5" stroke-width="1"/>
+            <path d="M0,130 C40,125 80,128 120,115 C160,102 200,108 240,95 C280,82 320,88 360,75 C400,62 440,68 480,55 C520,42 560,48 600,35 C620,28 640,25 640,22 L640,160 L0,160 Z" fill="url(#gBlue)"/>
+            <path d="M0,145 C40,143 80,144 120,140 C160,136 200,138 240,134 C280,130 320,132 360,128 C400,124 440,126 480,122 C520,118 560,120 600,116 C620,114 640,113 640,112" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="5 5" stroke-linecap="round"/>
+            <path d="M0,130 C40,125 80,128 120,115 C160,102 200,108 240,95 C280,82 320,88 360,75 C400,62 440,68 480,55 C520,42 560,48 600,35 C620,28 640,25 640,22" fill="none" stroke="#2457e6" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="640" cy="22" r="3.5" fill="#2457e6"/>
+          </svg>
+          <div class="mkt-chart-labels">
+            <span>01/07</span><span>08/07</span><span>15/07</span><span>22/07</span><span>31/07</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal Nova Campanha -->
-    <Teleport to="body">
-      <Transition name="fade">
-        <div v-if="showNovaCompanha" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click.self="showNovaCompanha = false">
-          <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div class="bg-gradient-to-r from-violet-500 to-indigo-600 px-6 py-5">
-              <div class="flex items-center justify-between">
-                <h2 class="text-lg font-bold text-white">Nova Campanha</h2>
-                <button @click="showNovaCompanha = false" class="w-8 h-8 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
-              </div>
-              <p class="text-xs text-white/60 mt-1">Configure e dispare sua campanha</p>
+    <!-- ROW 3: Donut + Campanhas -->
+    <div class="mkt-row">
+      <!-- DONUT CANAIS -->
+      <div class="mkt-card" style="flex: 5 1 360px;">
+        <div class="mkt-card-header"><h2>Desempenho por canal</h2><span class="mkt-card-sub">Sessões</span></div>
+        <p class="mkt-card-sub" style="margin-bottom: 16px;">Origem do tráfego no período</p>
+        <div class="mkt-donut-wrap">
+          <div class="mkt-donut-container">
+            <svg viewBox="0 0 140 140" class="mkt-donut-svg">
+              <g transform="rotate(-90 70 70)">
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#7c5ce6" stroke-width="21" stroke-dasharray="118.8 339.3" stroke-dashoffset="0"/>
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#2457e6" stroke-width="21" stroke-dasharray="94.4 339.3" stroke-dashoffset="-120.8"/>
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#12a5c9" stroke-width="21" stroke-dasharray="51.6 339.3" stroke-dashoffset="-217.2"/>
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#0fa06e" stroke-width="21" stroke-dasharray="32.6 339.3" stroke-dashoffset="-270.8"/>
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#d8920b" stroke-width="21" stroke-dasharray="19.4 339.3" stroke-dashoffset="-305.4"/>
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#c3ccd8" stroke-width="21" stroke-dasharray="10.6 339.3" stroke-dashoffset="-326.8"/>
+              </g>
+            </svg>
+            <div class="mkt-donut-center">
+              <span class="mkt-donut-val">18.734</span>
+              <span class="mkt-donut-label">sessões</span>
             </div>
-            <div class="p-6 space-y-4">
-              <div><label class="text-xs font-bold text-gray-600 mb-1.5 block">Nome</label><input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" placeholder="Ex: Promoção Julho" /></div>
-              <div class="grid grid-cols-2 gap-3">
-                <div><label class="text-xs font-bold text-gray-600 mb-1.5 block">Tipo</label><select class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm"><option>WhatsApp</option><option>Email</option><option>SMS</option></select></div>
-                <div><label class="text-xs font-bold text-gray-600 mb-1.5 block">Segmento</label><select class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm"><option>Todos</option><option>Leads quentes</option><option>Novos (7d)</option><option>Por nicho</option></select></div>
-              </div>
-              <div><label class="text-xs font-bold text-gray-600 mb-1.5 block">Mensagem</label><textarea rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm resize-none" placeholder="Olá {nome}, temos uma promoção exclusiva..."></textarea><p class="text-[10px] text-gray-400 mt-1.5">Variáveis: {nome}, {empresa}, {telefone}</p></div>
-              <div class="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
-                <button @click="showNovaCompanha = false" class="px-4 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50">Cancelar</button>
-                <button class="px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-violet-500 to-indigo-600 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 transition-all">Criar Campanha</button>
-              </div>
+          </div>
+          <div class="mkt-donut-legend">
+            <div v-for="c in canalLegend" :key="c.nome" class="mkt-legend-row">
+              <span class="mkt-legend-dot" :style="{ background: c.cor }"></span>
+              <span class="mkt-legend-name">{{ c.nome }}</span>
+              <span class="mkt-legend-val">{{ c.qtd }}</span>
+              <span class="mkt-legend-pct">{{ c.pct }}</span>
             </div>
           </div>
         </div>
-      </Transition>
-    </Teleport>
+      </div>
+
+      <!-- CAMPANHAS -->
+      <div class="mkt-card" style="flex: 7 1 460px;">
+        <div class="mkt-card-header">
+          <div><h2>Campanhas ativas</h2><p class="mkt-card-sub">5 campanhas em veiculação</p></div>
+          <span class="mkt-link">Ver todas</span>
+        </div>
+        <div class="mkt-table-scroll">
+          <div class="mkt-table-head">
+            <span>Campanha</span><span>Investimento</span><span>Resultado</span><span>ROI</span><span>Status</span><span></span>
+          </div>
+          <div v-for="c in campanhasData" :key="c.nome" class="mkt-table-row">
+            <div class="mkt-camp-name">
+              <span class="mkt-camp-badge" :style="{ background: c.badgeBg, color: c.badgeColor }">{{ c.sigla }}</span>
+              <div><div class="mkt-camp-title">{{ c.nome }}</div><div class="mkt-camp-sub">{{ c.sub }}</div></div>
+            </div>
+            <span class="mkt-cell-mono">{{ c.investimento }}</span>
+            <span class="mkt-cell-mono">{{ c.resultado }}</span>
+            <span class="mkt-cell-roi">{{ c.roi }}</span>
+            <span><span class="mkt-status-pill" :style="{ background: c.statusBg, color: c.statusColor }"><span class="mkt-status-dot" :style="{ background: c.statusDot }"></span>{{ c.status }}</span></span>
+            <span class="mkt-cell-menu">⋯</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 4: Mídia Paga + Metas -->
+    <div class="mkt-row">
+      <!-- MÍDIA PAGA -->
+      <div class="mkt-card" style="flex: 7 1 440px;">
+        <div class="mkt-card-header"><div><h2>Mídia paga</h2><p class="mkt-card-sub">Consolidado de todas as plataformas</p></div><span class="mkt-link">Ver relatório</span></div>
+        <div class="mkt-midia-grid">
+          <div class="mkt-midia-kpi"><div class="mkt-midia-kpi-label">Investimento</div><div class="mkt-midia-kpi-val">R$ 5.120,00</div><div class="mkt-midia-kpi-change up">↑ 12,0% vs jun</div></div>
+          <div class="mkt-midia-kpi"><div class="mkt-midia-kpi-label">Cliques</div><div class="mkt-midia-kpi-val">2.813</div><div class="mkt-midia-kpi-change up">↑ 8,4% vs jun</div></div>
+          <div class="mkt-midia-kpi"><div class="mkt-midia-kpi-label">CPC médio</div><div class="mkt-midia-kpi-val">R$ 1,82</div><div class="mkt-midia-kpi-change up">↓ 6,2% vs jun</div></div>
+          <div class="mkt-midia-kpi"><div class="mkt-midia-kpi-label">Conversões</div><div class="mkt-midia-kpi-val green">68</div><div class="mkt-midia-kpi-change up">↑ 15,0% vs jun</div></div>
+        </div>
+        <svg viewBox="0 0 640 100" preserveAspectRatio="none" class="mkt-midia-chart">
+          <path d="M0,80 C30,76 60,78 90,70 C120,62 150,66 180,58 C210,50 240,54 270,46 C300,38 330,42 360,34 C390,26 420,30 450,24 C480,18 510,22 540,16 C570,10 600,14 640,8 L640,100 L0,100 Z" fill="url(#gBlue)"/>
+          <path d="M0,80 C30,76 60,78 90,70 C120,62 150,66 180,58 C210,50 240,54 270,46 C300,38 330,42 360,34 C390,26 420,30 450,24 C480,18 510,22 540,16 C570,10 600,14 640,8" fill="none" stroke="#2457e6" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div class="mkt-chart-labels"><span>01/07</span><span>08/07</span><span>15/07</span><span>22/07</span><span>31/07</span></div>
+      </div>
+
+      <!-- METAS -->
+      <div class="mkt-card" style="flex: 5 1 340px;">
+        <div class="mkt-card-header"><h2>Metas do mês</h2></div>
+        <p class="mkt-card-sub" style="margin-bottom: 16px;">Progresso em relação a julho/26</p>
+        <div class="mkt-metas">
+          <div v-for="m in metas" :key="m.label" class="mkt-meta-item">
+            <div class="mkt-meta-top"><span class="mkt-meta-label">{{ m.label }}<span v-if="m.badge" class="mkt-meta-badge">{{ m.badge }}</span></span><span class="mkt-meta-val">{{ m.valor }}</span></div>
+            <div class="mkt-meta-bar-wrap"><div class="mkt-meta-bar" :style="{ width: m.pct + '%', background: m.cor }"></div></div>
+            <div class="mkt-meta-bottom"><span>Meta: {{ m.meta }}</span><span :style="{ color: m.cor, fontWeight: 700 }">{{ m.pct }}%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </template>
+
+    <!-- Outras tabs -->
+    <div v-if="activeTab !== 'visao'" class="mkt-card" style="padding: 60px; text-align: center;">
+      <div class="mkt-empty-icon">{{ tabs.find(t => t.id === activeTab)?.label?.charAt(0) }}</div>
+      <h2 style="margin-bottom: 6px;">{{ tabs.find(t => t.id === activeTab)?.label }}</h2>
+      <p class="mkt-card-sub">Em breve disponível</p>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { createSupabaseClient } from '~/lib/supabase'
-import { useEmpresa } from '~/composables/useEmpresa'
-
+import { ref } from 'vue'
 definePageMeta({ layout: 'default' })
 
-const supabase = createSupabaseClient()
-const { empresaId, loadEmpresa } = useEmpresa()
-
-const activeTab = ref('dashboard')
-const showNovaCompanha = ref(false)
-const leads = ref<any[]>([])
-const campanhas = ref<any[]>([])
-
+const activeTab = ref('visao')
 const tabs = [
-  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'visao', label: 'Visão geral' },
+  { id: 'planejamento', label: 'Planejamento' },
   { id: 'campanhas', label: 'Campanhas' },
-  { id: 'integracoes', label: 'Integrações' },
+  { id: 'conteudo', label: 'Conteúdo' },
+  { id: 'calendario', label: 'Calendário' },
+  { id: 'midia', label: 'Mídia paga' },
+  { id: 'automacao', label: 'Automação' },
   { id: 'relatorios', label: 'Relatórios' },
 ]
 
-onMounted(async () => { await loadEmpresa(); await carregarDados() })
-
-async function carregarDados() {
-  if (!empresaId.value) return
-  const { data } = await supabase.from('leads').select('*').eq('empresa_id', empresaId.value).order('created_at', { ascending: false })
-  leads.value = data || []
+function sparkPath(vals: number[], w = 140, h = 40) {
+  const pad = 4; const lo = Math.min(...vals); const hi = Math.max(...vals) || 1
+  const pts = vals.map((v, i) => `${(i / (vals.length - 1)) * w},${pad + (1 - (v - lo) / (hi - lo || 1)) * (h - 2 * pad)}`)
+  const line = 'M' + pts.join(' L')
+  const area = line + ` L${w},${h} L0,${h} Z`
+  return { linePath: line, areaPath: area }
 }
 
-const stats = computed(() => {
-  const total = leads.value.length
-  const now = Date.now()
-  const novos7d = leads.value.filter(l => now - new Date(l.created_at).getTime() < 7 * 86400000).length
-  const convertidos = leads.value.filter(l => l.status === 'convertido').length
-  const taxaConversao = total > 0 ? Math.round((convertidos / total) * 100) : 0
-  return { total, novos7d, convertidos, taxaConversao }
-})
-
-const campanhasAtivas = computed(() => campanhas.value.filter(c => c.status === 'ativa').length)
-const campanhasAgendadas = computed(() => campanhas.value.filter(c => c.status === 'agendada').length)
-
-const canalStats = computed(() => {
-  const canais: Record<string, { nome: string; cor: string; emoji: string; qtd: number }> = {
-    google: { nome: 'Google', cor: '#4285f4', emoji: '🔍', qtd: 0 },
-    instagram: { nome: 'Instagram', cor: '#e1306c', emoji: '📸', qtd: 0 },
-    facebook: { nome: 'Facebook', cor: '#1877f2', emoji: '📘', qtd: 0 },
-    indicacao: { nome: 'Indicação', cor: '#22c55e', emoji: '🤝', qtd: 0 },
-    site: { nome: 'Site', cor: '#06b6d4', emoji: '🌐', qtd: 0 },
-    whatsapp: { nome: 'WhatsApp', cor: '#25d366', emoji: '💬', qtd: 0 },
-    manual: { nome: 'Manual', cor: '#94a3b8', emoji: '✍️', qtd: 0 },
-  }
-  for (const l of leads.value) { if (canais[l.canal]) canais[l.canal].qtd++ }
-  const max = Math.max(...Object.values(canais).map(c => c.qtd), 1)
-  return Object.values(canais).filter(c => c.qtd > 0).sort((a, b) => b.qtd - a.qtd).map(c => ({ ...c, pct: Math.round((c.qtd / max) * 100) }))
-})
-
-const funilEtapas = computed(() => {
-  const total = leads.value.length || 1
-  const qual = leads.value.filter(l => ['qualificado', 'proposta', 'convertido'].includes(l.status)).length
-  const prop = leads.value.filter(l => ['proposta', 'convertido'].includes(l.status)).length
-  const conv = leads.value.filter(l => l.status === 'convertido').length
-  return [
-    { nome: 'Todos os Leads', cor: '#6366f1', qtd: leads.value.length, pct: 100, taxa: '' },
-    { nome: 'Qualificados', cor: '#0ea5e9', qtd: qual, pct: Math.round((qual / total) * 100), taxa: Math.round((qual / total) * 100) },
-    { nome: 'Proposta Enviada', cor: '#f59e0b', qtd: prop, pct: Math.round((prop / total) * 100), taxa: Math.round((prop / total) * 100) },
-    { nome: 'Convertidos', cor: '#22c55e', qtd: conv, pct: Math.round((conv / total) * 100), taxa: Math.round((conv / total) * 100) },
-  ]
-})
-
-const comparativoMensal = computed(() => {
-  const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun']
-  const vals = [8, 12, 18, 15, 22, 28]
-  const max = Math.max(...vals)
-  return meses.map((label, i) => ({ label, qtd: vals[i], pct: Math.round((vals[i] / max) * 100) }))
-})
-
-const tiposCampanha = [
-  { id: 'whatsapp', nome: 'WhatsApp em Massa', desc: 'Dispare mensagens para leads ou clientes via WhatsApp integrado.', bgClass: 'bg-green-50', iconClass: 'text-green-600', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/>' },
-  { id: 'email', nome: 'Email Marketing', desc: 'Templates visuais com segmentação inteligente por nicho.', bgClass: 'bg-blue-50', iconClass: 'text-blue-600', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>' },
-  { id: 'sms', nome: 'SMS Marketing', desc: 'Mensagens curtas e diretas para ações rápidas e urgentes.', bgClass: 'bg-amber-50', iconClass: 'text-amber-600', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/>' },
-  { id: 'landing', nome: 'Landing Pages', desc: 'Crie páginas de captura com link compartilhável e formulário.', bgClass: 'bg-purple-50', iconClass: 'text-purple-600', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582"/>' },
-  { id: 'automacao', nome: 'Automações', desc: 'Sequências automáticas disparadas por ações dos leads.', bgClass: 'bg-cyan-50', iconClass: 'text-cyan-600', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>' },
-  { id: 'agendamento', nome: 'Agendamento', desc: 'Programe campanhas recorrentes ou datas específicas.', bgClass: 'bg-rose-50', iconClass: 'text-rose-600', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>' },
+const kpis = [
+  { label: 'Novos Leads', valor: '1.248', iconBg: '#eef3fd', iconColor: '#2457e6', variacao: '24,5%', up: true, svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/>', ...sparkPath([62,58,66,71,64,74,79,72,84,81,90,96]) },
+  { label: 'Oportunidades', valor: '573', iconBg: '#e7f6ef', iconColor: '#0fa06e', variacao: '18,7%', up: true, svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>', ...sparkPath([30,34,31,38,36,42,40,47,45,52,50,57]) },
+  { label: 'Clientes conquistados', valor: '89', iconBg: '#fdf2dd', iconColor: '#d8920b', variacao: '15,2%', up: true, svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>', ...sparkPath([4,6,5,7,6,8,7,9,8,10,9,11]) },
+  { label: 'Receita gerada', valor: 'R$ 128.430', iconBg: '#e3f4f9', iconColor: '#12a5c9', variacao: '32,1%', up: true, svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>', ...sparkPath([6.2,7.8,7.1,9.4,8.8,10.6,11.2,10.4,12.8,12.1,13.9,15.2]) },
+  { label: 'ROI Marketing', valor: '315%', iconBg: '#f0ebfd', iconColor: '#7c5ce6', variacao: '28,6%', up: true, svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/>', ...sparkPath([210,232,224,251,246,268,262,281,275,296,301,315]) },
 ]
 
-const integracoes = [
-  { id: 'meta', nome: 'Meta Ads', desc: 'Importar leads automaticamente do Facebook e Instagram Ads', emoji: '📘', bgClass: 'bg-blue-50', ativo: false },
-  { id: 'google', nome: 'Google Ads', desc: 'Rastreamento de UTMs, conversões e custo por lead', emoji: '🔍', bgClass: 'bg-red-50', ativo: false },
-  { id: 'pixel', nome: 'Pixel SignPRO', desc: 'Rastreamento de visitas e conversões no e-commerce', emoji: '📊', bgClass: 'bg-purple-50', ativo: true },
-  { id: 'whatsapp', nome: 'WhatsApp API', desc: 'Disparos e recebimento via Datafy (integrado)', emoji: '💬', bgClass: 'bg-green-50', ativo: true },
+const funilData = [
+  { nome: 'Visitantes', qtd: 18734, pct: 100, conv: '100%', grad: 'linear-gradient(90deg,#1a1d6b,#2a3ab8)', drop: '' },
+  { nome: 'Leads', qtd: 1248, pct: 55, conv: '6,7%', grad: 'linear-gradient(90deg,#2a3ab8,#3d5ce6)', drop: '↓ 93,3%' },
+  { nome: 'Oportunidades', qtd: 573, pct: 40, conv: '3,1%', grad: 'linear-gradient(90deg,#3d5ce6,#5a7df0)', drop: '↓ 54,1%' },
+  { nome: 'Propostas', qtd: 214, pct: 28, conv: '1,1%', grad: 'linear-gradient(90deg,#5a7df0,#7c9cf5)', drop: '↓ 37,3%' },
+  { nome: 'Clientes', qtd: 89, pct: 19, conv: '0,5%', grad: 'linear-gradient(90deg,#143489,#0e2a73)', drop: '↓ 41,6%' },
 ]
 
-function campanhaStatusClass(s: string) {
-  return { ativa: 'bg-emerald-50 text-emerald-700 border border-emerald-100', agendada: 'bg-amber-50 text-amber-700 border border-amber-100', rascunho: 'bg-gray-50 text-gray-500 border border-gray-100', concluida: 'bg-blue-50 text-blue-700 border border-blue-100' }[s] || 'bg-gray-50 text-gray-500'
-}
+const canalLegend = [
+  { nome: 'Instagram', qtd: '6.676', pct: '35,6%', cor: '#7c5ce6' },
+  { nome: 'Google', qtd: '5.317', pct: '28,4%', cor: '#2457e6' },
+  { nome: 'Facebook', qtd: '2.964', pct: '15,8%', cor: '#12a5c9' },
+  { nome: 'Orgânico', qtd: '1.913', pct: '10,2%', cor: '#0fa06e' },
+  { nome: 'E-mail', qtd: '1.181', pct: '6,3%', cor: '#d8920b' },
+  { nome: 'Outros', qtd: '683', pct: '3,7%', cor: '#c3ccd8' },
+]
 
-function formatDate(d: string) { return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) }
+const campanhasData = [
+  { nome: 'Campanha Jul — Leads', sub: 'Instagram + Facebook', sigla: 'IG', badgeBg: '#f0ebfd', badgeColor: '#6d4fd2', investimento: 'R$ 2.450,00', resultado: '248 leads', roi: '312%', status: 'Ativa', statusBg: '#e7f6ef', statusColor: '#0b7a4b', statusDot: '#0fa06e' },
+  { nome: 'Google Ads — Conversão', sub: 'Rede de pesquisa', sigla: 'GO', badgeBg: '#e8eefc', badgeColor: '#2457e6', investimento: 'R$ 1.890,00', resultado: '32 clientes', roi: '420%', status: 'Ativa', statusBg: '#e7f6ef', statusColor: '#0b7a4b', statusDot: '#0fa06e' },
+  { nome: 'Remarketing — Site', sub: 'Público de visitantes', sigla: 'FB', badgeBg: '#e3f4f9', badgeColor: '#0e7e9c', investimento: 'R$ 780,00', resultado: '18 clientes', roi: '289%', status: 'Pausada', statusBg: '#fdf2dd', statusColor: '#a06508', statusDot: '#d8920b' },
+  { nome: 'E-mail — Novidades', sub: 'Base ativa · 12.400', sigla: 'EM', badgeBg: '#fdf2dd', badgeColor: '#a06508', investimento: 'R$ 0,00', resultado: '11 clientes', roi: '—', status: 'Ativa', statusBg: '#e7f6ef', statusColor: '#0b7a4b', statusDot: '#0fa06e' },
+  { nome: 'LinkedIn — B2B', sub: 'Segmentação por cargo', sigla: 'LI', badgeBg: '#eaeef2', badgeColor: '#51606f', investimento: 'R$ 1.200,00', resultado: '26 leads', roi: '156%', status: 'Teste A/B', statusBg: '#e8eefc', statusColor: '#2457e6', statusDot: '#2457e6' },
+]
+
+const metas = [
+  { label: 'Receita gerada', valor: 'R$ 128.430', meta: 'R$ 150.000', pct: 86, cor: '#2457e6', badge: '' },
+  { label: 'Novos leads', valor: '1.248', meta: '1.500', pct: 83, cor: '#12a5c9', badge: '' },
+  { label: 'Clientes conquistados', valor: '89', meta: '100', pct: 89, cor: '#0fa06e', badge: '' },
+  { label: 'ROI de marketing', valor: '315%', meta: '250%', pct: 100, cor: '#7c5ce6', badge: 'Meta superada' },
+]
 </script>
+
+<style scoped>
+.mkt-page { padding: 20px 24px; background: #f7f9fc; min-height: 100%; font-family: 'Inter', system-ui, sans-serif; }
+.mkt-topbar { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: 22px; }
+.mkt-title { font-size: 20px; font-weight: 700; color: #0f1720; letter-spacing: -0.3px; }
+.mkt-subtitle { font-size: 12.5px; color: #6b7a8a; margin-top: 2px; }
+.mkt-topbar-right { display: flex; align-items: center; gap: 10px; }
+.mkt-date-pill { display: flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 8px; border: 1px solid #e6eaf0; background: #fff; font-size: 12px; font-weight: 500; color: #33404e; }
+.mkt-btn-primary { padding: 9px 16px; border-radius: 8px; border: none; background: linear-gradient(135deg, #2457e6, #1c46c4); color: #fff; font-size: 12.5px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(36,87,230,0.25); }
+.mkt-tabs { display: flex; gap: 0; border-bottom: 1px solid #e6eaf0; margin-bottom: 20px; overflow-x: auto; }
+.mkt-tab { position: relative; padding: 10px 16px; border: none; background: none; font-size: 12.5px; font-weight: 500; color: #6b7a8a; cursor: pointer; white-space: nowrap; }
+.mkt-tab.active { color: #0f1720; font-weight: 600; }
+.mkt-tab-bar { position: absolute; left: 8px; right: 8px; bottom: -1px; height: 2px; border-radius: 2px; background: #2457e6; }
+.mkt-row { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 14px; }
+.mkt-card { background: #fff; border: 1px solid #e6eaf0; border-radius: 12px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(16,24,40,0.03); }
+.mkt-card-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+.mkt-card-header h2 { font-size: 14.5px; font-weight: 700; letter-spacing: -0.2px; color: #0f1720; }
+.mkt-card-sub { font-size: 12px; color: #8a97a6; margin-top: 2px; }
+.mkt-select { font-size: 11px; font-weight: 500; color: #6b7a8a; border: 1px solid #e6eaf0; border-radius: 6px; padding: 4px 8px; background: #f8fafc; }
+.mkt-link { font-size: 12px; font-weight: 600; color: #2457e6; cursor: pointer; }
+.mkt-kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.mkt-kpi-card { background: #fff; border: 1px solid #e6eaf0; border-radius: 12px; padding: 16px 18px; box-shadow: 0 1px 2px rgba(16,24,40,0.03); }
+.mkt-kpi-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+.mkt-kpi-label { font-size: 11.5px; font-weight: 500; color: #6b7a8a; margin-bottom: 4px; }
+.mkt-kpi-value { font-size: 22px; font-weight: 700; color: #0f1720; letter-spacing: -0.4px; font-variant-numeric: tabular-nums; }
+.mkt-kpi-change { font-size: 11px; font-weight: 600; color: #e04545; margin-top: 4px; }
+.mkt-kpi-change.up { color: #0b7a4b; }
+.mkt-kpi-change span { color: #98a4b3; font-weight: 400; margin-left: 3px; }
+.mkt-kpi-spark { width: 100%; height: 36px; margin-top: 8px; display: block; }
+/* Funil */
+.mkt-funil-grid { display: flex; flex-direction: column; gap: 10px; }
+.mkt-funil-row { display: grid; grid-template-columns: 110px 1fr 58px; align-items: center; gap: 12px; }
+.mkt-funil-info { display: flex; flex-direction: column; }
+.mkt-funil-name { font-size: 12px; font-weight: 600; color: #33404e; }
+.mkt-funil-qtd { font-size: 11px; color: #98a4b3; font-variant-numeric: tabular-nums; }
+.mkt-funil-bar-wrap { height: 32px; display: flex; align-items: center; gap: 8px; }
+.mkt-funil-bar { height: 100%; border-radius: 6px; flex: none; transition: width 0.6s ease; }
+.mkt-funil-conv { color: #33404e; font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.mkt-funil-badge { display: inline-flex; justify-content: center; padding: 2px 0; border-radius: 999px; background: #e7f6ef; color: #0b7a4b; font-size: 10.5px; font-weight: 700; }
+.mkt-funil-footer { margin-top: 16px; padding-top: 14px; border-top: 1px solid #eef1f5; display: flex; justify-content: space-between; font-size: 12px; color: #6b7a8a; }
+.mkt-funil-footer-val { font-weight: 700; color: #0f1720; font-variant-numeric: tabular-nums; }
+/* Chart */
+.mkt-chart-area { margin-top: 12px; }
+.mkt-chart-svg { width: 100%; height: 180px; display: block; }
+.mkt-chart-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10.5px; color: #98a4b3; }
+.mkt-chart-legend { display: flex; gap: 14px; align-items: center; }
+.mkt-legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: #33404e; font-weight: 500; }
+.mkt-legend-line { width: 14px; height: 3px; border-radius: 2px; }
+.mkt-legend-dash { width: 14px; height: 0; border-top: 2px dashed #94a3b8; }
+/* Donut */
+.mkt-donut-wrap { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.mkt-donut-container { position: relative; width: 160px; height: 160px; flex: none; }
+.mkt-donut-svg { width: 100%; height: 100%; display: block; }
+.mkt-donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.mkt-donut-val { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; font-variant-numeric: tabular-nums; color: #0f1720; }
+.mkt-donut-label { font-size: 11px; color: #8a97a6; }
+.mkt-donut-legend { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.mkt-legend-row { display: flex; align-items: center; gap: 8px; }
+.mkt-legend-dot { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+.mkt-legend-name { font-size: 12.5px; color: #33404e; flex: 1; }
+.mkt-legend-val { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; color: #0f1720; }
+.mkt-legend-pct { font-size: 11.5px; color: #8a97a6; width: 42px; text-align: right; font-variant-numeric: tabular-nums; }
+/* Table */
+.mkt-table-scroll { overflow-x: auto; }
+.mkt-table-head { display: grid; grid-template-columns: 2.3fr 1.1fr 1fr 0.7fr 1fr 30px; gap: 10px; padding: 0 10px 9px; border-bottom: 1px solid #eef1f5; font-size: 10.5px; font-weight: 700; color: #8a97a6; text-transform: uppercase; letter-spacing: 0.4px; min-width: 560px; }
+.mkt-table-row { display: grid; grid-template-columns: 2.3fr 1.1fr 1fr 0.7fr 1fr 30px; gap: 10px; align-items: center; padding: 11px 10px; border-bottom: 1px solid #f4f6f9; min-width: 560px; cursor: pointer; border-radius: 8px; }
+.mkt-table-row:hover { background: #f7f9fc; }
+.mkt-camp-name { display: flex; align-items: center; gap: 10px; }
+.mkt-camp-badge { width: 26px; height: 26px; border-radius: 7px; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; }
+.mkt-camp-title { font-size: 12.5px; font-weight: 600; color: #22303d; }
+.mkt-camp-sub { font-size: 11px; color: #98a4b3; }
+.mkt-cell-mono { font-size: 12.5px; color: #33404e; font-variant-numeric: tabular-nums; }
+.mkt-cell-roi { font-size: 12.5px; font-weight: 700; color: #0b7a4b; font-variant-numeric: tabular-nums; }
+.mkt-status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.mkt-status-dot { width: 5px; height: 5px; border-radius: 50%; }
+.mkt-cell-menu { color: #b0bac6; font-weight: 700; text-align: center; }
+/* Midia */
+.mkt-midia-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.mkt-midia-kpi { padding: 12px 14px; background: #f8fafc; border: 1px solid #eef1f5; border-radius: 10px; }
+.mkt-midia-kpi-label { font-size: 10.5px; font-weight: 700; color: #8a97a6; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
+.mkt-midia-kpi-val { font-size: 17px; font-weight: 700; color: #0f1720; letter-spacing: -0.3px; font-variant-numeric: tabular-nums; }
+.mkt-midia-kpi-val.green { color: #0b7a4b; }
+.mkt-midia-kpi-change { font-size: 11px; font-weight: 600; color: #e04545; margin-top: 3px; }
+.mkt-midia-kpi-change.up { color: #0b7a4b; }
+.mkt-midia-chart { width: 100%; height: 90px; display: block; }
+/* Metas */
+.mkt-metas { display: flex; flex-direction: column; gap: 17px; }
+.mkt-meta-item {}
+.mkt-meta-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
+.mkt-meta-label { font-size: 12.5px; font-weight: 600; color: #33404e; display: inline-flex; align-items: center; gap: 7px; }
+.mkt-meta-badge { padding: 1px 7px; border-radius: 999px; background: #e7f6ef; color: #0b7a4b; font-size: 10px; font-weight: 700; }
+.mkt-meta-val { font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; color: #0f1720; }
+.mkt-meta-bar-wrap { height: 6px; border-radius: 999px; background: #eef1f5; overflow: hidden; }
+.mkt-meta-bar { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
+.mkt-meta-bottom { display: flex; justify-content: space-between; margin-top: 5px; font-size: 11px; color: #98a4b3; }
+.mkt-empty-icon { width: 44px; height: 44px; border-radius: 12px; background: #eef3fd; color: #2457e6; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+@media (max-width: 768px) { .mkt-page { padding: 14px 12px; } .mkt-kpi-row { grid-template-columns: 1fr 1fr; } }
+</style>
