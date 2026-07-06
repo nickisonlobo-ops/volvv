@@ -603,6 +603,7 @@
               <div v-show="wizardStep === 1">
               <h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Campanha</h2>
               <p class="mkt-card-sub" style="margin-bottom:20px;">Onde este anúncio vai viver. Comece do zero ou aproveite uma campanha que já roda.</p>
+              <div class="mkt-form-label">Campanha</div>
               <select v-model="anuncioForm.campanha_id" class="mkt-input">
                 <option value="">➕ Criar nova campanha</option>
                 <option v-for="c in campanhas" :key="c.id" :value="c.id">{{ c.nome }}</option>
@@ -611,8 +612,6 @@
                 <input v-model="anuncioForm.campanha_nome" type="text" placeholder="Nome da campanha (opcional)" class="mkt-input" />
                 <select v-model="anuncioForm.objetivo" class="mkt-input"><option v-for="o in OBJETIVOS" :key="o.v" :value="o.v">{{ o.l }}</option></select>
               </div>
-
-              <div class="mkt-form-label">Anúncio</div>
               </div><!-- end step 1 -->
 
               <!-- STEP 2: Criativo -->
@@ -665,8 +664,6 @@
                 </div>
                 <button v-if="anuncioForm.cards.length < 10" type="button" class="mkt-link" @click="addCard">+ Adicionar cartão</button>
               </template>
-
-              <div class="mkt-form-label">Segmentação e orçamento</div>
               </div><!-- end step 2 -->
 
               <!-- STEP 3: Segmentação -->
@@ -814,8 +811,6 @@
                   </div>
                 </template>
               </template>
-
-              <div class="mkt-form-label">Publicação</div>
               </div><!-- end step 3 -->
 
               <!-- STEP 4: Revisão -->
@@ -840,9 +835,9 @@
 
             <!-- Footer action slot -->
             <template #footer-action>
-              <button v-if="wizardStep < 4 && !anuncioOk" class="wz-btn-primary" @click="wizardStep++">Continuar →</button>
-              <button v-if="wizardStep === 4 && !anuncioOk" class="wz-btn-primary" :disabled="saving" @click="salvarAnuncio">{{ saving ? 'Criando…' : '✓ Criar anúncio' }}</button>
-              <button v-if="anuncioOk" class="wz-btn-ghost" @click="modalAnuncio = false">Fechar</button>
+              <button v-if="wizardStep < 4 && !anuncioOk" class="mkt-btn-primary" @click="wizardStep++">Continuar →</button>
+              <button v-if="wizardStep === 4 && !anuncioOk" class="mkt-btn-primary" :disabled="saving" @click="salvarAnuncio">{{ saving ? 'Criando…' : '✓ Criar anúncio' }}</button>
+              <button v-if="anuncioOk" class="mkt-btn-ghost" @click="modalAnuncio = false">Fechar</button>
             </template>
 
             <!-- Preview slot -->
