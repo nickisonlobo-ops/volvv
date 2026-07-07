@@ -1,6 +1,6 @@
 <template>
   <section ref="sectionRef" class="py-20 overflow-hidden relative">
-    <div class="max-w-4xl mx-auto text-center mb-12 px-4">
+    <div v-reveal class="max-w-4xl mx-auto text-center mb-12 px-4">
       <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">Depoimentos</p>
       <h2 class="text-3xl sm:text-5xl font-bold text-white mb-4">Quem usa, recomenda</h2>
       <p class="text-lg text-white/50">Empresas que transformaram sua gestao com o SignPRO</p>

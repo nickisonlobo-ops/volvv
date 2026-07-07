@@ -32,28 +32,30 @@
     </div>
 
     <!-- Page content -->
-    <div v-else-if="os" class="print-content max-w-[210mm] mx-auto p-8">
+    <div v-else-if="os" class="print-content max-w-[210mm] mx-auto p-4 pt-20 sm:p-8">
 
       <!-- HEADER: dark bg with logo + title + status -->
-      <div class="rounded-2xl bg-gray-900 text-white px-8 py-6 flex items-center justify-between mb-6">
+      <div class="rounded-2xl bg-gray-900 text-white px-5 py-5 sm:px-8 sm:py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div class="flex items-center gap-4">
-          <img v-if="logoUrl" :src="logoUrl" class="h-12 w-auto object-contain" />
+          <img v-if="logoUrl" :src="logoUrl" class="h-10 sm:h-12 w-auto object-contain" />
           <div>
             <p class="text-xs text-gray-400 uppercase tracking-wider">{{ nomeEmpresa }}</p>
           </div>
         </div>
-        <div class="text-right">
-          <h1 class="text-xl font-bold">Ordem de Serviço</h1>
-          <p class="font-bold text-lg" :style="{ color: primaryColor }">{{ os.numero_os }}</p>
-        </div>
-        <div class="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-1.5">
-          <span class="w-2 h-2 rounded-full" :class="statusDotClass" />
-          <span class="text-sm font-bold">{{ statusLabel }}</span>
+        <div class="flex items-center justify-between gap-3 sm:contents">
+          <div class="text-left sm:text-right">
+            <h1 class="text-lg sm:text-xl font-bold">Ordem de Serviço</h1>
+            <p class="font-bold text-lg" :style="{ color: primaryColor }">{{ os.numero_os }}</p>
+          </div>
+          <div class="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-1.5 shrink-0">
+            <span class="w-2 h-2 rounded-full" :class="statusDotClass" />
+            <span class="text-sm font-bold whitespace-nowrap">{{ statusLabel }}</span>
+          </div>
         </div>
       </div>
 
       <!-- DATES ROW -->
-      <div class="flex justify-center gap-12 mb-6 text-center">
+      <div class="flex flex-wrap justify-center gap-6 sm:gap-12 mb-6 text-center">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
@@ -74,8 +76,8 @@
         </div>
       </div>
 
-      <!-- INFO CARDS (4 columns) -->
-      <div class="grid grid-cols-4 gap-3 mb-6">
+      <!-- INFO CARDS (4 columns, 2 no mobile) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         <!-- Status -->
         <div class="border rounded-xl p-3 text-center">
           <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center" :style="{ backgroundColor: primaryColor + '15' }">
@@ -122,8 +124,8 @@
         </div>
       </div>
 
-      <!-- CLIENT + ADDRESS (2 columns) -->
-      <div class="grid grid-cols-2 gap-4 mb-6">
+      <!-- CLIENT + ADDRESS (2 columns, empilhado no mobile) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div class="border rounded-xl p-4">
           <p class="text-[10px] text-gray-400 uppercase font-bold mb-1">Cliente</p>
           <p class="text-lg font-bold">{{ os.cliente_nome }}</p>
@@ -136,40 +138,40 @@
       </div>
 
       <!-- TIMELINE -->
-      <div class="border rounded-xl p-6 mb-6">
+      <div class="border rounded-xl p-3 sm:p-6 mb-6">
         <p class="text-[10px] font-bold uppercase text-gray-400 mb-4 tracking-wider">Acompanhamento do Pedido</p>
         <div class="flex items-center justify-between">
           <template v-for="(step, idx) in timelineSteps" :key="step.key">
             <!-- Step circle + label -->
             <div class="flex flex-col items-center gap-1.5 flex-shrink-0">
               <div
-                class="w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors"
+                class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 transition-colors"
                 :class="idx <= activeStepIndex ? 'border-transparent text-white' : 'border-gray-200 text-gray-400 bg-white'"
                 :style="idx <= activeStepIndex ? { backgroundColor: primaryColor } : {}"
               >
-                <svg v-if="step.icon === 'clipboard'" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <svg v-if="step.icon === 'clipboard'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                <svg v-else-if="step.icon === 'pencil'" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <svg v-else-if="step.icon === 'pencil'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z" />
                 </svg>
-                <svg v-else-if="step.icon === 'cog'" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <svg v-else-if="step.icon === 'cog'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <svg v-else-if="step.icon === 'truck'" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <svg v-else-if="step.icon === 'truck'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
                 </svg>
-                <svg v-else-if="step.icon === 'check'" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <svg v-else-if="step.icon === 'check'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <span class="text-[10px] font-bold text-center" :class="idx <= activeStepIndex ? 'text-gray-800' : 'text-gray-400'">{{ step.label }}</span>
+              <span class="text-[8px] sm:text-[10px] font-bold text-center leading-tight" :class="idx <= activeStepIndex ? 'text-gray-800' : 'text-gray-400'">{{ step.label }}</span>
             </div>
             <!-- Connecting line -->
             <div
               v-if="idx < timelineSteps.length - 1"
-              class="flex-1 h-0.5 mx-1"
+              class="flex-1 h-0.5 mx-0.5 sm:mx-1"
               :style="{ backgroundColor: idx < activeStepIndex ? primaryColor : '#e5e7eb' }"
             />
           </template>
@@ -179,26 +181,28 @@
       <!-- ITEMS TABLE -->
       <div class="mb-6">
         <p class="text-[10px] font-bold uppercase text-gray-400 mb-3 tracking-wider">Itens da Ordem de Serviço</p>
-        <table class="w-full text-sm border-collapse">
-          <thead>
-            <tr class="border-b-2" :style="{ borderColor: primaryColor }">
-              <th class="py-2 px-3 text-left text-[10px] font-bold uppercase text-gray-500">#</th>
-              <th class="py-2 px-3 text-left text-[10px] font-bold uppercase text-gray-500">Descrição</th>
-              <th class="py-2 px-3 text-center text-[10px] font-bold uppercase text-gray-500">Material</th>
-              <th class="py-2 px-3 text-center text-[10px] font-bold uppercase text-gray-500">Dimensões</th>
-              <th class="py-2 px-3 text-center text-[10px] font-bold uppercase text-gray-500">Qtd</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, idx) in itens" :key="item.id" class="border-b border-gray-100">
-              <td class="py-3 px-3 text-gray-500 font-bold">{{ idx + 1 }}</td>
-              <td class="py-3 px-3 font-semibold text-gray-800">{{ item.descricao }}</td>
-              <td class="py-3 px-3 text-center text-gray-600">{{ item.material_id || '—' }}</td>
-              <td class="py-3 px-3 text-center text-gray-600">{{ item.largura_cm }} × {{ item.altura_cm }} cm</td>
-              <td class="py-3 px-3 text-center font-bold">{{ item.quantidade }} un</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse min-w-[480px]">
+            <thead>
+              <tr class="border-b-2" :style="{ borderColor: primaryColor }">
+                <th class="py-2 px-3 text-left text-[10px] font-bold uppercase text-gray-500">#</th>
+                <th class="py-2 px-3 text-left text-[10px] font-bold uppercase text-gray-500">Descrição</th>
+                <th class="py-2 px-3 text-center text-[10px] font-bold uppercase text-gray-500">Material</th>
+                <th class="py-2 px-3 text-center text-[10px] font-bold uppercase text-gray-500">Dimensões</th>
+                <th class="py-2 px-3 text-center text-[10px] font-bold uppercase text-gray-500">Qtd</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in itens" :key="item.id" class="border-b border-gray-100">
+                <td class="py-3 px-3 text-gray-500 font-bold">{{ idx + 1 }}</td>
+                <td class="py-3 px-3 font-semibold text-gray-800">{{ item.descricao }}</td>
+                <td class="py-3 px-3 text-center text-gray-600">{{ item.material_id || '—' }}</td>
+                <td class="py-3 px-3 text-center text-gray-600">{{ item.largura_cm }} × {{ item.altura_cm }} cm</td>
+                <td class="py-3 px-3 text-center font-bold">{{ item.quantidade }} un</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <!-- Fotos dos itens -->
         <div v-for="(item, idx) in itens" :key="'foto-' + item.id">
@@ -225,12 +229,12 @@
       </div>
 
       <!-- FOOTER -->
-      <div class="border-t pt-6 flex items-center justify-between">
+      <div class="border-t pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-center sm:text-left">
         <div>
           <p class="text-sm font-bold text-gray-800">{{ nomeEmpresa }}</p>
           <p class="text-xs text-gray-400">Qualidade, prazo e excelência em cada etapa do seu projeto.</p>
         </div>
-        <div class="text-right">
+        <div class="sm:text-right">
           <p class="text-base font-bold italic" :style="{ color: primaryColor }">
             Obrigado por escolher a {{ nomeEmpresa }}!
           </p>

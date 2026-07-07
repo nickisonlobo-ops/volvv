@@ -35,16 +35,18 @@
       </div>
 
       <!-- Mobile drawer -->
-      <div v-if="mobileOpen" class="md:hidden bg-[#0a0a0f]/95 backdrop-blur-xl border-t border-white/5 px-6 py-6 space-y-4">
-        <a v-for="link in navLinks" :key="link.href" :href="link.href" class="block text-sm text-white/70 font-medium py-2" @click="mobileOpen = false">{{ link.label }}</a>
-        <div class="flex flex-col gap-3 pt-3 border-t border-white/10">
-          <NuxtLink to="/login" :prefetch="false" class="text-sm font-medium text-white/70 py-2" @click="mobileOpen = false">Entrar</NuxtLink>
-          <a href="/login"
-            class="px-5 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white text-center" @click="mobileOpen = false">
-            Começar grátis
-          </a>
+      <Transition name="slide-down">
+        <div v-if="mobileOpen" class="md:hidden bg-[#0a0a0f]/95 backdrop-blur-xl border-t border-white/5 px-6 py-6 space-y-4">
+          <a v-for="link in navLinks" :key="link.href" :href="link.href" class="block text-sm text-white/70 font-medium py-2" @click="mobileOpen = false">{{ link.label }}</a>
+          <div class="flex flex-col gap-3 pt-3 border-t border-white/10">
+            <NuxtLink to="/login" :prefetch="false" class="text-sm font-medium text-white/70 py-2" @click="mobileOpen = false">Entrar</NuxtLink>
+            <a href="/login"
+              class="px-5 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white text-center" @click="mobileOpen = false">
+              Começar grátis
+            </a>
+          </div>
         </div>
-      </div>
+      </Transition>
     </nav>
 
     <!-- ═══ HERO ═══ -->
@@ -64,7 +66,7 @@
       <div class="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-transparent to-orange-600/5"></div>
       <div class="relative max-w-4xl mx-auto px-6 sm:px-10">
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
-          <div v-for="stat in stats" :key="stat.label" class="text-center">
+          <div v-for="(stat, i) in stats" :key="stat.label" v-reveal="i * 90" class="text-center">
             <div class="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-orange-300 to-orange-400 bg-clip-text text-transparent mb-2">{{ stat.value }}</div>
             <div class="text-xs font-medium text-white/40 uppercase tracking-wider">{{ stat.label }}</div>
           </div>
@@ -75,13 +77,13 @@
     <!-- ═══ COMO FUNCIONA ═══ -->
     <section id="como-funciona" class="py-24 sm:py-32">
       <div class="max-w-4xl mx-auto px-6 sm:px-10">
-        <div class="text-center mb-16">
+        <div v-reveal class="text-center mb-16">
           <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">Simples assim</p>
           <h2 class="text-3xl sm:text-5xl font-bold tracking-tight mb-4">Começa em 3 passos</h2>
           <p class="text-white/50 max-w-md mx-auto">Em 5 minutos sua conta está criada e funcionando.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          <div v-for="(step, i) in steps" :key="step.title" class="relative text-center">
+          <div v-for="(step, i) in steps" :key="step.title" v-reveal="i * 100" class="relative text-center">
             <div class="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center bg-gradient-to-br from-orange-500/20 to-orange-600/20 border border-orange-500/20">
               <svg class="w-7 h-7 text-orange-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" v-html="step.svg"></svg>
               <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center bg-orange-500 text-white">{{ i + 1 }}</span>
@@ -102,13 +104,13 @@
     <section id="precos" class="py-24 sm:py-32 relative">
       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/5 to-transparent"></div>
       <div class="relative max-w-5xl mx-auto px-6 sm:px-10">
-        <div class="text-center mb-16">
+        <div v-reveal class="text-center mb-16">
           <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">Planos</p>
           <h2 class="text-3xl sm:text-5xl font-bold tracking-tight mb-4">Investimento que se paga numa semana</h2>
           <p class="text-white/50 max-w-sm mx-auto">Planos que crescem com a sua empresa. Cancele quando quiser.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 items-start">
-          <div v-for="plan in plans" :key="plan.name"
+          <div v-for="(plan, i) in plans" :key="plan.name" v-reveal="i * 110"
             class="relative rounded-2xl p-7 flex flex-col gap-5 transition-all duration-300"
             :class="plan.featured
               ? 'border-2 border-orange-500/50 bg-white/[0.05] shadow-2xl shadow-orange-500/10 sm:scale-[1.03]'
@@ -149,20 +151,22 @@
     <!-- ═══ FAQ ═══ -->
     <section class="py-24 sm:py-32">
       <div class="max-w-2xl mx-auto px-6 sm:px-10">
-        <div class="text-center mb-12">
+        <div v-reveal class="text-center mb-12">
           <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">Dúvidas</p>
           <h2 class="text-3xl sm:text-5xl font-bold tracking-tight">Perguntas frequentes</h2>
         </div>
         <div class="flex flex-col gap-3">
-          <div v-for="(faq, i) in faqs" :key="i"
+          <div v-for="(faq, i) in faqs" :key="i" v-reveal="i * 60"
             class="rounded-xl border border-white/[0.08] bg-white/[0.02] overflow-hidden transition-all hover:border-white/15">
             <button class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left" @click="toggleFaq(i)">
               <span class="text-sm font-medium text-white/90">{{ faq.q }}</span>
               <svg class="w-4 h-4 text-white/40 shrink-0 transition-transform duration-200" :class="faqOpen === i ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <div v-if="faqOpen === i" class="px-5 pb-4">
-              <p class="text-sm text-white/50 leading-relaxed">{{ faq.a }}</p>
-            </div>
+            <Transition name="slide-down">
+              <div v-if="faqOpen === i" class="px-5 pb-4">
+                <p class="text-sm text-white/50 leading-relaxed">{{ faq.a }}</p>
+              </div>
+            </Transition>
           </div>
         </div>
       </div>
@@ -173,7 +177,7 @@
       <div class="absolute inset-0 pointer-events-none">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-20 blur-[120px]" style="background: radial-gradient(circle, #ea580c, transparent 70%)"></div>
       </div>
-      <div class="relative max-w-2xl mx-auto px-6 sm:px-10 text-center">
+      <div v-reveal class="relative max-w-2xl mx-auto px-6 sm:px-10 text-center">
         <h2 class="text-3xl sm:text-5xl font-bold tracking-tight mb-6 leading-tight">
           Da arte à entrega.<br><span class="bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">Controle total.</span>
         </h2>
@@ -191,7 +195,7 @@
 
     <!-- ═══ FOOTER ═══ -->
     <footer class="border-t border-white/5 py-8">
-      <div class="max-w-6xl mx-auto px-6 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div v-reveal class="max-w-6xl mx-auto px-6 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-2">
           <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
             <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
