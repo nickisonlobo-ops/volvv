@@ -8,9 +8,12 @@ import type { Direcao, Kind, Status } from '~/types/chat'
 // NOTA: usar `type` (não `interface`) — o supabase-js exige que cada tabela
 // satisfaça Record<string, unknown> (GenericSchema). Interfaces não têm index
 // signature implícita e fariam o schema degradar para `never`.
+export type Canal = 'whatsapp' | 'instagram' | 'facebook'
+
 export type ConversationRow = {
   id: string
   phone_number_id: string
+  canal: Canal
   display_phone_number: string | null
   waba_id: string | null
   wa_id: string
@@ -27,6 +30,7 @@ export type MessageRow = {
   id: string
   conversation_id: string
   wa_message_id: string | null
+  canal: Canal
   direction: Direcao
   kind: Kind
   from_wa_id: string | null

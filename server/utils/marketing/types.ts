@@ -60,6 +60,12 @@ export interface Credenciais {
   accessToken: string | null
   refreshToken: string | null
   pageId?: string | null      // Meta: ID da Página do Facebook (para criar anúncios)
+  // Mensageria (central de mensagens) — Página independente da usada em anúncios.
+  msgPageId?: string | null
+  msgPageNome?: string | null
+  pageAccessToken?: string | null      // Page Access Token (Send API)
+  instagramBusinessId?: string | null  // ID da conta comercial do Instagram vinculada à msgPageId
+  instagramUsuario?: string | null
 }
 
 // Resultado de um teste de conexão (usado ao gravar credenciais)
