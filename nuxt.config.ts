@@ -53,6 +53,8 @@ export default defineNuxtConfig({
     pusherAppId: process.env.PUSHER_APP_ID,
     pusherSecret: process.env.PUSHER_SECRET,
     metaWebhookVerifyToken: process.env.META_WEBHOOK_VERIFY_TOKEN,
+    metaAppId: process.env.META_APP_ID,
+    metaAppSecret: process.env.META_APP_SECRET,
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,

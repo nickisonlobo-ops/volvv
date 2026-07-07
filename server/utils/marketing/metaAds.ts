@@ -14,6 +14,33 @@ function actId(id: string): string {
   return id.startsWith('act_') ? id : `act_${id}`
 }
 
+/**
+ * Troca um token curto (Graph API Explorer, ~1-2h) por um de longa duração (~60 dias).
+ * Exige META_APP_ID + META_APP_SECRET configurados (painel do app na Meta → Configurações
+ * básicas). Sem essas variáveis, ou se a troca falhar, devolve o token original — a conexão
+ * não é bloqueada por isso, só dura menos.
+ */
+export async function trocarPorTokenLongo(token: string): Promise<string> {
+  const config = useRuntimeConfig()
+  const appId = config.metaAppId
+  const appSecret = config.metaAppSecret
+  if (!appId || !appSecret) return token
+  try {
+    const res = await $fetch<{ access_token?: string }>(`${GRAPH}/oauth/access_token`, {
+      query: {
+        grant_type: 'fb_exchange_token',
+        client_id: appId,
+        client_secret: appSecret,
+        fb_exchange_token: token,
+      },
+    })
+    return res.access_token || token
+  } catch (e: any) {
+    console.error('[meta] troca de token longo falhou, mantendo o original:', e?.data?.error?.message || e?.message)
+    return token
+  }
+}
+
 interface InsightRow {
   spend?: string
   clicks?: string

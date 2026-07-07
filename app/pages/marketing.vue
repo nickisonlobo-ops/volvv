@@ -42,7 +42,15 @@
     <template v-if="activeTab === 'visao'">
 
     <!-- Aviso conectar -->
-    <div v-if="!overview?.conectado" class="mkt-connect-banner">
+    <div v-if="!overview?.conectado && overview?.erro" class="mkt-connect-banner mkt-connect-banner-erro">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+      <div class="mkt-connect-text">
+        <strong>A conexão com o anúncio parou de funcionar</strong>
+        <span>{{ overview.erro }} — gere um novo token e atualize em Configurações.</span>
+      </div>
+      <NuxtLink to="/configuracoes" class="mkt-connect-btn">Reconectar</NuxtLink>
+    </div>
+    <div v-else-if="!overview?.conectado" class="mkt-connect-banner">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       <div class="mkt-connect-text">
         <strong>Conecte suas contas de anúncio</strong>
@@ -317,10 +325,10 @@
               <tr v-if="estruturaAberta === c.id" class="mkt-estrutura-row">
                 <td colspan="7">
                   <div v-if="estruturaLoad === c.id" class="mkt-estrutura-load"><span class="mkt-mini-spin"></span> Carregando conjuntos…</div>
-                  <div v-else-if="estruturaCache[c.id]?.erro" class="mkt-estrutura-erro">{{ estruturaCache[c.id].erro }}</div>
+                  <div v-else-if="estruturaCache[c.id]?.erro" class="mkt-estrutura-erro">{{ estruturaCache[c.id]?.erro }}</div>
                   <div v-else-if="!estruturaCache[c.id]?.adsets?.length" class="mkt-estrutura-vazio">Nenhum conjunto nesta campanha ainda.</div>
                   <div v-else class="mkt-estrutura">
-                    <div v-for="aset in estruturaCache[c.id].adsets" :key="aset.id" class="mkt-adset">
+                    <div v-for="aset in estruturaCache[c.id]?.adsets ?? []" :key="aset.id" class="mkt-adset">
                       <div class="mkt-adset-head">
                         <span class="mkt-adset-icon">▣</span>
                         <span class="mkt-adset-nome">{{ aset.nome }}</span>
@@ -941,6 +949,7 @@ interface Conteudo { id: number; titulo: string; tipo: string; rede: string | nu
 interface Automacao { id: number; nome: string; gatilho: string; acao: string; descricao: string | null; ativo: boolean }
 interface Overview {
   conectado: boolean
+  erro?: string
   kpis: { leads: number; oportunidades: number; clientes: number; receita: number | null; roi: string | null }
   funil: { nome: string; qtd: number; cor: string; conv: string }[]
   canais: { nome: string; qtd: number; cor: string }[]
@@ -1345,6 +1354,7 @@ const anuncioForm = reactive({
   pos_facebook: [] as string[],
   pos_instagram: [] as string[],
   dispositivos: [] as string[],
+  ativar: false,
 })
 const mostrarAvancado = ref(false)
 const EVENTOS_PIXEL = ['PURCHASE', 'LEAD', 'COMPLETE_REGISTRATION', 'ADD_TO_CART', 'INITIATE_CHECKOUT', 'CONTACT']
@@ -1851,6 +1861,10 @@ onMounted(async () => {
 .mkt-connect-text strong { font-size: 13px; color: #1c3aa0; }
 .mkt-connect-text span { font-size: 12px; color: #4a5f8f; margin-top: 2px; }
 .mkt-connect-btn { padding: 8px 14px; border-radius: 8px; background: linear-gradient(135deg, #2457e6, #1c46c4); color: #fff; font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.mkt-connect-banner-erro { border-color: #f5c6c6; background: #fde8e8; color: #c02b2b; }
+.mkt-connect-banner-erro .mkt-connect-text strong { color: #a01f1f; }
+.mkt-connect-banner-erro .mkt-connect-text span { color: #c02b2b; }
+.mkt-connect-banner-erro .mkt-connect-btn { background: linear-gradient(135deg, #e04545, #c02b2b); }
 .mkt-row { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 14px; }
 .mkt-card { background: #fff; border: 1px solid #e6eaf0; border-radius: 12px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(16,24,40,0.03); }
 .mkt-card-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
