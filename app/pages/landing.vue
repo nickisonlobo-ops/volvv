@@ -180,25 +180,7 @@
     </section>
 
     <!-- ═══ FUNCIONALIDADES ═══ -->
-    <section id="funcionalidades" class="py-24 sm:py-32 relative">
-      <div class="max-w-6xl mx-auto px-6 sm:px-10">
-        <div class="text-center mb-16">
-          <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">Funcionalidades</p>
-          <h2 class="text-3xl sm:text-5xl font-bold tracking-tight mb-4">Tudo para o seu dia a dia</h2>
-          <p class="text-white/50 max-w-lg mx-auto">Do orçamento à entrega, do financeiro à equipe. Uma plataforma que entende o ritmo da sua produção.</p>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <div v-for="feat in features" :key="feat.title"
-            class="group relative p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-orange-500/30 hover:bg-white/[0.05] transition-all duration-300">
-            <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4 bg-gradient-to-br" :class="feat.iconClass">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" v-html="feat.svg"></svg>
-            </div>
-            <h3 class="text-[15px] font-semibold text-white mb-2">{{ feat.title }}</h3>
-            <p class="text-sm text-white/40 leading-relaxed">{{ feat.desc }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <LandingFeaturesBento locale="pt-BR" />
 
     <!-- ═══ APARELHOS / DEVICES ═══ -->
     <section class="relative overflow-hidden bg-[#0c0c0d] py-20 sm:py-24">
@@ -483,18 +465,6 @@ const navLinks = [
   { href: '#como-funciona', label: 'Como funciona' },
   { href: '#depoimentos', label: 'Depoimentos' },
   { href: '#precos', label: 'Planos' },
-]
-
-const features = [
-  { svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25V13.5zm0 2.25h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25V18zm2.498-6.75h.007v.008h-.007v-.008zm0 2.25h.007v.008h-.007V13.5zm0 2.25h.007v.008h-.007v-.008zm0 2.25h.007v.008h-.007V18zm2.504-6.75h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V13.5zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V18zm2.498-6.75h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V13.5zM8.25 6h7.5v2.25h-7.5V6zM12 2.25c-1.892 0-3.758.11-5.593.322C5.307 2.7 4.5 3.65 4.5 4.757V19.5a2.25 2.25 0 002.25 2.25h10.5a2.25 2.25 0 002.25-2.25V4.757c0-1.108-.806-2.057-1.907-2.185A48.507 48.507 0 0012 2.25z"/>', iconClass: 'from-orange-500/20 to-orange-600/20', title: 'Orçamentos inteligentes', desc: 'Crie orçamentos profissionais em segundos com cálculo automático de materiais e margem.' },
-  { svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>', iconClass: 'from-orange-600/20 to-orange-700/20', title: 'Kanban de produção', desc: 'Acompanhe cada pedido por etapas visuais: arte, aprovação, produção, acabamento e entrega.' },
-  { svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/>', iconClass: 'from-emerald-500/20 to-emerald-600/20', title: 'Dashboard financeiro', desc: 'Receita, despesas, lucro e fluxo de caixa — tudo visual em tempo real.' },
-  { svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>', iconClass: 'from-blue-500/20 to-blue-600/20', title: 'Gestão de clientes', desc: 'Ficha completa com histórico de pedidos, valor gasto e contato via WhatsApp.' },
-  { svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/>', iconClass: 'from-cyan-500/20 to-cyan-600/20', title: 'Ordens de serviço', desc: 'Gere OS com arte, materiais, prazo e valor. Envie por WhatsApp ao cliente.' },
-  { svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/>', iconClass: 'from-orange-500/20 to-orange-600/20', title: 'Catálogo de materiais', desc: 'Lonas, vinis, ACM e insumos com preço por m², estoque e alertas de reposição.' },
-  { svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75"/>', iconClass: 'from-orange-500/20 to-orange-600/20', title: 'Contas a pagar/receber', desc: 'Vencimentos, categorias, inadimplência e status de pagamento em um só lugar.' },
-  { svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/>', iconClass: 'from-pink-500/20 to-pink-600/20', title: 'Equipe e comissões', desc: 'Gerencie profissionais, calcule comissões e acompanhe produtividade.' },
-  { svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/>', iconClass: 'from-fuchsia-500/20 to-fuchsia-600/20', title: 'Consultor IA', desc: 'IA que analisa seus dados e gera diagnósticos, oportunidades e planos de ação.' },
 ]
 
 const stats = [
