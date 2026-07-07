@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   const empresaId = q.empresa_id as string | undefined
 
   if (!empresaId || !plataforma) {
-    throw createError({ statusCode: 400, statusMessage: 'empresa_id e plataforma obrigatórios' })
+    throw createError({ statusCode: 400, message: 'empresa_id e plataforma obrigatórios' })
   }
 
   const supabase = useSupabaseServer()
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     .eq('plataforma', plataforma)
 
   if (error) {
-    throw createError({ statusCode: 500, statusMessage: error.message })
+    throw createError({ statusCode: 500, message: error.message })
   }
 
   return { ok: true }

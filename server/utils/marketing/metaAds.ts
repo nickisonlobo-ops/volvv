@@ -92,11 +92,11 @@ export async function fetchMeta(
 
     // 2) Campanhas com insights agregados no período
     const campResp = await $fetch<{
-      data: { name: string; status: string; insights?: { data: InsightRow[] } }[]
+      data: { id: string; name: string; status: string; insights?: { data: InsightRow[] } }[]
     }>(`${GRAPH}/${account}/campaigns`, {
       query: {
-        fields: `name,status,insights.time_range(${timeRange}){spend,clicks,actions}`,
-        limit: 25,
+        fields: `id,name,status,insights.time_range(${timeRange}){spend,clicks,actions}`,
+        limit: 50,
         access_token: creds.accessToken,
       },
     })
@@ -107,6 +107,8 @@ export async function fetchMeta(
       const conv = contarConversoes(ins?.actions)
       const roi = spend > 0 && conv > 0 ? `${Math.round((conv * 200 / spend) * 100)}%` : '—'
       return {
+        id: c.id,
+        plataforma: 'meta' as const,
         nome: c.name,
         canal: 'meta',
         icone: '📸',

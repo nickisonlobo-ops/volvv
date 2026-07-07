@@ -909,6 +909,9 @@
 
             <!-- Formulário de conexão -->
             <div v-else class="space-y-3 pt-3 border-t border-gray-100">
+              <div v-if="p.ajuda" class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                <p class="text-xs text-blue-700 leading-relaxed" v-html="p.ajuda"></p>
+              </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="space-y-1">
                   <label class="text-xs font-bold text-gray-500">{{ p.accountLabel }}</label>
@@ -917,6 +920,10 @@
                 <div class="space-y-1">
                   <label class="text-xs font-bold text-gray-500">Access Token</label>
                   <input v-model="mktForm[p.id].access_token" type="password" placeholder="Cole o token aqui" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all font-mono" />
+                </div>
+                <div v-if="p.id === 'meta'" class="space-y-1 sm:col-span-2">
+                  <label class="text-xs font-bold text-gray-500">Page ID do Facebook <span class="font-normal text-gray-400">(necessário para criar anúncios)</span></label>
+                  <input v-model="mktForm[p.id].page_id" type="text" placeholder="ex: 102938475610293" class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all" />
                 </div>
               </div>
               <div v-if="mktError[p.id] || mktStatus(p.id)?.erro_msg" class="text-xs text-red-600 font-medium bg-red-50 border border-red-200 rounded-lg px-3 py-2">
@@ -1282,18 +1289,35 @@ const billingForm = reactive({ accountName: '', apiKey: '' })
 type PlatMkt = 'meta' | 'google_ads' | 'ga4'
 const PLATAFORMAS_MKT: {
   id: PlatMkt; label: string; help: string; badge: string; cor: string
-  accountLabel: string; accountPlaceholder: string
+  accountLabel: string; accountPlaceholder: string; ajuda?: string
 }[] = [
-  { id: 'meta', label: 'Meta Ads (Instagram + Facebook)', help: 'Access token de longa duração + ID da conta de anúncio', badge: 'M', cor: '#1877f2', accountLabel: 'ID da Conta (act_...)', accountPlaceholder: 'act_1234567890' },
-  { id: 'google_ads', label: 'Google Ads', help: 'Customer ID + token OAuth (developer token no servidor)', badge: 'G', cor: '#4285f4', accountLabel: 'Customer ID', accountPlaceholder: '123-456-7890' },
-  { id: 'ga4', label: 'Google Analytics 4', help: 'Property ID + token OAuth', badge: 'A', cor: '#f59e0b', accountLabel: 'Property ID', accountPlaceholder: 'properties/123456789' },
+  {
+    id: 'meta', label: 'Meta Ads (Instagram + Facebook)',
+    help: 'Um token + uma conta de anúncio cobrem Facebook e Instagram juntos',
+    badge: 'M', cor: '#1877f2', accountLabel: 'ID da Conta de Anúncio (act_...)', accountPlaceholder: 'act_1234567890',
+    ajuda: '<strong>É um só token para FB + Instagram.</strong> Os anúncios das duas redes rodam na mesma conta de anúncio Meta.<br>' +
+      '1. <strong>ID da Conta</strong>: no <a href="https://adsmanager.facebook.com" target="_blank" class="underline font-semibold">Gerenciador de Anúncios</a> (formato <code>act_1234567890</code>).<br>' +
+      '2. <strong>Access Token</strong>: gere em <a href="https://developers.facebook.com/tools/explorer" target="_blank" class="underline font-semibold">developers.facebook.com</a> com permissão <code>ads_read</code>. Para não expirar, use um <em>System User token</em> no Gerenciador de Negócios.',
+  },
+  {
+    id: 'google_ads', label: 'Google Ads',
+    help: 'Customer ID + token OAuth (requer developer token no servidor)',
+    badge: 'G', cor: '#4285f4', accountLabel: 'Customer ID', accountPlaceholder: '123-456-7890',
+    ajuda: 'Integração ainda não habilitada neste ambiente (requer developer token do Google Ads).',
+  },
+  {
+    id: 'ga4', label: 'Google Analytics 4',
+    help: 'Property ID + token OAuth',
+    badge: 'A', cor: '#f59e0b', accountLabel: 'Property ID', accountPlaceholder: 'properties/123456789',
+    ajuda: 'Integração ainda não habilitada neste ambiente.',
+  },
 ]
 interface MktIntegracao { plataforma: PlatMkt; conta_nome: string | null; account_id: string | null; status: string; erro_msg: string | null }
 const mktIntegracoes = ref<MktIntegracao[]>([])
-const mktForm = reactive<Record<PlatMkt, { account_id: string; access_token: string }>>({
-  meta: { account_id: '', access_token: '' },
-  google_ads: { account_id: '', access_token: '' },
-  ga4: { account_id: '', access_token: '' },
+const mktForm = reactive<Record<PlatMkt, { account_id: string; access_token: string; page_id: string }>>({
+  meta: { account_id: '', access_token: '', page_id: '' },
+  google_ads: { account_id: '', access_token: '', page_id: '' },
+  ga4: { account_id: '', access_token: '', page_id: '' },
 })
 const mktLoading = reactive<Record<PlatMkt, boolean>>({ meta: false, google_ads: false, ga4: false })
 const mktError = reactive<Record<PlatMkt, string | null>>({ meta: null, google_ads: null, ga4: null })
@@ -1319,13 +1343,14 @@ async function conectarMkt(id: PlatMkt) {
         plataforma: id,
         account_id: mktForm[id].account_id.trim(),
         access_token: mktForm[id].access_token.trim(),
+        page_id: id === 'meta' ? mktForm[id].page_id.trim() : undefined,
       },
     })
     if (res.status !== 'conectado') mktError[id] = res.erro_msg || 'Falha ao conectar.'
-    else { mktForm[id].account_id = ''; mktForm[id].access_token = '' }
+    else { mktForm[id].account_id = ''; mktForm[id].access_token = ''; mktForm[id].page_id = '' }
     await loadMktIntegracoes()
   } catch (e: any) {
-    mktError[id] = e?.data?.statusMessage || e?.message || 'Erro ao conectar.'
+    mktError[id] = e?.data?.message || e?.data?.statusMessage || e?.message || 'Erro ao conectar.'
   } finally {
     mktLoading[id] = false
   }
@@ -1381,7 +1406,7 @@ async function salvarWpp() {
       },
     })
   } catch (e: any) {
-    wppError.value = e?.data?.message || e?.data?.statusMessage || e?.message || 'Erro ao salvar.'
+    wppError.value = e?.data?.message || e?.data?.message || e?.data?.statusMessage || e?.message || 'Erro ao salvar.'
   } finally {
     wppSalvando.value = false
   }

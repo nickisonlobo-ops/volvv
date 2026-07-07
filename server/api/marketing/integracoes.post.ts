@@ -19,10 +19,10 @@ export default defineEventHandler(async (event) => {
   const plataforma = body?.plataforma as Plataforma
 
   if (!empresaId || !plataforma || !PLATAFORMAS.includes(plataforma)) {
-    throw createError({ statusCode: 400, statusMessage: 'empresa_id e plataforma válidos são obrigatórios' })
+    throw createError({ statusCode: 400, message: 'empresa_id e plataforma válidos são obrigatórios' })
   }
   if (!body?.access_token || !body?.account_id) {
-    throw createError({ statusCode: 400, statusMessage: 'access_token e account_id são obrigatórios' })
+    throw createError({ statusCode: 400, message: 'access_token e account_id são obrigatórios' })
   }
 
   const creds: Credenciais = {
@@ -46,6 +46,7 @@ export default defineEventHandler(async (event) => {
     account_id: creds.accountId,
     access_token: creds.accessToken,
     refresh_token: creds.refreshToken,
+    meta_page_id: plataforma === 'meta' && body.page_id ? String(body.page_id) : null,
     status: teste.ok ? 'conectado' : 'erro',
     erro_msg: teste.ok ? null : (teste.erro || 'Falha desconhecida'),
     ativo: true,
@@ -60,7 +61,7 @@ export default defineEventHandler(async (event) => {
     .single()
 
   if (error) {
-    throw createError({ statusCode: 500, statusMessage: error.message })
+    throw createError({ statusCode: 500, message: error.message })
   }
 
   return data

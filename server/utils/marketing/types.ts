@@ -8,6 +8,8 @@
 export type Plataforma = 'meta' | 'google_ads' | 'ga4'
 
 export interface CampanhaNorm {
+  id: string               // ID da campanha na plataforma (para ações)
+  plataforma: Plataforma   // origem, para rotear ações
   nome: string
   canal: string            // 'meta' | 'google_ads' | nome amigável
   icone: string            // emoji para a UI
@@ -57,6 +59,7 @@ export interface Credenciais {
   accountId: string | null
   accessToken: string | null
   refreshToken: string | null
+  pageId?: string | null      // Meta: ID da Página do Facebook (para criar anúncios)
 }
 
 // Resultado de um teste de conexão (usado ao gravar credenciais)

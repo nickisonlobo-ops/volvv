@@ -595,12 +595,12 @@
     <Teleport to="body">
       <Transition name="mkt-fade">
         <div v-if="modalAnuncio" class="mkt-modal-overlay" @click.self="modalAnuncio = false">
-          <MarketingWizardLayout :step="wizardStep" :total-steps="4" :steps="[{title:'Campanha',sub:'Objetivo e estrutura'},{title:'Criativo',sub:'Texto, mídia e destino'},{title:'Segmentação',sub:'Público e orçamento'},{title:'Revisão',sub:'Confirmar e publicar'}]" @go="wizardStep = $event" @close="modalAnuncio = false">
+          <MarketingWizardLayout :step="wizardStep" :total-steps="4" :steps="[{title:'Campanha',sub:'Objetivo e estrutura'},{title:'Criativo',sub:'Texto, mídia e destino'},{title:'Segmentação',sub:'Público e orçamento'},{title:'Revisão',sub:'Confirmar e publicar'}]" :preview-tab="previewTab" @update:preview-tab="previewTab = $event" @go="wizardStep = $event" @close="modalAnuncio = false">
             <h3 v-if="anuncioOk" class="mkt-modal-ok">{{ anuncioOk }}</h3>
 
             <template v-else>
               <!-- STEP 1: Campanha -->
-              <div v-show="wizardStep === 1">
+              <div v-show="wizardStep === 1" class="mkt-wizard-step">
               <h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Campanha</h2>
               <p class="mkt-card-sub" style="margin-bottom:20px;">Onde este anúncio vai viver. Comece do zero ou aproveite uma campanha que já roda.</p>
               <div class="mkt-form-label">Campanha</div>
@@ -615,15 +615,19 @@
               </div><!-- end step 1 -->
 
               <!-- STEP 2: Criativo -->
-              <div v-show="wizardStep === 2">
+              <div v-show="wizardStep === 2" class="mkt-wizard-step">
               <h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Criativo</h2>
               <p class="mkt-card-sub" style="margin-bottom:20px;">O que as pessoas vão ver. Acompanhe na prévia ao lado enquanto escreve.</p>
               <div class="mkt-form-label">Anúncio</div>
               <input v-model="anuncioForm.nome" type="text" placeholder="Nome do anúncio" class="mkt-input" />
               <input v-model="anuncioForm.link" type="url" placeholder="Link de destino (https://…)" class="mkt-input" />
               <textarea v-model="anuncioForm.mensagem" rows="2" placeholder="Texto principal do anúncio" class="mkt-input"></textarea>
+              <div class="mkt-char-hint" :class="{ over: anuncioForm.mensagem.length > 125 }">{{ anuncioForm.mensagem.length }}/125 — acima disso o Feed pode cortar com "ver mais"</div>
               <div class="mkt-modal-grid">
-                <input v-model="anuncioForm.titulo" type="text" placeholder="Título (headline)" class="mkt-input" />
+                <div>
+                  <input v-model="anuncioForm.titulo" type="text" placeholder="Título (headline)" class="mkt-input" />
+                  <div class="mkt-char-hint" :class="{ over: anuncioForm.titulo.length > 40 }">{{ anuncioForm.titulo.length }}/40</div>
+                </div>
                 <select v-model="anuncioForm.cta" class="mkt-input"><option v-for="c in CTAS" :key="c.v" :value="c.v">{{ c.l }}</option></select>
               </div>
 
@@ -656,7 +660,11 @@
               <template v-else>
                 <div v-for="(card, idx) in anuncioForm.cards" :key="idx" class="mkt-card-row">
                   <div class="mkt-card-row-head"><span>Cartão {{ idx + 1 }}</span><button v-if="anuncioForm.cards.length > 2" type="button" class="mkt-link danger" @click="rmCard(idx)">remover</button></div>
-                  <input v-model="card.imagem_url" type="url" placeholder="URL da imagem" class="mkt-input" />
+                  <label class="mkt-file">
+                    <input type="file" accept="image/*" @change="onCardImagemFile(idx, $event)" hidden />
+                    <span>{{ card.imagem_nome || 'Enviar imagem do computador' }}</span>
+                  </label>
+                  <input v-model="card.imagem_url" type="url" placeholder="…ou cole a URL da imagem" class="mkt-input" :disabled="!!card.imagem_base64" />
                   <div class="mkt-modal-grid">
                     <input v-model="card.titulo" type="text" placeholder="Título" class="mkt-input" />
                     <input v-model="card.link" type="url" placeholder="Link (opcional)" class="mkt-input" />
@@ -667,11 +675,14 @@
               </div><!-- end step 2 -->
 
               <!-- STEP 3: Segmentação -->
-              <div v-show="wizardStep === 3">
+              <div v-show="wizardStep === 3" class="mkt-wizard-step">
               <h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Segmentação e orçamento</h2>
               <p class="mkt-card-sub" style="margin-bottom:20px;">Quem vê o anúncio e quanto você investe por dia.</p>
               <div class="mkt-modal-grid">
-                <input v-model.number="anuncioForm.orcamento" type="number" min="1" placeholder="Orçamento diário R$" class="mkt-input" />
+                <div>
+                  <input v-model.number="anuncioForm.orcamento" type="number" min="1" placeholder="Orçamento diário R$" class="mkt-input" />
+                  <div v-if="anuncioForm.orcamento && anuncioForm.orcamento < 20" class="mkt-char-hint over">Orçamentos muito baixos podem limitar a veiculação do anúncio.</div>
+                </div>
                 <input v-model="anuncioForm.paises" type="text" placeholder="Países (ex: BR,PT)" class="mkt-input" />
               </div>
               <div class="mkt-modal-grid">
@@ -748,11 +759,11 @@
                   </div>
                   <div class="mkt-checks">
                     <span class="mkt-checks-label">Facebook:</span>
-                    <label v-for="p in POS_FACEBOOK" :key="p"><input type="checkbox" :value="p" v-model="anuncioForm.pos_facebook" /> {{ p }}</label>
+                    <label v-for="p in POS_FACEBOOK" :key="p.v"><input type="checkbox" :value="p.v" v-model="anuncioForm.pos_facebook" /> {{ p.l }}</label>
                   </div>
                   <div class="mkt-checks">
                     <span class="mkt-checks-label">Instagram:</span>
-                    <label v-for="p in POS_INSTAGRAM" :key="p"><input type="checkbox" :value="p" v-model="anuncioForm.pos_instagram" /> {{ p }}</label>
+                    <label v-for="p in POS_INSTAGRAM" :key="p.v"><input type="checkbox" :value="p.v" v-model="anuncioForm.pos_instagram" /> {{ p.l }}</label>
                   </div>
                   <div class="mkt-checks">
                     <span class="mkt-checks-label">Dispositivos:</span>
@@ -814,7 +825,7 @@
               </div><!-- end step 3 -->
 
               <!-- STEP 4: Revisão -->
-              <div v-show="wizardStep === 4">
+              <div v-show="wizardStep === 4" class="mkt-wizard-step">
               <h2 style="font-size:18px;font-weight:700;margin-bottom:4px;">Revisão</h2>
               <p class="mkt-card-sub" style="margin-bottom:20px;">Confira tudo antes de criar. Nada é publicado sem a sua confirmação.</p>
               <div class="mkt-form-label">Publicação</div>
@@ -840,13 +851,33 @@
               <button v-if="anuncioOk" class="mkt-btn-ghost" @click="modalAnuncio = false">Fechar</button>
             </template>
 
-            <!-- Preview slot -->
+            <!-- Preview slot: prévia real da Meta quando disponível; cartão aproximado como reserva -->
             <template #preview>
-              <div style="background:#fff;border:1px solid #e6eaf0;border-radius:12px;padding:12px;margin-top:8px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><div style="width:32px;height:32px;border-radius:50%;background:#2457e6;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;">S</div><div><strong style="font-size:12px;">SIGNPRO</strong><br/><span style="font-size:10px;color:#8a97a6;">Patrocinado</span></div></div>
-                <div style="background:#f0f2f5;border-radius:8px;height:180px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><span style="font-size:10px;color:#8a97a6;">SUA MÍDIA · 1080×1080</span></div>
-                <p style="font-size:12px;color:#22303d;margin-bottom:10px;line-height:1.4;">{{ anuncioForm.mensagem || 'O texto principal do seu anúncio aparece aqui, exatamente como no feed.' }}</p>
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#f0f2f5;border-radius:8px;"><div><span style="font-size:9px;color:#8a97a6;text-transform:uppercase;">{{ anuncioForm.link ? 'seusite.com.br' : 'SEUSITE.COM.BR' }}</span><br/><strong style="font-size:12px;">{{ anuncioForm.titulo || 'Seu título (headline)' }}</strong></div><button style="padding:4px 10px;border-radius:4px;background:#2457e6;color:#fff;border:none;font-size:10px;font-weight:600;">Saiba mais</button></div>
+              <div class="mkt-pv-wrap">
+                <iframe v-if="previewIframeSrc" :key="previewIframeSrc" :src="previewIframeSrc" class="mkt-pv-iframe" :class="{ 'is-stories': previewTab === 'stories' }" frameborder="0" scrolling="no"></iframe>
+                <div v-else class="mkt-pv-card">
+                  <div class="mkt-pv-head">
+                    <div class="mkt-pv-avatar"><img v-if="previewPageFoto" :src="previewPageFoto" alt="" /><template v-else>{{ previewPageInicial }}</template></div>
+                    <div class="mkt-pv-head-text"><strong>{{ previewPageNome }}</strong><span>Patrocinado</span></div>
+                    <svg class="mkt-pv-dots" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="19" cy="12" r="1.7" fill="currentColor"/></svg>
+                  </div>
+                  <div class="mkt-pv-media" :style="(anuncioForm.imagem_base64 || anuncioForm.imagem_url) ? { backgroundImage: `url('${anuncioForm.imagem_base64 || anuncioForm.imagem_url}')` } : {}">
+                    <div v-if="!(anuncioForm.imagem_base64 || anuncioForm.imagem_url)" class="mkt-pv-media-ph">
+                      <span class="mkt-pv-media-ic"></span>
+                      <span>SUA MÍDIA · 1080×1080</span>
+                    </div>
+                  </div>
+                  <p class="mkt-pv-body">{{ anuncioForm.mensagem || 'O texto principal do seu anúncio aparece aqui, exatamente como no feed.' }}</p>
+                  <div class="mkt-pv-foot">
+                    <div class="mkt-pv-foot-text"><span>{{ anuncioForm.link ? (anuncioForm.link.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) : 'seusite.com.br' }}</span><strong>{{ anuncioForm.titulo || 'Seu título (headline)' }}</strong></div>
+                    <button type="button" class="mkt-pv-cta">{{ CTAS.find(c => c.v === anuncioForm.cta)?.l || 'Saiba mais' }}</button>
+                  </div>
+                  <div class="mkt-pv-hint">
+                    <span v-if="previewLoading"><span class="mkt-mini-spin"></span> Gerando prévia real…</span>
+                    <span v-else-if="previewError">{{ previewError }}</span>
+                    <span v-else>Prévia aproximada</span>
+                  </div>
+                </div>
               </div>
             </template>
           </MarketingWizardLayout>
@@ -882,7 +913,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { createSupabaseClient } from '~/lib/supabase'
 import { useEmpresa } from '~/composables/useEmpresa'
 
@@ -1251,6 +1282,7 @@ async function salvarCampanha() {
 // Wizard: criar anúncio COMPLETO (campanha→conjunto→criativo→anúncio)
 const modalAnuncio = ref(false)
 const wizardStep = ref(1) // 1=Campanha, 2=Criativo, 3=Segmentação, 4=Revisão
+const previewTab = ref<'feed' | 'stories'>('feed')
 const anuncioOk = ref<string | null>(null)
 const CTAS = [
   { v: 'LEARN_MORE', l: 'Saiba mais' },
@@ -1262,7 +1294,7 @@ const CTAS = [
   { v: 'SUBSCRIBE', l: 'Assinar' },
   { v: 'WHATSAPP_MESSAGE', l: 'Enviar WhatsApp' },
 ]
-interface CardCarrossel { imagem_url: string; titulo: string; link: string }
+interface CardCarrossel { imagem_url: string; imagem_base64: string; imagem_nome: string; titulo: string; link: string }
 const anuncioForm = reactive({
   campanha_id: '',        // '' = nova campanha
   campanha_nome: '',
@@ -1330,11 +1362,26 @@ const OPT_GOALS = [
   { v: 'OFFSITE_CONVERSIONS', l: 'Conversões' },
   { v: 'THRUPLAY', l: 'Reproduções de vídeo' },
 ]
-const POS_FACEBOOK = ['feed', 'story', 'reels', 'marketplace', 'video_feeds', 'right_hand_column', 'search']
-const POS_INSTAGRAM = ['stream', 'story', 'reels', 'explore', 'explore_home']
+// Valores exigidos pela Meta (targeting spec) — atenção: Reels no Facebook usa "facebook_reels",
+// já no Instagram o valor correto é só "reels".
+const POS_FACEBOOK = [
+  { v: 'feed', l: 'Feed' },
+  { v: 'story', l: 'Stories' },
+  { v: 'facebook_reels', l: 'Reels' },
+  { v: 'marketplace', l: 'Marketplace' },
+  { v: 'right_hand_column', l: 'Coluna lateral' },
+  { v: 'search', l: 'Busca' },
+]
+const POS_INSTAGRAM = [
+  { v: 'stream', l: 'Feed' },
+  { v: 'story', l: 'Stories' },
+  { v: 'reels', l: 'Reels' },
+  { v: 'explore', l: 'Explorar' },
+  { v: 'explore_home', l: 'Explorar (início)' },
+]
 
 // Recursos da conta (páginas, pixels, IG) para dropdowns
-const metaRecursos = ref<{ paginas: { id: string; nome: string; instagram?: { id: string; usuario: string } | null }[]; pixels: { id: string; nome: string }[]; conta?: { moeda?: string } } | null>(null)
+const metaRecursos = ref<{ paginas: { id: string; nome: string; foto?: string; instagram?: { id: string; usuario: string } | null }[]; pixels: { id: string; nome: string }[]; conta?: { moeda?: string } } | null>(null)
 const recursosLoad = ref(false)
 async function loadRecursos() {
   if (!empresaId.value || metaRecursos.value) return
@@ -1343,10 +1390,69 @@ async function loadRecursos() {
   recursosLoad.value = false
 }
 const paginaSel = computed(() => metaRecursos.value?.paginas.find((p) => p.id === anuncioForm.page_id))
+const previewPageNome = computed(() => paginaSel.value?.nome || 'Sua Página')
+const previewPageFoto = computed(() => paginaSel.value?.foto || '')
+const previewPageInicial = computed(() => (previewPageNome.value.trim()[0] || 'P').toUpperCase())
 function onPaginaChange() {
   // vincula a conta Instagram da página selecionada (se houver)
   anuncioForm.instagram_actor_id = paginaSel.value?.instagram?.id || ''
 }
+
+// ── Prévia real do anúncio (iframe oficial da Meta via generatepreviews) ──
+const previewLoading = ref(false)
+const previewError = ref<string | null>(null)
+const previewIframeSrc = ref('')
+let previewTimer: ReturnType<typeof setTimeout> | null = null
+
+async function buscarPreviewReal() {
+  if (!empresaId.value || !modalAnuncio.value) return
+  previewLoading.value = true
+  previewError.value = null
+  try {
+    const res = await $fetch<{ iframeSrc?: string }>('/api/marketing/preview', {
+      method: 'POST',
+      body: {
+        empresa_id: empresaId.value,
+        formato: anuncioForm.formato,
+        page_id: anuncioForm.page_id,
+        link: anuncioForm.link,
+        mensagem: anuncioForm.mensagem,
+        titulo: anuncioForm.titulo,
+        descricao: anuncioForm.descricao,
+        cta: anuncioForm.cta,
+        instagram_actor_id: anuncioForm.instagram_actor_id,
+        imagem_url: anuncioForm.imagem_url,
+        imagem_base64: anuncioForm.imagem_base64,
+        video_id: anuncioForm.video_id,
+        video_url: anuncioForm.video_url,
+        video_thumb_url: anuncioForm.video_thumb_url,
+        cards: anuncioForm.formato === 'carrossel'
+          ? anuncioForm.cards.filter((c) => c.imagem_url || c.imagem_base64).map((c) => ({ imagemUrl: c.imagem_url || undefined, imagemBase64: c.imagem_base64 || undefined, titulo: c.titulo || undefined, link: c.link || undefined }))
+          : undefined,
+        ad_format: previewTab.value === 'stories' ? 'FACEBOOK_STORY_MOBILE' : 'MOBILE_FEED_STANDARD',
+      },
+    })
+    previewIframeSrc.value = res.iframeSrc || ''
+  } catch (e: any) {
+    previewIframeSrc.value = ''
+    previewError.value = e?.data?.message || 'Preencha o link, o texto e a mídia para ver a prévia.'
+  } finally {
+    previewLoading.value = false
+  }
+}
+function agendarPreview() {
+  if (previewTimer) clearTimeout(previewTimer)
+  previewTimer = setTimeout(buscarPreviewReal, 700)
+}
+watch(
+  () => [
+    anuncioForm.formato, anuncioForm.page_id, anuncioForm.link, anuncioForm.mensagem, anuncioForm.titulo,
+    anuncioForm.descricao, anuncioForm.cta, anuncioForm.instagram_actor_id, anuncioForm.imagem_url,
+    anuncioForm.imagem_base64, anuncioForm.video_id, anuncioForm.video_url, anuncioForm.video_thumb_url,
+    JSON.stringify(anuncioForm.cards), previewTab.value,
+  ],
+  () => { if (modalAnuncio.value) agendarPreview() },
+)
 
 // Públicos personalizados (carregados junto com recursos)
 const metaAudiences = ref<{ id: string; nome: string; tipo?: string }[]>([])
@@ -1405,27 +1511,76 @@ function togglePub(lista: 'publicos_incluir' | 'publicos_excluir', id: string) {
   const i = arr.indexOf(id)
   if (i >= 0) arr.splice(i, 1); else arr.push(id)
 }
+// ── Rascunho do anúncio (autosave em localStorage — sobrevive a fechar o modal/recarregar a página) ──
+function rascunhoKey() { return empresaId.value ? `mkt_anuncio_rascunho_${empresaId.value}` : null }
+function rascunhoSnapshot() {
+  return {
+    ...anuncioForm,
+    // imagens em base64 podem ser pesadas (MBs) — não persiste, só o resto do formulário
+    imagem_base64: '',
+    imagem_nome: anuncioForm.imagem_base64 ? '' : anuncioForm.imagem_nome,
+    cards: anuncioForm.cards.map((c) => (c.imagem_base64 ? { ...c, imagem_base64: '', imagem_nome: '' } : { ...c })),
+  }
+}
+let rascunhoTimer: ReturnType<typeof setTimeout> | null = null
+function salvarRascunho() {
+  const key = rascunhoKey()
+  if (!key) return
+  try {
+    localStorage.setItem(key, JSON.stringify({ form: rascunhoSnapshot(), step: wizardStep.value, savedAt: Date.now() }))
+  } catch { /* localStorage indisponível/cheio (ex: imagens grandes) — ignora silenciosamente */ }
+}
+function agendarSalvarRascunho() {
+  if (rascunhoTimer) clearTimeout(rascunhoTimer)
+  rascunhoTimer = setTimeout(salvarRascunho, 500)
+}
+function limparRascunho() {
+  const key = rascunhoKey()
+  if (key) { try { localStorage.removeItem(key) } catch { /* ignora */ } }
+}
+function carregarRascunho(): boolean {
+  const key = rascunhoKey()
+  if (!key) return false
+  try {
+    const raw = localStorage.getItem(key)
+    if (!raw) return false
+    const parsed = JSON.parse(raw)
+    if (!parsed?.form) return false
+    Object.assign(anuncioForm, parsed.form)
+    wizardStep.value = parsed.step >= 1 && parsed.step <= 4 ? parsed.step : 1
+    return true
+  } catch { return false }
+}
+watch(anuncioForm, () => { if (modalAnuncio.value) agendarSalvarRascunho() }, { deep: true })
+
 function abrirAnuncio() {
   acaoErro.value = null
   anuncioOk.value = null
-  wizardStep.value = 1
   mostrarAvancado.value = false
-  Object.assign(anuncioForm, {
-    campanha_id: '', campanha_nome: '', objetivo: 'OUTCOME_TRAFFIC', nome: '', orcamento: null,
-    paises: 'BR', idade_min: 18, idade_max: 65, genero: '0', formato: 'imagem', page_id: '', link: '', mensagem: '',
-    titulo: '', descricao: '', cta: 'LEARN_MORE', imagem_url: '', imagem_base64: '', imagem_nome: '',
-    video_url: '', video_thumb_url: '', video_id: '', video_file_nome: '', cards: [{ imagem_url: '', titulo: '', link: '' }, { imagem_url: '', titulo: '', link: '' }],
-    pixel_id: '', evento_conversao: 'PURCHASE', instagram_actor_id: '', interesses: [],
-    tipo_orcamento: 'diario', orcamento_total: null, bid_strategy: 'LOWEST_COST_WITHOUT_CAP', bid_amount: null,
-    billing_event: 'IMPRESSIONS', optimization_goal: '', inicio: '', fim: '',
-    comportamentos: [], exclusoes: [], cidades: [], raio_km: 10, idiomas: [], publicos_incluir: [], publicos_excluir: [],
-    posicionamento: 'auto', plataformas: [], pos_facebook: [], pos_instagram: [], dispositivos: [],
-  })
-  anuncioForm.video_id = ''
+  const restaurou = carregarRascunho()
+  if (!restaurou) {
+    wizardStep.value = 1
+    Object.assign(anuncioForm, {
+      campanha_id: '', campanha_nome: '', objetivo: 'OUTCOME_TRAFFIC', nome: '', orcamento: null,
+      paises: 'BR', idade_min: 18, idade_max: 65, genero: '0', formato: 'imagem', page_id: '', link: '', mensagem: '',
+      titulo: '', descricao: '', cta: 'LEARN_MORE', imagem_url: '', imagem_base64: '', imagem_nome: '',
+      video_url: '', video_thumb_url: '', video_id: '', video_file_nome: '', cards: [{ imagem_url: '', imagem_base64: '', imagem_nome: '', titulo: '', link: '' }, { imagem_url: '', imagem_base64: '', imagem_nome: '', titulo: '', link: '' }] as CardCarrossel[],
+      pixel_id: '', evento_conversao: 'PURCHASE', instagram_actor_id: '', interesses: [],
+      tipo_orcamento: 'diario', orcamento_total: null, bid_strategy: 'LOWEST_COST_WITHOUT_CAP', bid_amount: null,
+      billing_event: 'IMPRESSIONS', optimization_goal: '', inicio: '', fim: '',
+      comportamentos: [], exclusoes: [], cidades: [], raio_km: 10, idiomas: [], publicos_incluir: [], publicos_excluir: [],
+      posicionamento: 'auto', plataformas: [], pos_facebook: [], pos_instagram: [], dispositivos: [],
+    })
+    anuncioForm.video_id = ''
+  }
   for (const k of Object.keys(picker) as PickerTipo[]) { picker[k].busca = ''; picker[k].res = [] }
+  previewTab.value = 'feed'
+  previewIframeSrc.value = ''
+  previewError.value = null
   modalAnuncio.value = true
   loadRecursos()
   loadAudiences()
+  agendarPreview()
 }
 // Upload de vídeo por arquivo → retorna video_id
 const uploadVideoLoad = ref(false)
@@ -1457,7 +1612,19 @@ function onImagemFile(e: Event) {
   reader.onload = () => { anuncioForm.imagem_base64 = String(reader.result); anuncioForm.imagem_nome = file.name; anuncioForm.imagem_url = '' }
   reader.readAsDataURL(file)
 }
-function addCard() { if (anuncioForm.cards.length < 10) anuncioForm.cards.push({ imagem_url: '', titulo: '', link: '' }) }
+function onCardImagemFile(idx: number, e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  if (file.size > 8 * 1024 * 1024) { acaoErro.value = 'Imagem acima de 8MB.'; return }
+  const reader = new FileReader()
+  reader.onload = () => {
+    const card = anuncioForm.cards[idx]
+    if (!card) return
+    card.imagem_base64 = String(reader.result); card.imagem_nome = file.name; card.imagem_url = ''
+  }
+  reader.readAsDataURL(file)
+}
+function addCard() { if (anuncioForm.cards.length < 10) anuncioForm.cards.push({ imagem_url: '', imagem_base64: '', imagem_nome: '', titulo: '', link: '' }) }
 function rmCard(idx: number) { if (anuncioForm.cards.length > 2) anuncioForm.cards.splice(idx, 1) }
 const objetivoConversao = computed(() => anuncioForm.objetivo === 'OUTCOME_SALES' || anuncioForm.objetivo === 'OUTCOME_LEADS')
 async function salvarAnuncio() {
@@ -1521,7 +1688,7 @@ async function salvarAnuncio() {
         video_url: anuncioForm.video_url || undefined,
         video_thumb_url: anuncioForm.video_thumb_url || undefined,
         cards: anuncioForm.formato === 'carrossel'
-          ? anuncioForm.cards.filter((c) => c.imagem_url).map((c) => ({ imagemUrl: c.imagem_url, titulo: c.titulo || undefined, link: c.link || undefined }))
+          ? anuncioForm.cards.filter((c) => c.imagem_url || c.imagem_base64).map((c) => ({ imagemUrl: c.imagem_url || undefined, imagemBase64: c.imagem_base64 || undefined, titulo: c.titulo || undefined, link: c.link || undefined }))
           : undefined,
         pixel_id: objetivoConversao.value && anuncioForm.pixel_id ? anuncioForm.pixel_id : undefined,
         evento_conversao: objetivoConversao.value ? anuncioForm.evento_conversao : undefined,
@@ -1530,6 +1697,7 @@ async function salvarAnuncio() {
       },
     })
     anuncioOk.value = `Anúncio criado (${anuncioForm.ativar ? 'ativo' : 'pausado'})! ID ${res.adId || ''}`
+    limparRascunho()
     await fetchOverview()
   } catch (e: any) {
     acaoErro.value = e?.data?.message || e?.data?.statusMessage || e?.message || 'Falha ao criar anúncio.'
@@ -1814,6 +1982,7 @@ onMounted(async () => {
 .mkt-modal { background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(16,24,40,0.28); width: 100%; max-width: 460px; padding: 22px; display: flex; flex-direction: column; gap: 12px; }
 .mkt-modal-lg { max-width: 540px; max-height: 90vh; overflow-y: auto; gap: 9px; }
 .mkt-form-label { font-size: 10.5px; font-weight: 700; color: #8a97a6; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 6px; }
+.mkt-wizard-step > * + * { margin-top: 14px; }
 .mkt-modal-ok { font-size: 12.5px; color: #0b7a4b; background: #e7f6ef; border: 1px solid #b8e6cf; border-radius: 8px; padding: 10px 12px; font-weight: 600; }
 .mkt-seg { display: flex; gap: 6px; background: #f4f6f9; border-radius: 10px; padding: 4px; }
 .mkt-seg button { flex: 1; padding: 7px; border: none; background: none; border-radius: 7px; font-size: 12px; font-weight: 600; color: #6b7a8a; cursor: pointer; }
@@ -1860,10 +2029,37 @@ onMounted(async () => {
 .mkt-input { width: 100%; border: 1px solid #e6eaf0; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #33404e; background: #f8fafc; font-family: inherit; }
 .mkt-input:focus { outline: none; border-color: #2457e6; box-shadow: 0 0 0 3px rgba(36,87,230,0.12); }
 .mkt-modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mkt-char-hint { font-size: 10.5px; color: #98a4b3; margin-top: 4px; }
+.mkt-char-hint.over { color: #c02b2b; font-weight: 600; }
 .mkt-check { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #6b7a8a; }
 .mkt-modal-error { font-size: 12px; color: #c02b2b; background: #fde8e8; border: 1px solid #f5c6c6; border-radius: 8px; padding: 8px 10px; }
 .mkt-modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 .mkt-fade-enter-active, .mkt-fade-leave-active { transition: opacity 0.2s ease; }
 .mkt-fade-enter-from, .mkt-fade-leave-to { opacity: 0; }
 @media (max-width: 768px) { .mkt-page { padding: 14px 12px; } .mkt-kpi-row { grid-template-columns: 1fr 1fr; } }
+
+/* Prévia real do anúncio (wizard) — iframe oficial da Meta (generatepreviews), com cartão aproximado como reserva */
+.mkt-pv-wrap { width: 100%; display: flex; align-items: center; justify-content: center; min-height: 320px; }
+.mkt-pv-iframe { width: 100%; max-width: 300px; height: 600px; border: none; border-radius: 14px; background: #fff; box-shadow: 0 14px 34px -10px rgba(16,24,40,0.18); }
+.mkt-pv-iframe.is-stories { max-width: 240px; height: 520px; }
+.mkt-pv-card { width: 100%; max-width: 292px; margin: 0 auto; background: #fff; border: 1px solid #edf0f4; border-radius: 14px; box-shadow: 0 14px 34px -10px rgba(16,24,40,0.18); overflow: hidden; }
+.mkt-pv-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+.mkt-pv-avatar { width: 34px; height: 34px; flex-shrink: 0; border-radius: 999px; background: linear-gradient(135deg, #2457e6, #1c46c4); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; overflow: hidden; }
+.mkt-pv-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 999px; }
+.mkt-pv-head-text { flex: 1; min-width: 0; }
+.mkt-pv-head-text strong { display: block; font-size: 13px; font-weight: 700; color: #101828; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mkt-pv-head-text span { font-size: 10.5px; color: #98a2b3; }
+.mkt-pv-dots { flex-shrink: 0; color: #98a2b3; }
+.mkt-pv-media { position: relative; aspect-ratio: 1/1; background: #eef1f5 center/cover no-repeat; }
+.mkt-pv-media-ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.mkt-pv-media-ic { width: 44px; height: 44px; border-radius: 10px; border: 1.5px dashed #d0d5dd; }
+.mkt-pv-media-ph span:last-child { font-family: ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.1em; color: #98a2b3; }
+.mkt-pv-body { padding: 10px 12px 4px; font-size: 12.5px; line-height: 1.5; color: #101828; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.mkt-pv-foot { margin: 10px 12px 12px; display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 10px; background: #f2f4f6; }
+.mkt-pv-foot-text { flex: 1; min-width: 0; }
+.mkt-pv-foot-text span { display: block; font-family: ui-monospace, Menlo, monospace; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #98a2b3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mkt-pv-foot-text strong { display: block; font-size: 12.5px; font-weight: 700; color: #101828; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mkt-pv-cta { flex-shrink: 0; padding: 7px 11px; border: none; border-radius: 8px; background: #2457e6; color: #fff; font-size: 11.5px; font-weight: 700; cursor: default; }
+.mkt-pv-hint { padding: 0 12px 12px; font-size: 10.5px; color: #98a4b3; text-align: center; }
+.mkt-pv-hint .mkt-mini-spin { width: 10px; height: 10px; border-width: 2px; vertical-align: -1px; }
 </style>

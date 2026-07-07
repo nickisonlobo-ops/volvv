@@ -52,6 +52,7 @@ export default defineNuxtConfig({
     datafyPhoneNumberId: process.env.DATAFY_PHONE_NUMBER_ID,
     pusherAppId: process.env.PUSHER_APP_ID,
     pusherSecret: process.env.PUSHER_SECRET,
+    metaWebhookVerifyToken: process.env.META_WEBHOOK_VERIFY_TOKEN,
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,

@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
   const q = getQuery(event)
   const empresaId = q.empresa_id as string | undefined
   if (!empresaId) {
-    throw createError({ statusCode: 400, statusMessage: 'empresa_id obrigatório' })
+    throw createError({ statusCode: 400, message: 'empresa_id obrigatório' })
   }
   const def = mesAtual()
   const since = (q.since as string) || def.since

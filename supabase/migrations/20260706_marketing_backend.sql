@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.marketing_integracoes (
   plataforma    text NOT NULL CHECK (plataforma IN ('meta','google_ads','ga4')),
   conta_nome    text NULL,                 -- nome amigável da conta (ex: "Loja Principal")
   account_id    text NULL,                 -- act_<id> (Meta), customer id (Google Ads), property id (GA4)
+  meta_page_id  text NULL,                 -- ID da Página do Facebook (Meta) — necessário para criar anúncios
 
   -- Segredos — NUNCA expostos ao frontend (ver nota no topo)
   access_token  text NULL,
@@ -54,21 +55,28 @@ CREATE TABLE IF NOT EXISTS public.marketing_integracoes (
 CREATE INDEX IF NOT EXISTS idx_mkt_integracoes_empresa
   ON public.marketing_integracoes (empresa_id);
 
+-- Coluna adicionada depois (idempotente para bases já existentes)
+ALTER TABLE public.marketing_integracoes ADD COLUMN IF NOT EXISTS meta_page_id text;
+
 ALTER TABLE public.marketing_integracoes ENABLE ROW LEVEL SECURITY;
 
 -- RLS empresa-scoped (padrão canônico — 20260417_setup_completo.sql:243).
 -- Observação: o segredo fica protegido pela disciplina de nunca fazer
 -- select('*') no cliente; a linha é visível à empresa, mas o token só é
 -- consumido server-side. (Free tier — sem Vault; mesmo trade-off do invoicexpress.)
+DROP POLICY IF EXISTS "mkt_integracoes_select" ON public.marketing_integracoes;
 CREATE POLICY "mkt_integracoes_select" ON public.marketing_integracoes
   FOR SELECT TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_integracoes_insert" ON public.marketing_integracoes;
 CREATE POLICY "mkt_integracoes_insert" ON public.marketing_integracoes
   FOR INSERT TO authenticated
   WITH CHECK (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_integracoes_update" ON public.marketing_integracoes;
 CREATE POLICY "mkt_integracoes_update" ON public.marketing_integracoes
   FOR UPDATE TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_integracoes_delete" ON public.marketing_integracoes;
 CREATE POLICY "mkt_integracoes_delete" ON public.marketing_integracoes
   FOR DELETE TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
@@ -103,15 +111,19 @@ CREATE INDEX IF NOT EXISTS idx_mkt_tarefas_empresa
 
 ALTER TABLE public.marketing_tarefas ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "mkt_tarefas_select" ON public.marketing_tarefas;
 CREATE POLICY "mkt_tarefas_select" ON public.marketing_tarefas
   FOR SELECT TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_tarefas_insert" ON public.marketing_tarefas;
 CREATE POLICY "mkt_tarefas_insert" ON public.marketing_tarefas
   FOR INSERT TO authenticated
   WITH CHECK (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_tarefas_update" ON public.marketing_tarefas;
 CREATE POLICY "mkt_tarefas_update" ON public.marketing_tarefas
   FOR UPDATE TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_tarefas_delete" ON public.marketing_tarefas;
 CREATE POLICY "mkt_tarefas_delete" ON public.marketing_tarefas
   FOR DELETE TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
@@ -147,15 +159,19 @@ CREATE INDEX IF NOT EXISTS idx_mkt_conteudos_empresa
 
 ALTER TABLE public.marketing_conteudos ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "mkt_conteudos_select" ON public.marketing_conteudos;
 CREATE POLICY "mkt_conteudos_select" ON public.marketing_conteudos
   FOR SELECT TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_conteudos_insert" ON public.marketing_conteudos;
 CREATE POLICY "mkt_conteudos_insert" ON public.marketing_conteudos
   FOR INSERT TO authenticated
   WITH CHECK (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_conteudos_update" ON public.marketing_conteudos;
 CREATE POLICY "mkt_conteudos_update" ON public.marketing_conteudos
   FOR UPDATE TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_conteudos_delete" ON public.marketing_conteudos;
 CREATE POLICY "mkt_conteudos_delete" ON public.marketing_conteudos
   FOR DELETE TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
@@ -186,15 +202,19 @@ CREATE INDEX IF NOT EXISTS idx_mkt_automacoes_empresa
 
 ALTER TABLE public.marketing_automacoes ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "mkt_automacoes_select" ON public.marketing_automacoes;
 CREATE POLICY "mkt_automacoes_select" ON public.marketing_automacoes
   FOR SELECT TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_automacoes_insert" ON public.marketing_automacoes;
 CREATE POLICY "mkt_automacoes_insert" ON public.marketing_automacoes
   FOR INSERT TO authenticated
   WITH CHECK (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_automacoes_update" ON public.marketing_automacoes;
 CREATE POLICY "mkt_automacoes_update" ON public.marketing_automacoes
   FOR UPDATE TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));
+DROP POLICY IF EXISTS "mkt_automacoes_delete" ON public.marketing_automacoes;
 CREATE POLICY "mkt_automacoes_delete" ON public.marketing_automacoes
   FOR DELETE TO authenticated
   USING (empresa_id IN (SELECT empresa_id FROM public.profiles WHERE id = auth.uid()));

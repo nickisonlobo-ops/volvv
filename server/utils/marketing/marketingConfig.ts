@@ -39,7 +39,7 @@ export async function getIntegracao(
   const supabase = useSupabaseServer()
   const { data } = await supabase
     .from('marketing_integracoes')
-    .select('plataforma, account_id, access_token, refresh_token')
+    .select('plataforma, account_id, access_token, refresh_token, meta_page_id')
     .eq('empresa_id', empresaId)
     .eq('plataforma', plataforma)
     .maybeSingle()
@@ -50,5 +50,6 @@ export async function getIntegracao(
     accountId: data.account_id,
     accessToken: data.access_token,
     refreshToken: data.refresh_token,
+    pageId: data.meta_page_id ?? null,
   }
 }
