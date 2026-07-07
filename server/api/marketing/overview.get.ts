@@ -58,9 +58,6 @@ export default defineEventHandler(async (event) => {
   }
   const conectados = resultados.filter((r) => r.conectado)
   const conectado = conectados.length > 0
-  // Integração configurada mas falhando (ex: token expirado) é diferente de "nunca conectou" —
-  // sem isso, a tela mostra "conecte suas contas" mesmo já estando configurada, o que confunde.
-  const erro = resultados.find((r) => !r.conectado && r.erro)?.erro
 
   // Agrega mídia paga
   let investimento = 0
@@ -104,7 +101,6 @@ export default defineEventHandler(async (event) => {
 
   return {
     conectado,
-    erro,
     plataformas: integracoes.map((i) => i.plataforma),
     periodo: { since, until },
     kpis: {

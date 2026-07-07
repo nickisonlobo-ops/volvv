@@ -7,7 +7,7 @@
  * Resposta: metadados da integração (sem o token).
  */
 import type { Credenciais, Plataforma, TesteConexao } from '../../utils/marketing/types'
-import { testarMeta, trocarPorTokenLongo } from '../../utils/marketing/metaAds'
+import { testarMeta } from '../../utils/marketing/metaAds'
 import { testarGoogleAds } from '../../utils/marketing/googleAds'
 import { testarGa4 } from '../../utils/marketing/ga4'
 
@@ -30,12 +30,6 @@ export default defineEventHandler(async (event) => {
     accountId: String(body.account_id),
     accessToken: String(body.access_token),
     refreshToken: body.refresh_token ? String(body.refresh_token) : null,
-  }
-
-  // Meta: tenta trocar por um token de longa duração (~60 dias) antes de testar/salvar,
-  // pra não depender do usuário colar um token que expira em 1-2h.
-  if (plataforma === 'meta') {
-    creds.accessToken = await trocarPorTokenLongo(creds.accessToken!)
   }
 
   // Testa a conexão conforme a plataforma
