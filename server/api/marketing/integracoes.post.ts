@@ -8,7 +8,6 @@
  */
 import type { Credenciais, Plataforma, TesteConexao } from '../../utils/marketing/types'
 import { testarMeta, trocarPorTokenLongo, buscarCredenciaisMensageria } from '../../utils/marketing/metaAds'
-import { inscreverPaginaNoWebhook } from '../../utils/metaMessagingSend'
 import { testarGoogleAds } from '../../utils/marketing/googleAds'
 import { testarGa4 } from '../../utils/marketing/ga4'
 
@@ -77,18 +76,11 @@ export default defineEventHandler(async (event) => {
     if (!existente?.meta_msg_page_id) {
       const mensageria = await buscarCredenciaisMensageria(creds, pageId)
       if (mensageria.pageAccessToken) {
-        // Inscreve a Página no webhook — sem isso a Meta não entrega mensagens
-        // pra ela, mesmo com a URL de callback já verificada.
-        const inscricao = await inscreverPaginaNoWebhook(pageId, mensageria.pageAccessToken)
-        if (inscricao.ok) {
-          payload.meta_msg_page_id = pageId
-          payload.meta_msg_page_nome = mensageria.pageNome || null
-          payload.meta_msg_page_access_token = mensageria.pageAccessToken
-          payload.meta_msg_instagram_business_id = mensageria.instagramBusinessId || null
-          payload.meta_msg_instagram_usuario = mensageria.instagramUsuario || null
-        } else {
-          console.error('[integracoes] falha ao inscrever Página padrão no webhook:', inscricao.erro)
-        }
+        payload.meta_msg_page_id = pageId
+        payload.meta_msg_page_nome = mensageria.pageNome || null
+        payload.meta_msg_page_access_token = mensageria.pageAccessToken
+        payload.meta_msg_instagram_business_id = mensageria.instagramBusinessId || null
+        payload.meta_msg_instagram_usuario = mensageria.instagramUsuario || null
       }
     }
   }
