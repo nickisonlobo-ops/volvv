@@ -10,6 +10,11 @@ export default defineNuxtPlugin(async () => {
   // Só roda no cliente
   if (typeof window === 'undefined') return
 
+  // Pula as páginas públicas — sem essa guarda, um visitante anônimo na
+  // landing já disparava uma checagem de sessão no Supabase à toa.
+  const route = useRoute()
+  if (/^\/(landing|politica-de-privacidade|welcome)/.test(route.path)) return
+
   const chave = chaveGeracaoHoje()
 
   // Já gerou hoje? Sai sem fazer nada

@@ -15,8 +15,12 @@ export default defineNuxtConfig({
       ],
       script: [
         {
-          // Restaura tema do localStorage antes do primeiro render — elimina flash de cor
-          innerHTML: `(function(){try{var t=localStorage.getItem('empresa_tema');if(!t)return;var c=JSON.parse(t);var r=document.documentElement;var s=r.style;var dir=c.grad_direction||'135deg';var p=c.cor_primaria||'#374151';var p2=c.cor_primaria_grad||null;var bg=c.cor_fundo||'#111827';var bg2=c.cor_fundo_grad||null;var sb=c.cor_sidebar||'#1f2937';var sb2=c.cor_sidebar_grad||null;s.setProperty('--color-primary',p);s.setProperty('--color-primary-text',c.cor_primaria_texto||'#ffffff');s.setProperty('--color-primary-bg',p2?'linear-gradient('+dir+','+p+','+p2+')':p);s.setProperty('--color-bg',bg2?'linear-gradient('+dir+','+bg+','+bg2+')':bg);s.setProperty('--color-sidebar',sb2?'linear-gradient('+dir+','+sb+','+sb2+')':sb);s.setProperty('--color-btn',c.cor_botao||'#374151');s.setProperty('--color-btn-text',c.cor_botao_texto||'#ffffff');s.setProperty('--color-icon',c.cor_icone||'#6b7280');}catch(e){}})();`,
+          // Restaura tema do localStorage antes do primeiro render — elimina flash de cor.
+          // Pula as páginas públicas (landing, política de privacidade etc.) — elas não
+          // são de uma empresa logada, e sem esse pulo o fundo do body herdava a cor de
+          // fundo de uma empresa que já tenha feito login nesse navegador antes (podendo
+          // ser claro), aparecendo como uma "borda branca" no elastic scroll do mobile.
+          innerHTML: `(function(){try{if(/^\\/(landing|politica-de-privacidade|welcome)/.test(location.pathname))return;var t=localStorage.getItem('empresa_tema');if(!t)return;var c=JSON.parse(t);var r=document.documentElement;var s=r.style;var dir=c.grad_direction||'135deg';var p=c.cor_primaria||'#374151';var p2=c.cor_primaria_grad||null;var bg=c.cor_fundo||'#111827';var bg2=c.cor_fundo_grad||null;var sb=c.cor_sidebar||'#1f2937';var sb2=c.cor_sidebar_grad||null;s.setProperty('--color-primary',p);s.setProperty('--color-primary-text',c.cor_primaria_texto||'#ffffff');s.setProperty('--color-primary-bg',p2?'linear-gradient('+dir+','+p+','+p2+')':p);s.setProperty('--color-bg',bg2?'linear-gradient('+dir+','+bg+','+bg2+')':bg);s.setProperty('--color-sidebar',sb2?'linear-gradient('+dir+','+sb+','+sb2+')':sb);s.setProperty('--color-btn',c.cor_botao||'#374151');s.setProperty('--color-btn-text',c.cor_botao_texto||'#ffffff');s.setProperty('--color-icon',c.cor_icone||'#6b7280');}catch(e){}})();`,
           type: 'text/javascript',
         },
       ],

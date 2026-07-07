@@ -8,7 +8,7 @@
     >
       <div class="max-w-7xl mx-auto px-6 sm:px-10 flex items-center justify-between h-16 sm:h-20">
         <!-- Logo -->
-        <NuxtLink to="/welcome" class="flex items-center">
+        <NuxtLink to="/welcome" :prefetch="false" class="flex items-center">
           <img src="/logo-signpro.png" alt="SignPRO" class="h-8 sm:h-10 w-auto" />
         </NuxtLink>
 
@@ -19,7 +19,7 @@
 
         <!-- Desktop CTA -->
         <div class="hidden md:flex items-center gap-4">
-          <NuxtLink to="/login" class="text-sm font-medium text-white/70 hover:text-white transition-colors">Entrar</NuxtLink>
+          <NuxtLink to="/login" :prefetch="false" class="text-sm font-medium text-white/70 hover:text-white transition-colors">Entrar</NuxtLink>
           <a href="/login"
             class="px-5 py-2.5 rounded-full text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 transition-all duration-200">
             Começar grátis
@@ -38,7 +38,7 @@
       <div v-if="mobileOpen" class="md:hidden bg-[#0a0a0f]/95 backdrop-blur-xl border-t border-white/5 px-6 py-6 space-y-4">
         <a v-for="link in navLinks" :key="link.href" :href="link.href" class="block text-sm text-white/70 font-medium py-2" @click="mobileOpen = false">{{ link.label }}</a>
         <div class="flex flex-col gap-3 pt-3 border-t border-white/10">
-          <NuxtLink to="/login" class="text-sm font-medium text-white/70 py-2" @click="mobileOpen = false">Entrar</NuxtLink>
+          <NuxtLink to="/login" :prefetch="false" class="text-sm font-medium text-white/70 py-2" @click="mobileOpen = false">Entrar</NuxtLink>
           <a href="/login"
             class="px-5 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white text-center" @click="mobileOpen = false">
             Começar grátis
@@ -199,7 +199,7 @@
           <span class="text-sm font-bold">Sign<span class="text-orange-400">PRO</span></span>
         </div>
         <p class="text-xs text-white/30">© 2025 SignPRO. Da arte à entrega, controle total.</p>
-        <NuxtLink to="/login" class="text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors">Acessar plataforma</NuxtLink>
+        <NuxtLink to="/login" :prefetch="false" class="text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors">Acessar plataforma</NuxtLink>
       </div>
     </footer>
 
@@ -224,6 +224,12 @@ useHead({
   ],
   noscript: [
     { innerHTML: '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=2418191055286734&ev=PageView&noscript=1" />' },
+  ],
+  // Trava o fundo do html/body na cor exata da landing — sem isso, o "elastic
+  // scroll" do mobile (iOS) pode mostrar a cor de fundo padrão/de outra
+  // empresa (ver nuxt.config.ts) por trás do conteúdo por uma fração de segundo.
+  style: [
+    { innerHTML: 'html,body{background:#0a0a0f !important;}' },
   ],
 })
 

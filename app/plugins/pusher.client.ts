@@ -9,6 +9,12 @@ import Pusher from 'pusher-js'
  * Também ouve o canal global 'chat' para status updates.
  */
 export default defineNuxtPlugin(() => {
+  // Plugins do Nuxt rodam em TODA página por padrão — sem essa guarda, um
+  // visitante anônimo na landing pública já abria uma conexão WebSocket com
+  // o Pusher à toa (gasto de bateria/dados sem nenhum uso real).
+  const route = useRoute()
+  if (/^\/(landing|politica-de-privacidade|welcome)/.test(route.path)) return
+
   const config = useRuntimeConfig()
   const key = config.public.pusherKey as string
   const cluster = config.public.pusherCluster as string
