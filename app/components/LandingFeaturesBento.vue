@@ -190,6 +190,47 @@ onMounted(() => {
   const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
   const clamp = (v: number, a: number, b: number) => (v < a ? a : v > b ? b : v)
 
+  // Entrada lateral: cada card desliza da lateral mais próxima de onde ele já
+  // está na grade (esquerda ou direita), quando ELE MESMO (não a seção
+  // inteira) se aproxima da tela ao rolar — mesma ideia da entrada do
+  // laptop/celular em "Simples e em qualquer lugar". Distância calculada por
+  // card (não fixa): o suficiente pra cruzar a borda da viewport do lado
+  // dele + uma folga, ou seja, começa de verdade fora da tela.
+  // Não dá pra usar IntersectionObserver observando os PRÓPRIOS cards aqui:
+  // como eles já nascem com esse deslocamento enorme aplicado, o retângulo
+  // real deles (pós-transform) nunca entra na viewport, então "entrou na
+  // tela" nunca dispara — trava (precisa aparecer pra disparar a animação,
+  // só aparece depois que ela dispara). E disparar tudo de uma vez ao ver só
+  // o TOPO da seção (o que tentamos antes) faz as linhas de baixo chegarem
+  // sozinhas antes de você rolar até elas, parecendo que o efeito não roda.
+  // Por isso reaproveitamos a checagem de posição VERTICAL que o próprio
+  // update() já faz a cada scroll (r.top/r.bottom não são afetados pelo
+  // translateX do --ex, só a coordenada X seria) pra disparar cada card na
+  // hora certa, individualmente.
+  const EDGE_MARGIN = 80
+  const cardOffset = (c: HTMLElement) => {
+    const r = c.getBoundingClientRect()
+    const vw = window.innerWidth
+    const fromLeft = (r.left + r.width / 2) < vw / 2
+    return fromLeft ? -(r.right + EDGE_MARGIN) : (vw - r.left + EDGE_MARGIN)
+  }
+  const entered = new WeakSet<HTMLElement>()
+  function enterCard(c: HTMLElement) {
+    if (entered.has(c)) return
+    entered.add(c)
+    const from = cardOffset(c)
+    let t0: number | null = null
+    const dur = 850
+    function tick(ts: number) {
+      if (t0 === null) t0 = ts
+      const p = Math.min((ts - t0) / dur, 1)
+      const e = 1 - Math.pow(1 - p, 3)
+      c.style.setProperty('--ex', (from * (1 - e)).toFixed(1) + 'px')
+      if (p < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }
+
   let ticking = false
   function update() {
     ticking = false
@@ -206,6 +247,9 @@ onMounted(() => {
       c.style.setProperty('--ty', ty.toFixed(2) + 'px')
       c.style.opacity = clamp(0.4 + 0.9 * e, 0.4, 1).toFixed(3)
       c.style.zIndex = String(10 + Math.round(prox * 12))
+      // Assim que o card chega perto o bastante da viewport verticalmente
+      // (mesmo limiar do fade/scale acima), dispara a entrada lateral dele.
+      if (prox > 0) enterCard(c)
     })
     layers.forEach((l) => {
       const r = l.getBoundingClientRect()
@@ -220,6 +264,7 @@ onMounted(() => {
   if (reduce) {
     cards.forEach((c) => { c.style.setProperty('--s', '1'); c.style.setProperty('--ty', '0px'); c.style.opacity = '1' })
   } else {
+    cards.forEach((c) => c.style.setProperty('--ex', cardOffset(c).toFixed(0) + 'px'))
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll, { passive: true })
     cleanup.push(() => window.removeEventListener('scroll', onScroll))
@@ -276,7 +321,7 @@ onUnmounted(() => { cleanup.forEach((fn) => fn()); cleanup = [] })
   background: #141416; border: 1px solid rgba(255,255,255,.07); border-radius: 18px; padding: 24px;
   transition: border-color .25s ease, background .25s ease, box-shadow .25s ease;
   position: relative; overflow: hidden;
-  transform: translateY(calc(var(--ty,0px) + var(--hy,0px))) scale(var(--s,1)); will-change: transform;
+  transform: translateY(calc(var(--ty,0px) + var(--hy,0px))) translateX(var(--ex,0px)) scale(var(--s,1)); will-change: transform;
 }
 .card:hover { --hy: -6px; border-color: rgba(249,115,22,.35); background: #17171a; box-shadow: 0 30px 60px rgba(0,0,0,.45); }
 .card > * { position: relative; z-index: 1; }
