@@ -14,8 +14,8 @@
         <p class="text-[15px] sm:text-base text-zinc-400 max-w-md mx-auto leading-relaxed">{{ intro }}</p>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
-        <div v-for="(cat, i) in categorias" :key="cat.label" class="ind-card devices-tilt" :style="{ backgroundImage: `url(${cat.img})` }" :data-idx="i">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+        <div v-for="(cat, i) in categorias" :key="cat.label" class="ind-card" :style="{ backgroundImage: `url(${cat.img})` }" :data-idx="i">
           <div class="ind-overlay" aria-hidden="true"></div>
           <div class="ind-glare" aria-hidden="true"></div>
           <div class="ind-content">
@@ -57,8 +57,13 @@ const categorias = computed(() => [
 
 const root = ref<HTMLElement | null>(null)
 let cleanup: Array<() => void> = []
-let raf = 0
 
+// Mesmo modelo de efeito da seção de Funcionalidades (LandingFeaturesBento):
+// hover só com spotlight + leve elevação via --hy (sem tilt 3D), e um
+// update() rodando a cada frame de scroll que reescala/esmaece cada card
+// pela proximidade vertical ao centro da tela, disparando a entrada lateral
+// dele individualmente assim que se aproxima — em vez de tudo entrar junto
+// quando a seção aparece.
 onMounted(() => {
   const el = root.value
   if (!el) return
@@ -73,78 +78,73 @@ onMounted(() => {
         const r = c.getBoundingClientRect()
         c.style.setProperty('--mx', (e.clientX - r.left) + 'px')
         c.style.setProperty('--my', (e.clientY - r.top) + 'px')
-        const px = (e.clientX - r.left) / r.width
-        const py = (e.clientY - r.top) / r.height
-        const rx = (0.5 - py) * 10
-        const ry = (px - 0.5) * 10
-        cancelAnimationFrame(raf)
-        raf = requestAnimationFrame(() => {
-          // Inclui translateX(var(--ex)) na mesma string — se só setasse o
-          // tilt aqui, isso apagaria o deslocamento da entrada lateral (que
-          // vive em --ex) caso o hover aconteça durante a animação de
-          // entrada, mesma pegadinha de "quem escreve por último apaga o
-          // resto" corrigida nos outros componentes.
-          c.style.transform = `translateX(var(--ex,0px)) perspective(900px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale(1.03)`
-        })
       }
-      const onLeave = () => { c.style.transform = '' }
       c.addEventListener('pointermove', onMove)
-      c.addEventListener('pointerleave', onLeave)
-      cleanup.push(() => {
-        c.removeEventListener('pointermove', onMove)
-        c.removeEventListener('pointerleave', onLeave)
-      })
+      cleanup.push(() => c.removeEventListener('pointermove', onMove))
     })
   }
 
-  // Entrada lateral: metade esquerda entra da esquerda, metade direita entra
-  // da direita, disparando junto quando a SEÇÃO aparece (mesma lógica usada
-  // nos aparelhos — observar os próprios cards com esse deslocamento grande
-  // aplicado trava o IntersectionObserver, então observamos a seção).
-  if (!reduce) {
-    const EDGE_MARGIN = 70
-    cards.forEach((c) => {
-      const idx = parseInt(c.dataset.idx || '0', 10)
-      const fromLeft = idx < categorias.value.length / 2
-      const r = c.getBoundingClientRect()
-      const vw = window.innerWidth
-      const off = fromLeft ? -(r.right + EDGE_MARGIN) : (vw - r.left + EDGE_MARGIN)
-      c.style.setProperty('--ex', off.toFixed(0) + 'px')
-    })
+  const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
+  const clamp = (v: number, a: number, b: number) => (v < a ? a : v > b ? b : v)
 
-    let entered = false
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting || entered) return
-        entered = true
-        io.disconnect()
-        cards.forEach((c, i) => {
-          const idx = parseInt(c.dataset.idx || '0', 10)
-          const fromLeft = idx < categorias.value.length / 2
-          const r = c.getBoundingClientRect()
-          const vw = window.innerWidth
-          const from = fromLeft ? -(r.right + EDGE_MARGIN) : (vw - r.left + EDGE_MARGIN)
-          const delay = i * 90
-          let t0: number | null = null
-          const dur = 800
-          function tick(ts: number) {
-            if (t0 === null) t0 = ts
-            const p = Math.min(Math.max(ts - t0 - delay, 0) / dur, 1)
-            const e = 1 - Math.pow(1 - p, 3)
-            c.style.setProperty('--ex', (from * (1 - e)).toFixed(1) + 'px')
-            if (ts - t0 < delay + dur) requestAnimationFrame(tick)
-          }
-          requestAnimationFrame(tick)
-        })
-      })
-    }, { threshold: 0.15 })
-    io.observe(el)
-    cleanup.push(() => io.disconnect())
+  const EDGE_MARGIN = 70
+  const cardOffset = (c: HTMLElement) => {
+    const r = c.getBoundingClientRect()
+    const vw = window.innerWidth
+    const fromLeft = (r.left + r.width / 2) < vw / 2
+    return fromLeft ? -(r.right + EDGE_MARGIN) : (vw - r.left + EDGE_MARGIN)
+  }
+  const entered = new WeakSet<HTMLElement>()
+  function enterCard(c: HTMLElement) {
+    if (entered.has(c)) return
+    entered.add(c)
+    const from = cardOffset(c)
+    let t0: number | null = null
+    const dur = 850
+    function tick(ts: number) {
+      if (t0 === null) t0 = ts
+      const p = Math.min((ts - t0) / dur, 1)
+      const e = 1 - Math.pow(1 - p, 3)
+      c.style.setProperty('--ex', (from * (1 - e)).toFixed(1) + 'px')
+      if (p < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }
+
+  let ticking = false
+  function update() {
+    ticking = false
+    const vh = window.innerHeight
+    const vc = vh / 2
+    cards.forEach((c) => {
+      const r = c.getBoundingClientRect()
+      const cc = r.top + r.height / 2
+      const prox = clamp(1 - Math.abs(cc - vc) / (vh * 0.62), 0, 1)
+      const e = easeOut(prox)
+      const s = 0.7 + 0.3 * e
+      const ty = (1 - e) * 12
+      c.style.setProperty('--s', s.toFixed(4))
+      c.style.setProperty('--ty', ty.toFixed(2) + 'px')
+      c.style.opacity = clamp(0.4 + 0.9 * e, 0.4, 1).toFixed(3)
+      c.style.zIndex = String(10 + Math.round(prox * 12))
+      if (prox > 0) enterCard(c)
+    })
+  }
+  function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update) } }
+
+  if (reduce) {
+    cards.forEach((c) => { c.style.setProperty('--s', '1'); c.style.opacity = '1' })
+  } else {
+    cards.forEach((c) => c.style.setProperty('--ex', cardOffset(c).toFixed(0) + 'px'))
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    cleanup.push(() => window.removeEventListener('scroll', onScroll))
+    cleanup.push(() => window.removeEventListener('resize', onScroll))
+    update()
   }
 })
 
 onUnmounted(() => {
-  cancelAnimationFrame(raf)
   cleanup.forEach((fn) => fn())
   cleanup = []
 })
@@ -172,11 +172,11 @@ onUnmounted(() => {
 .ind-card {
   position: relative; overflow: hidden; border-radius: 18px; aspect-ratio: 3/4;
   background-size: cover; background-position: center; border: 1px solid rgba(255,255,255,.08);
-  transition: transform .25s ease-out, border-color .3s ease, box-shadow .3s ease;
-  transform: translateX(var(--ex, 0px));
+  transition: border-color .3s ease, box-shadow .3s ease;
+  transform: translateY(calc(var(--ty, 0px) + var(--hy, 0px))) translateX(var(--ex, 0px)) scale(var(--s, 1));
   will-change: transform;
 }
-.ind-card:hover { border-color: rgba(249,115,22,.4); box-shadow: 0 24px 50px rgba(0,0,0,.5); }
+.ind-card:hover { --hy: -6px; border-color: rgba(249,115,22,.4); box-shadow: 0 24px 50px rgba(0,0,0,.5); }
 .ind-overlay {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: linear-gradient(180deg, rgba(10,10,11,.05) 0%, rgba(10,10,11,.35) 55%, rgba(10,10,11,.94) 100%);

@@ -14,7 +14,7 @@
       <!-- Devices scene: molduras reais via devices.css (MacBook Pro + iPhone 14 Pro),
            reescalada via JS pra caber em qualquer largura de tela. -->
       <div ref="viewport" class="devices-reveal relative mx-auto" :class="{ 'is-in': visible }" :style="{ height: viewportH + 'px' }">
-        <div class="devices-scaler" :style="{ width: STAGE_W + 'px', height: STAGE_H + 'px', transform: `scale(${scale})` }">
+        <div class="devices-scaler" :style="{ width: STAGE_W + 'px', height: STAGE_H + 'px', transform: `translateX(-50%) scale(${scale})` }">
           <!-- LAPTOP -->
           <div class="device device-macbook-pro device-spacegray devices-tilt device-reveal-fade" :class="{ 'is-in': visible }" data-depth="16" :style="{ left: LAPTOP_LEFT + 'px', top: '0px' }">
             <div class="device-frame">
@@ -310,7 +310,11 @@ function onScroll() {
 function updateScale() {
   const v = viewport.value
   if (!v) return
-  const w = v.parentElement?.clientWidth || v.clientWidth
+  // A largura certa pra escalar é a do PRÓPRIO viewport (já descontando o
+  // padding lateral da seção via fluxo normal de bloco) — usar a largura do
+  // pai media o padding junto e faz a cena ficar maior que a área disponível,
+  // estourando pra fora nas telas estreitas.
+  const w = v.clientWidth
   const s = Math.min(1, w / STAGE_W)
   scale.value = s
   viewportH.value = STAGE_H * s
@@ -468,8 +472,8 @@ onMounted(async () => {
         animateDonut(donutArte.value, numArte.value, 45, 17, 2300, reduce)
         animateDonut(donutImpressao.value, numImpressao.value, 70, 17, 2500, reduce)
         animateDonut(donutAcabamento.value, numAcabamento.value, 90, 17, 2700, reduce)
-        animateEntrance(laptopEl, laptopFromX, 1250, reduce)
-        animateEntrance(phoneEl, phoneFromX, 1250, reduce)
+        animateEntrance(laptopEl, laptopFromX, 2000, reduce)
+        animateEntrance(phoneEl, phoneFromX, 2100, reduce)
         io.disconnect()
       }
     })
@@ -493,7 +497,13 @@ onUnmounted(() => {
   50% { opacity: 0.9; }
 }
 
-.devices-scaler { position: relative; margin: 0 auto; transform-origin: top center; }
+/* Centralização feita via left:50% + translateX(-50%) no transform (não
+   margin:auto) porque a caixa (STAGE_W=1070px) é mais larga que o container
+   no mobile — nesse caso a spec do CSS zera margens "auto" (over-constrained),
+   fazendo a caixa colar na esquerda e o scale() encolher em torno do centro
+   ERRADO, jogando a composição pra fora da tela. translateX(-50%) centraliza
+   com base na própria largura da caixa, funciona em qualquer tamanho. */
+.devices-scaler { position: absolute; left: 50%; top: 0; transform-origin: top center; }
 .device { position: absolute !important; }
 .devices-tilt { transition: transform .2s ease-out; will-change: transform; }
 .devices-phone-scale { transform: scale(v-bind(PHONE_SCALE)); transform-origin: top left; }
