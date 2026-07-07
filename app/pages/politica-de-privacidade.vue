@@ -2,45 +2,45 @@
   <div class="min-h-screen font-sans antialiased bg-[#0a0a0f] text-white">
     <!-- ═══ HEADER ═══ -->
     <header class="border-b border-white/5">
-      <div class="max-w-3xl mx-auto px-6 sm:px-10 h-16 sm:h-20 flex items-center">
-        <span class="text-xl font-bold tracking-tight text-white">Expand</span>
+      <div class="max-w-3xl mx-auto px-6 sm:px-10 h-16 sm:h-20 flex items-center justify-between">
+        <NuxtLink to="/welcome" class="flex items-center">
+          <img src="/logo-signpro.png" alt="SignPRO" class="h-8 sm:h-9 w-auto" />
+        </NuxtLink>
+        <NuxtLink to="/welcome" class="text-sm text-white/60 hover:text-white transition-colors font-medium">← Voltar ao site</NuxtLink>
       </div>
     </header>
 
     <!-- ═══ CONTEÚDO ═══ -->
     <main class="max-w-3xl mx-auto px-6 sm:px-10 py-14 sm:py-20">
       <p class="text-xs font-semibold uppercase tracking-widest text-orange-400 mb-3">Política de Privacidade</p>
-      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Política de Privacidade do Grupo Expand</h1>
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Política de Privacidade do SignPRO</h1>
       <p class="text-sm text-white/40 mb-12">Última atualização: 7 de julho de 2026</p>
 
       <div class="privacy-content space-y-10 text-white/70 leading-relaxed">
 
         <section>
           <p>
-            Esta Política de Privacidade descreve como o <strong>Grupo Expand</strong> ("Expand", "nós",
-            "nosso"), empresa-mãe responsável por produtos SaaS como o <strong>SignPRO</strong> e demais
-            plataformas do grupo ("Plataforma", "Serviço"), coleta, usa, armazena, compartilha e protege
-            dados pessoais de clientes que utilizam essas plataformas ("Cliente", "você") e de terceiros com
-            quem o Cliente interage através delas (ex.: contatos de WhatsApp, seguidores do Instagram, leads
-            de anúncios).
+            Esta Política de Privacidade descreve como a <strong>Expand</strong> ("Expand", "nós", "nosso"),
+            empresa responsável pela plataforma <strong>SignPRO</strong> ("Plataforma", "Serviço"), coleta, usa,
+            armazena, compartilha e protege dados pessoais de clientes que utilizam a Plataforma
+            ("Cliente", "você") e de terceiros com quem o Cliente interage através dela (ex.: contatos de
+            WhatsApp, seguidores do Instagram, leads de anúncios).
           </p>
           <p class="mt-3">
-            Ao usar qualquer plataforma do Grupo Expand, você concorda com a coleta e o uso de informações de
-            acordo com esta Política, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº
-            13.709/2018) e, quando aplicável, com os Termos da Plataforma e as Políticas para Desenvolvedores
-            da Meta.
+            Ao usar o SignPRO, você concorda com a coleta e o uso de informações de acordo com esta
+            Política, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018) e,
+            quando aplicável, com os Termos da Plataforma e as Políticas para Desenvolvedores da Meta.
           </p>
         </section>
 
         <section>
           <h2>1. Quem somos</h2>
           <p>
-            O Grupo Expand é a empresa responsável por um portfólio de produtos SaaS voltados a pequenas e
-            médias empresas, incluindo o <strong>SignPRO</strong> — sistema de gestão empresarial (CRM) que
-            ajuda a organizar atendimento via WhatsApp, agendamentos, orçamentos, catálogo de produtos,
-            pedidos e campanhas de marketing (incluindo anúncios no Facebook e Instagram através da Meta
-            Marketing API). O Grupo Expand é o controlador dos dados descritos aqui, salvo quando indicado
-            que o Cliente atua como controlador dos dados de seus próprios contatos.
+            O SignPRO é um sistema de gestão empresarial (CRM) que ajuda pequenas e médias empresas a
+            organizar atendimento via WhatsApp, agendamentos, orçamentos, catálogo de produtos, pedidos e
+            campanhas de marketing (incluindo anúncios no Facebook e Instagram através da Meta Marketing
+            API). A Expand opera essa plataforma e é a controladora dos dados descritos aqui, salvo quando
+            indicado que o Cliente atua como controlador dos dados de seus próprios contatos.
           </p>
         </section>
 
@@ -61,13 +61,13 @@
             identificador da Página/conta de anúncios, campanhas, conjuntos de anúncios, criativos,
             métricas de desempenho (gasto, cliques, impressões, conversões) e, quando aplicável, mensagens
             diretas ou comentários do Instagram vinculados à automação contratada. Esses dados são usados
-            unicamente para fornecer as funcionalidades de gestão de anúncios e atendimento dentro da
-            Plataforma — não são vendidos, alugados nem usados para publicidade fora dela.</p>
+            unicamente para fornecer as funcionalidades de gestão de anúncios e atendimento dentro do
+            SignPRO — não são vendidos, alugados nem usados para publicidade fora da Plataforma.</p>
           <p class="mt-3"><strong>2.5. Dados de uso:</strong> registros técnicos de acesso (endereço IP,
             navegador, páginas acessadas, data/hora) coletados automaticamente para segurança, suporte e
             melhoria do Serviço.</p>
           <p class="mt-3"><strong>2.6. Dados de pagamento:</strong> quando aplicável, dados de cobrança são
-            processados por provedores de pagamento terceirizados; o Grupo Expand não armazena números completos
+            processados por provedores de pagamento terceirizados; a Expand não armazena números completos
             de cartão de crédito.</p>
         </section>
 
@@ -82,7 +82,7 @@
             <li>Diagnosticar problemas técnicos e melhorar o Serviço.</li>
           </ul>
           <p class="mt-3">Não usamos dados obtidos através das APIs da Meta para fins de publicidade própria
-            do Grupo Expand, nem os compartilhamos com terceiros para tais fins.</p>
+            da Expand, nem os compartilhamos com terceiros para tais fins.</p>
         </section>
 
         <section>
@@ -99,7 +99,7 @@
             <li><strong>Provedor de API de WhatsApp Business</strong> — intermediação técnica do envio e
               recebimento de mensagens de WhatsApp.</li>
             <li><strong>Autoridades públicas</strong>, quando exigido por lei, ordem judicial ou para
-              proteger direitos, segurança ou propriedade do Grupo Expand ou de terceiros.</li>
+              proteger direitos, segurança ou propriedade da Expand ou de terceiros.</li>
           </ul>
           <p class="mt-3">Não vendemos dados pessoais a terceiros.</p>
         </section>
@@ -171,8 +171,8 @@
         <section>
           <h2>10. Dados de crianças</h2>
           <p>
-            As plataformas do Grupo Expand são destinadas a uso empresarial e não são direcionadas a menores
-            de 18 anos. Não coletamos intencionalmente dados de crianças.
+            O SignPRO é destinado a uso empresarial e não é direcionado a menores de 18 anos. Não coletamos
+            intencionalmente dados de crianças.
           </p>
         </section>
 
@@ -207,7 +207,7 @@
 
     <footer class="border-t border-white/5 py-8">
       <div class="max-w-3xl mx-auto px-6 sm:px-10 text-xs text-white/30 text-center">
-        © {{ new Date().getFullYear() }} Grupo Expand. Todos os direitos reservados.
+        © {{ new Date().getFullYear() }} Expand · SignPRO. Todos os direitos reservados.
       </div>
     </footer>
   </div>
@@ -215,7 +215,7 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: false })
-useHead({ title: 'Política de Privacidade — Grupo Expand' })
+useHead({ title: 'Política de Privacidade — SignPRO' })
 </script>
 
 <style scoped>
