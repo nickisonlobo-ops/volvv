@@ -410,6 +410,7 @@ const emit = defineEmits<{
 }>()
 
 const supabase = createSupabaseClient()
+const { empresaId } = useEmpresa()
 const { gerarRecebiveisOrcamento } = useContasReceber()
 const { gerarProcessosParaOS } = useProcessos()
 const {
@@ -554,6 +555,7 @@ async function atualizarStatusParaEnviado() {
     const { data: etapaData } = await supabase
       .from('pipeline_etapas')
       .select('id')
+      .eq('empresa_id', empresaId.value)
       .eq('pipeline_tipo', 'orcamentos')
       .eq('nome', 'Enviado')
       .limit(1)
@@ -733,6 +735,7 @@ async function reprovarOrcamento() {
     const { data: etapaData } = await supabase
       .from('pipeline_etapas')
       .select('id')
+      .eq('empresa_id', empresaId.value)
       .eq('pipeline_tipo', 'orcamentos')
       .eq('nome', 'Rejeitado')
       .limit(1)
@@ -767,6 +770,7 @@ async function voltarEtapa() {
     const { data: etapaData } = await supabase
       .from('pipeline_etapas')
       .select('id')
+      .eq('empresa_id', empresaId.value)
       .eq('pipeline_tipo', 'orcamentos')
       .eq('nome', 'Enviado')
       .limit(1)
@@ -808,6 +812,7 @@ async function voltarEtapaSemOS() {
     const { data: etapaData } = await supabase
       .from('pipeline_etapas')
       .select('id')
+      .eq('empresa_id', empresaId.value)
       .eq('pipeline_tipo', 'orcamentos')
       .eq('nome', 'Enviado')
       .limit(1)
@@ -848,6 +853,7 @@ async function excluirOS() {
     const { data: etapaData } = await supabase
       .from('pipeline_etapas')
       .select('id')
+      .eq('empresa_id', empresaId.value)
       .eq('pipeline_tipo', 'orcamentos')
       .eq('nome', 'Enviado')
       .limit(1)

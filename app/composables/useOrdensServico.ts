@@ -40,6 +40,7 @@ export interface ItemOS {
 
 export function useOrdensServico() {
   const supabase = createSupabaseClient()
+  const { empresaId } = useEmpresa()
 
   // ─── Transições válidas de status da OS ─────────────────
   const transicoesValidas: Record<StatusOS, StatusOS[]> = {
@@ -153,9 +154,11 @@ export function useOrdensServico() {
    * - em_producao/pronto → etapas intermediárias (busca pela posição relativa)
    */
   async function buscarEtapaPorNomeStatus(status: StatusOS) {
+    if (!empresaId.value) return null
     const { data: etapas } = await supabase
       .from('pipeline_etapas')
       .select('id, is_final, posicao')
+      .eq('empresa_id', empresaId.value)
       .eq('pipeline_tipo', 'producao')
       .order('posicao', { ascending: true })
 

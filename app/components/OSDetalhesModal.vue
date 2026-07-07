@@ -432,11 +432,12 @@ const etapasProducao = ref<any[]>([])
 
 // Carregar etapas do pipeline de produção
 watch(() => props.show, async (show) => {
-  if (show && etapasProducao.value.length === 0) {
+  if (show && etapasProducao.value.length === 0 && empresaId.value) {
     try {
       const { data } = await supabase
         .from('pipeline_etapas')
         .select('id, nome, posicao, is_final, cor')
+        .eq('empresa_id', empresaId.value)
         .eq('pipeline_tipo', 'producao')
         .order('posicao', { ascending: true })
       etapasProducao.value = data ?? []

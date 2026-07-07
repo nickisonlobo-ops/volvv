@@ -173,9 +173,11 @@ const kanbanKey = ref(0)
 const etapasProducao = ref<{ id: number; nome: string; cor: string; posicao: number; is_final: boolean }[]>([])
 
 async function fetchEtapas() {
+  if (!empresaId.value) return
   const { data } = await supabase
     .from('pipeline_etapas')
     .select('id, nome, cor, posicao, is_final')
+    .eq('empresa_id', empresaId.value)
     .eq('pipeline_tipo', 'producao')
     .order('posicao', { ascending: true })
   etapasProducao.value = data ?? []
