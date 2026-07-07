@@ -1,46 +1,63 @@
 /*
-  Valores padrão neutros/escuros para as variáveis de tema.
-  Estes são sobrescritos pelo applyTheme() assim que o tema da empresa é carregado.
-  Evitam o flash de cor rosa (Tailwind padrão) no primeiro render.
+  Sistema de tema Dark/Light padronizado.
+  A marca (accent) é fixa — laranja #f97316 — nos dois modos.
+  As superfícies (fundo, sidebar, card, texto) mudam por modo via [data-theme].
+  applyTheme() em usePersonalizacao.ts sobrescreve estas variáveis em runtime;
+  os valores abaixo servem como fallback/anti-flash no primeiro render.
 */
-:root {
-  --color-primary:        #374151;
+:root,
+:root[data-theme="light"] {
+  /* ── Accent fixo (marca) ── */
+  --color-primary:        #f97316;
   --color-primary-text:   #ffffff;
-  --color-primary-bg:     #1f2937;
-  --color-bg:             #111827;
-  --color-sidebar:        #1f2937;
-  --color-btn:            #374151;
+  --color-primary-bg:     linear-gradient(135deg, #ea580c, #f97316);
+  --color-btn:            #f97316;
   --color-btn-text:       #ffffff;
-  --color-icon:           #6b7280;
-  --color-card:           #ffffff;
-  --color-card-texto:     #1e293b;
-  --color-card-border:    rgba(0,0,0,0.06);
 
-  --color-primary-5:      rgba(55,65,81,0.05);
-  --color-primary-10:     rgba(55,65,81,0.10);
-  --color-primary-12:     rgba(55,65,81,0.12);
-  --color-primary-15:     rgba(55,65,81,0.15);
-  --color-primary-20:     rgba(55,65,81,0.20);
-  --color-primary-30:     rgba(55,65,81,0.30);
-  --color-primary-light:  rgba(55,65,81,0.12);
-  --color-primary-border: rgba(55,65,81,0.30);
+  --color-primary-5:      rgba(249,115,22,0.05);
+  --color-primary-10:     rgba(249,115,22,0.10);
+  --color-primary-12:     rgba(249,115,22,0.12);
+  --color-primary-15:     rgba(249,115,22,0.15);
+  --color-primary-20:     rgba(249,115,22,0.20);
+  --color-primary-30:     rgba(249,115,22,0.30);
+  --color-primary-light:  rgba(249,115,22,0.12);
+  --color-primary-border: rgba(249,115,22,0.30);
 
-  --color-primary-50:  #f9fafb;
-  --color-primary-100: #f3f4f6;
-  --color-primary-200: #e5e7eb;
-  --color-primary-300: #d1d5db;
-  --color-primary-400: #9ca3af;
-  --color-primary-500: #6b7280;
-  --color-primary-600: #4b5563;
-  --color-primary-700: #374151;
-  --color-primary-800: #1f2937;
-  --color-primary-900: #111827;
+  --color-primary-50:  #fff7ed;
+  --color-primary-100: #ffedd5;
+  --color-primary-200: #fed7aa;
+  --color-primary-300: #fdba74;
+  --color-primary-400: #fb923c;
+  --color-primary-500: #f97316;
+  --color-primary-600: #ea580c;
+  --color-primary-700: #c2410c;
+  --color-primary-800: #9a3412;
+  --color-primary-900: #7c2d12;
 
-  --color-icon-10:     rgba(107,114,128,0.10);
-  --color-icon-light:  rgba(107,114,128,0.12);
-  --color-icon-border: rgba(107,114,128,0.30);
+  --color-icon-10:     rgba(249,115,22,0.10);
+  --color-icon-light:  rgba(249,115,22,0.12);
+  --color-icon-border: rgba(249,115,22,0.30);
 
+  --glow-primary:  rgba(249,115,22,0.30);
   --grad-direction: 135deg;
+
+  /* ── Superfícies — LIGHT ── */
+  --color-bg:          #f8fafc;
+  --color-sidebar:     #0f172a;
+  --color-icon:        #ffffff;
+  --color-card:        #ffffff;
+  --color-card-texto:  #1e293b;
+  --color-card-border: rgba(0,0,0,0.06);
+}
+
+/* ── Superfícies — DARK ── */
+:root[data-theme="dark"] {
+  --color-bg:          #0b0e14;
+  --color-sidebar:     #111318;
+  --color-icon:        #e5e7eb;
+  --color-card:        #181b22;
+  --color-card-texto:  #e5e7eb;
+  --color-card-border: rgba(255,255,255,0.08);
 }
 
 /* ═══ Padrão base ═══ */
@@ -522,3 +539,166 @@ html, body {
 .slide-down-enter-from, .slide-down-leave-to { transform: translateY(-10px); opacity: 0; }
 
 /* ═══ Force section titles to use theme text color ═══ */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Remap de classes de cor legadas (pink/rose/amber/indigo) → accent da marca.
+   Muitas telas ainda usam classes Tailwind fixas herdadas da paleta rosa
+   antiga. Aqui elas passam a apontar para o accent (laranja) via tokens.
+   Estático — não depende de JS.
+   ═══════════════════════════════════════════════════════════════════════ */
+.bg-pink-50,  .bg-amber-50,  .hover\:bg-pink-50:hover,  .hover\:bg-amber-50:hover  { background-color: var(--color-primary-50)  !important; }
+.bg-pink-100, .bg-amber-100, .hover\:bg-pink-100:hover                             { background-color: var(--color-primary-100) !important; }
+.bg-pink-200, .bg-amber-200                                                        { background-color: var(--color-primary-200) !important; }
+.bg-pink-300                                                                       { background-color: var(--color-primary-300) !important; }
+.bg-pink-400, .bg-amber-400, .bg-rose-400, .hover\:bg-pink-400:hover, .hover\:bg-amber-400:hover { background-color: var(--color-primary-400) !important; }
+.bg-pink-500, .bg-amber-500                                                        { background-color: var(--color-primary-500) !important; }
+.bg-pink-600, .bg-amber-600, .hover\:bg-pink-600:hover                             { background-color: var(--color-primary-600) !important; }
+.bg-pink-700                                                                       { background-color: var(--color-primary-700) !important; }
+.bg-pink-800                                                                       { background-color: var(--color-primary-800) !important; }
+.bg-pink-900                                                                       { background-color: var(--color-primary-900) !important; }
+
+.text-pink-100                                                { color: var(--color-primary-100) !important; }
+.text-pink-300                                                { color: var(--color-primary-300) !important; }
+.text-pink-400, .text-amber-400, .hover\:text-pink-400:hover { color: var(--color-primary-400) !important; }
+.text-pink-500, .text-amber-500, .hover\:text-pink-500:hover { color: var(--color-primary-500) !important; }
+.text-pink-600, .text-amber-600, .hover\:text-pink-600:hover { color: var(--color-primary-600) !important; }
+.text-pink-700, .text-amber-700, .hover\:text-pink-700:hover { color: var(--color-primary-700) !important; }
+
+.border-pink-100                                     { border-color: var(--color-primary-100) !important; }
+.border-pink-200, .border-amber-200, .hover\:border-pink-200:hover { border-color: var(--color-primary-200) !important; }
+.border-pink-300, .hover\:border-pink-300:hover      { border-color: var(--color-primary-300) !important; }
+.border-pink-400, .border-amber-400, .hover\:border-pink-400:hover { border-color: var(--color-primary-400) !important; }
+.border-pink-500                                     { border-color: var(--color-primary-500) !important; }
+
+.focus\:ring-pink-300:focus { --tw-ring-color: var(--color-primary-300) !important; }
+.focus\:ring-pink-400:focus { --tw-ring-color: var(--color-primary-400) !important; }
+
+.from-pink-400, .from-amber-500 { --tw-gradient-from: var(--color-primary-400) !important; }
+.from-pink-500                  { --tw-gradient-from: var(--color-primary-500) !important; }
+.from-pink-600                  { --tw-gradient-from: var(--color-primary-600) !important; }
+.via-pink-500                   { --tw-gradient-via:  var(--color-primary-500) !important; }
+.to-pink-400, .to-amber-500, .to-rose-400 { --tw-gradient-to: var(--color-primary-400) !important; }
+.to-pink-600                    { --tw-gradient-to:  var(--color-primary-600) !important; }
+.bg-gradient-to-br.from-pink-600 { background-image: var(--color-primary-bg) !important; }
+
+input[type=range].accent-amber-500 { accent-color: var(--color-primary) !important; }
+
+/* Classe hardcoded #ff46a2 (rosa antigo) gerada pelo JIT do Tailwind */
+.text-\[\#ff46a2\], .hover\:text-\[\#ff46a2\]:hover { color: var(--color-primary) !important; }
+.bg-\[\#ff46a2\], .hover\:bg-\[\#ff46a2\]:hover     { background-color: var(--color-primary) !important; }
+.border-\[\#ff46a2\]                                { border-color: var(--color-primary) !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Overrides do modo DARK.
+   As telas usam muitas classes Tailwind fixas (bg-white, text-gray-*, etc.).
+   No modo dark, remapeamos para as superfícies do tema — assim o dark
+   funciona sem editar cada componente.
+   ═══════════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] body {
+  color: var(--color-card-texto);
+}
+
+/* Cards e superfícies brancas → card do tema */
+[data-theme="dark"] .bg-white {
+  background-color: var(--color-card) !important;
+  color: var(--color-card-texto) !important;
+}
+[data-theme="dark"] .bg-gray-50,
+[data-theme="dark"] .bg-gray-50\/80,
+[data-theme="dark"] .bg-gray-50\/70,
+[data-theme="dark"] .bg-gray-50\/50,
+[data-theme="dark"] .bg-gray-100 {
+  background-color: rgba(255,255,255,0.04) !important;
+}
+
+/* Texto */
+[data-theme="dark"] .text-gray-950,
+[data-theme="dark"] .text-gray-900,
+[data-theme="dark"] .text-gray-800 { color: var(--color-card-texto) !important; }
+[data-theme="dark"] .text-gray-700,
+[data-theme="dark"] .text-gray-600 { color: rgba(255,255,255,0.72) !important; }
+[data-theme="dark"] .text-gray-500 { color: rgba(255,255,255,0.52) !important; }
+[data-theme="dark"] .text-gray-400 { color: rgba(255,255,255,0.42) !important; }
+[data-theme="dark"] .text-gray-300 { color: rgba(255,255,255,0.32) !important; }
+
+/* Links indigo/blue fixos → accent */
+[data-theme="dark"] .text-indigo-600,
+[data-theme="dark"] .text-indigo-700,
+[data-theme="dark"] .text-blue-600,
+[data-theme="dark"] .text-blue-700 { color: var(--color-primary-400) !important; }
+[data-theme="dark"] .text-indigo-500,
+[data-theme="dark"] .text-blue-500 { color: var(--color-primary) !important; }
+
+/* Bordas e divisores */
+[data-theme="dark"] .border-gray-50,
+[data-theme="dark"] .border-gray-100,
+[data-theme="dark"] .border-gray-200,
+[data-theme="dark"] .border-gray-300 { border-color: rgba(255,255,255,0.08) !important; }
+[data-theme="dark"] .divide-gray-50 > * + *,
+[data-theme="dark"] .divide-gray-100 > * + * { border-color: rgba(255,255,255,0.08) !important; }
+
+/* Inputs, selects, textareas */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background-color: rgba(255,255,255,0.05) !important;
+  color: var(--color-card-texto) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus { border-color: var(--color-primary) !important; }
+[data-theme="dark"] ::placeholder { color: rgba(255,255,255,0.35) !important; }
+
+/* Tabelas */
+[data-theme="dark"] table thead,
+[data-theme="dark"] table thead tr { background-color: rgba(255,255,255,0.03) !important; }
+[data-theme="dark"] table thead th { color: rgba(255,255,255,0.52) !important; }
+[data-theme="dark"] tr:hover,
+[data-theme="dark"] .hover\:bg-gray-50:hover,
+[data-theme="dark"] .hover\:bg-indigo-50\/30:hover { background-color: rgba(255,255,255,0.03) !important; }
+
+/* Badges/tags cinza */
+[data-theme="dark"] .bg-gray-100.text-gray-600 {
+  background-color: rgba(255,255,255,0.08) !important;
+  color: rgba(255,255,255,0.72) !important;
+}
+
+/* Modais e dropdowns (overlays fixed) */
+[data-theme="dark"] .fixed .bg-white,
+[data-theme="dark"] [class*="fixed"] .bg-white {
+  background-color: var(--color-card) !important;
+  color: var(--color-card-texto) !important;
+}
+
+/* Sombras mais fortes no dark */
+[data-theme="dark"] .shadow-sm,
+[data-theme="dark"] .shadow-md { box-shadow: 0 1px 3px rgba(0,0,0,0.35) !important; }
+
+/* Textos brancos nunca são sobrescritos (headers/overlays) */
+[data-theme="dark"] .text-white { color: #ffffff !important; }
+
+/* Componentes .theme-card / .data-table / filtros seguem os tokens */
+[data-theme="dark"] .filter-panel {
+  background: var(--color-card) !important;
+  border-color: var(--color-card-border) !important;
+}
+[data-theme="dark"] .filter-panel-header {
+  background: rgba(255,255,255,0.03) !important;
+  border-color: var(--color-card-border) !important;
+}
+[data-theme="dark"] .data-table th {
+  background: rgba(255,255,255,0.03) !important;
+  color: rgba(255,255,255,0.52) !important;
+  border-color: var(--color-card-border) !important;
+}
+[data-theme="dark"] .data-table td {
+  color: var(--color-card-texto) !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+[data-theme="dark"] .icon-btn { background: rgba(255,255,255,0.06) !important; }
+[data-theme="dark"] .view-toggle-btn-inactive {
+  background: rgba(255,255,255,0.04) !important;
+  color: rgba(255,255,255,0.6) !important;
+}
+[data-theme="dark"] .empty-state-icon { color: rgba(255,255,255,0.2) !important; }

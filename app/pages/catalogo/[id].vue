@@ -146,12 +146,13 @@ const carrinhoAberto = ref(false)
 const carrinho = ref<any[]>([])
 const telefoneEmpresa = ref('')
 
-// Cores derivadas do tema
-const primaryColor = computed(() => tema.value.cor_primaria || '#374151')
-const bgColor = computed(() => tema.value.cor_fundo || '#f9fafb')
-const cardBg = computed(() => tema.value.cor_card || '#ffffff')
-const textColor = computed(() => tema.value.cor_card_texto || '#1e293b')
-const headerBg = computed(() => (tema.value.cor_card || '#ffffff') + 'ee')
+// Cores derivadas do tema padronizado (accent laranja fixo + superfícies light/dark)
+const lojaDark = computed(() => tema.value.tema_loja === 'dark')
+const primaryColor = computed(() => '#f97316')
+const bgColor = computed(() => (lojaDark.value ? '#0b0e14' : '#f8fafc'))
+const cardBg = computed(() => (lojaDark.value ? '#181b22' : '#ffffff'))
+const textColor = computed(() => (lojaDark.value ? '#e5e7eb' : '#1e293b'))
+const headerBg = computed(() => (lojaDark.value ? '#181b22ee' : '#ffffffee'))
 
 const produtosFiltrados = computed(() => {
   let arr = produtos.value

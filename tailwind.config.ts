@@ -57,41 +57,42 @@ export default {
 
         // ─── Tokens dinâmicos do tema (mapeiam para variáveis CSS) ───────────
         // Uso: bg-primary, text-primary, border-primary, etc.
+        // Accent fixo da marca (laranja) — resolvido via variáveis CSS.
         primary: {
-          DEFAULT: 'var(--color-primary, #374151)',
+          DEFAULT: 'var(--color-primary, #f97316)',
           text:    'var(--color-primary-text, #ffffff)',
-          bg:      'var(--color-primary-bg, #1f2937)',
-          light:   'var(--color-primary-light, rgba(55,65,81,0.12))',
-          border:  'var(--color-primary-border, rgba(55,65,81,0.30))',
+          bg:      'var(--color-primary-bg, #ea580c)',
+          light:   'var(--color-primary-light, rgba(249,115,22,0.12))',
+          border:  'var(--color-primary-border, rgba(249,115,22,0.30))',
           // Variantes com opacidade pré-calculada
-          5:       'var(--color-primary-5,  rgba(55,65,81,0.05))',
-          10:      'var(--color-primary-10, rgba(55,65,81,0.10))',
-          12:      'var(--color-primary-12, rgba(55,65,81,0.12))',
-          15:      'var(--color-primary-15, rgba(55,65,81,0.15))',
-          20:      'var(--color-primary-20, rgba(55,65,81,0.20))',
-          30:      'var(--color-primary-30, rgba(55,65,81,0.30))',
-          // Escala numérica (gerada pelo applyTheme)
-          50:      'var(--color-primary-50,  #f9fafb)',
-          100:     'var(--color-primary-100, #f3f4f6)',
-          200:     'var(--color-primary-200, #e5e7eb)',
-          300:     'var(--color-primary-300, #d1d5db)',
-          400:     'var(--color-primary-400, #9ca3af)',
-          500:     'var(--color-primary-500, #6b7280)',
-          600:     'var(--color-primary-600, #4b5563)',
-          700:     'var(--color-primary-700, #374151)',
-          800:     'var(--color-primary-800, #1f2937)',
-          900:     'var(--color-primary-900, #111827)',
+          5:       'var(--color-primary-5,  rgba(249,115,22,0.05))',
+          10:      'var(--color-primary-10, rgba(249,115,22,0.10))',
+          12:      'var(--color-primary-12, rgba(249,115,22,0.12))',
+          15:      'var(--color-primary-15, rgba(249,115,22,0.15))',
+          20:      'var(--color-primary-20, rgba(249,115,22,0.20))',
+          30:      'var(--color-primary-30, rgba(249,115,22,0.30))',
+          // Escala numérica (laranja fixo)
+          50:      'var(--color-primary-50,  #fff7ed)',
+          100:     'var(--color-primary-100, #ffedd5)',
+          200:     'var(--color-primary-200, #fed7aa)',
+          300:     'var(--color-primary-300, #fdba74)',
+          400:     'var(--color-primary-400, #fb923c)',
+          500:     'var(--color-primary-500, #f97316)',
+          600:     'var(--color-primary-600, #ea580c)',
+          700:     'var(--color-primary-700, #c2410c)',
+          800:     'var(--color-primary-800, #9a3412)',
+          900:     'var(--color-primary-900, #7c2d12)',
         },
 
-        // ─── Superfícies do tema ─────────────────────────────────────────────
+        // ─── Superfícies do tema (mudam com data-theme light/dark) ───────────
         theme: {
           card:       'var(--color-card,        #ffffff)',
           'card-text':'var(--color-card-texto,  #1e293b)',
-          sidebar:    'var(--color-sidebar,     #1f2937)',
-          bg:         'var(--color-bg,          #111827)',
-          btn:        'var(--color-btn,         #374151)',
+          sidebar:    'var(--color-sidebar,     #0f172a)',
+          bg:         'var(--color-bg,          #f8fafc)',
+          btn:        'var(--color-btn,         #f97316)',
           'btn-text': 'var(--color-btn-text,   #ffffff)',
-          icon:       'var(--color-icon,        #6b7280)',
+          icon:       'var(--color-icon,        #ffffff)',
         },
 
         // ─── Feedback (estáticos — cores semânticas universais) ───────────────

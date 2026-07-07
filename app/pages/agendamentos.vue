@@ -1196,7 +1196,7 @@ defineOptions({ name: 'AgendamentosPage' })
 useHead({ title: 'Agendamentos' })
 
 const { config: tema } = usePersonalizacao()
-const temaGrad = computed(() => tema.value.cor_primaria_grad ?? tema.value.cor_primaria)
+const temaGrad = computed(() => tema.value.cor_primaria)
 
 interface AgendamentoRow {
   id: number

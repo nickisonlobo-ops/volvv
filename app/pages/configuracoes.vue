@@ -200,222 +200,65 @@
       <!-- ═══ TAB: VISUAL ═══ -->
       <div v-show="activeTab === 'visual'" class="space-y-8">
 
-      <!-- Cores -->
-      <section class="bg-white rounded-2xl border border-primary-10 shadow-sm p-6 space-y-6">
-        <h2 class="text-base font-bold text-gray-800">Esquema de Cores</h2>
-
-        <!-- Temas pré-definidos -->
-        <div class="space-y-4">
-          <p class="text-sm font-medium text-gray-600">Temas prontos</p>
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            <button
-              v-for="tema in temasProntos"
-              :key="tema.nome"
-              type="button"
-              class="group relative rounded-xl border-2 overflow-hidden transition-all text-left"
-              :class="isTemaSelecionado(tema) ? 'border-gray-800 shadow-lg ring-1 ring-gray-800/20' : 'border-gray-200 hover:border-gray-300 hover:shadow-md'"
-              @click="aplicarTema(tema)"
-            >
-              <!-- Mini preview -->
-              <div class="h-8 w-full" :style="{ background: tema.cor_primaria_grad ? `linear-gradient(90deg, ${tema.cor_primaria}, ${tema.cor_primaria_grad})` : tema.cor_primaria }" />
-              <div class="p-2.5 space-y-1.5" :style="{ background: tema.cor_fundo }">
-                <div class="flex gap-1.5">
-                  <div class="w-8 h-5 rounded" :style="{ background: tema.cor_sidebar_grad ? `linear-gradient(135deg, ${tema.cor_sidebar}, ${tema.cor_sidebar_grad})` : tema.cor_sidebar, border: '1px solid rgba(0,0,0,0.06)' }" />
-                  <div class="flex-1 h-5 rounded" :style="{ background: tema.cor_card_grad ? `linear-gradient(135deg, ${tema.cor_card}, ${tema.cor_card_grad})` : tema.cor_card, border: '1px solid rgba(0,0,0,0.06)' }" />
-                </div>
-                <p class="text-[10px] font-bold truncate" :style="{ color: tema.cor_card_texto }">{{ tema.nome }}</p>
-              </div>
-              <div v-if="isTemaSelecionado(tema)" class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-white shadow flex items-center justify-center">
-                <svg class="w-2.5 h-2.5 text-gray-800" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-              </div>
-            </button>
-          </div>
+      <!-- Tema do Sistema -->
+      <section class="bg-white rounded-2xl border border-primary-10 shadow-sm p-6 space-y-5">
+        <div>
+          <h2 class="text-base font-bold text-gray-800">Tema do Sistema</h2>
+          <p class="text-xs text-gray-400 mt-1">Aparência do painel interno. Cada usuário pode alternar pelo botão no topo; aqui você define o padrão da empresa.</p>
         </div>
 
-        <div class="border-t border-gray-100 pt-4 grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <!-- Cor primária -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Cor principal</label>
-            <p class="text-xs text-gray-400">Botões, links ativos e destaques</p>
-            <div class="flex items-center gap-2 mt-2 flex-wrap">
-              <input v-model="form.cor_primaria" type="color" class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-              <input v-model="form.cor_primaria" type="text" class="w-24 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_primaria')" />
-              <!-- Degradê -->
-              <label class="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none">
-                <input v-model="usarGradPrimaria" type="checkbox" class="rounded" />
-                Degradê
-              </label>
-              <template v-if="usarGradPrimaria">
-                <input v-model="form.cor_primaria_grad" type="color" class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-                <input v-model="form.cor_primaria_grad" type="text" class="w-24 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_primaria_grad')" />
-                <div class="h-5 w-20 rounded-full border border-gray-200" :style="{ background: `linear-gradient(90deg, ${form.cor_primaria}, ${form.cor_primaria_grad ?? form.cor_primaria})` }" />
-              </template>
-            </div>
-          </div>
-
-          <!-- Cor do texto sobre primária -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Texto sobre cor principal</label>
-            <p class="text-xs text-gray-400">Texto em botões e badges coloridos</p>
-            <div class="flex items-center gap-2 mt-2">
-              <input v-model="form.cor_primaria_texto" type="color" class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-              <input v-model="form.cor_primaria_texto" type="text" class="w-28 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_primaria_texto')" />
-            </div>
-          </div>
-
-          <!-- Cor de fundo -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Cor de fundo</label>
-            <p class="text-xs text-gray-400">Background geral do sistema</p>
-            <div class="flex items-center gap-2 mt-2 flex-wrap">
-              <input v-model="form.cor_fundo" type="color" class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-              <input v-model="form.cor_fundo" type="text" class="w-24 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_fundo')" />
-              <label class="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none">
-                <input v-model="usarGradFundo" type="checkbox" class="rounded" />
-                Degradê
-              </label>
-              <template v-if="usarGradFundo">
-                <input v-model="form.cor_fundo_grad" type="color" class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-                <input v-model="form.cor_fundo_grad" type="text" class="w-24 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_fundo_grad')" />
-                <div class="h-5 w-20 rounded-full border border-gray-200" :style="{ background: `linear-gradient(90deg, ${form.cor_fundo}, ${form.cor_fundo_grad ?? form.cor_fundo})` }" />
-              </template>
-            </div>
-          </div>
-
-          <!-- Cor da sidebar -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Cor da sidebar / header</label>
-            <p class="text-xs text-gray-400">Fundo do menu lateral e cabeçalho</p>
-            <div class="flex items-center gap-2 mt-2 flex-wrap">
-              <input v-model="form.cor_sidebar" type="color" class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-              <input v-model="form.cor_sidebar" type="text" class="w-24 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_sidebar')" />
-              <label class="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none">
-                <input v-model="usarGradSidebar" type="checkbox" class="rounded" />
-                Degradê
-              </label>
-              <template v-if="usarGradSidebar">
-                <input v-model="form.cor_sidebar_grad" type="color" class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-                <input v-model="form.cor_sidebar_grad" type="text" class="w-24 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_sidebar_grad')" />
-                <div class="h-5 w-20 rounded-full border border-gray-200" :style="{ background: `linear-gradient(90deg, ${form.cor_sidebar}, ${form.cor_sidebar_grad ?? form.cor_sidebar})` }" />
-              </template>
-            </div>
-          </div>
-
-          <!-- Cor do card -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Cor do card</label>
-            <p class="text-xs text-gray-400">Fundo das tabelas, listas e painéis</p>
-            <div class="flex items-center gap-2 mt-2 flex-wrap">
-              <input v-model="form.cor_card" type="color" class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-              <input v-model="form.cor_card" type="text" class="w-24 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_card')" />
-              <label class="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none">
-                <input v-model="usarGradCard" type="checkbox" class="rounded" />
-                Degradê
-              </label>
-              <template v-if="usarGradCard">
-                <input v-model="form.cor_card_grad" type="color" class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-                <input v-model="form.cor_card_grad" type="text" class="w-24 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_card_grad')" />
-                <div class="h-5 w-20 rounded-full border border-gray-200" :style="{ background: `linear-gradient(90deg, ${form.cor_card}, ${form.cor_card_grad ?? form.cor_card})` }" />
-              </template>
-            </div>
-          </div>
-
-          <!-- Cor do texto do card -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Texto dos cards</label>
-            <p class="text-xs text-gray-400">Cor dos textos dentro de tabelas e painéis</p>
-            <div class="flex items-center gap-2 mt-2">
-              <input v-model="form.cor_card_texto" type="color" class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-              <input v-model="form.cor_card_texto" type="text" class="w-28 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_card_texto')" />
-            </div>
-          </div>
-
-          <!-- Cor dos botões -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Cor dos botões</label>
-            <p class="text-xs text-gray-400">Background dos botões de ação (Adicionar, Salvar...)</p>
-            <div class="flex items-center gap-2 mt-2 flex-wrap">
-              <input v-model="form.cor_botao" type="color" class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-              <input v-model="form.cor_botao" type="text" class="w-24 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_botao')" />
-              <div class="h-8 px-3 rounded-lg border border-gray-200 flex items-center text-xs font-bold" :style="{ background: form.cor_botao, color: form.cor_botao_texto }">+ Adicionar</div>
-            </div>
-          </div>
-
-          <!-- Texto dos botões -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Texto dos botões</label>
-            <p class="text-xs text-gray-400">Cor do texto e ícone dentro dos botões</p>
-            <div class="flex items-center gap-2 mt-2">
-              <input v-model="form.cor_botao_texto" type="color" class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-              <input v-model="form.cor_botao_texto" type="text" class="w-28 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_botao_texto')" />
-            </div>
-          </div>
-
-          <!-- Cor dos ícones -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Cor dos ícones / nav</label>
-            <p class="text-xs text-gray-400">Ícones ativos na sidebar e barra de navegação inferior</p>
-            <div class="flex items-center gap-2 mt-2 flex-wrap">
-              <input v-model="form.cor_icone" type="color" class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5" />
-              <input v-model="form.cor_icone" type="text" class="w-24 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" maxlength="7" @input="sanitizeHex('cor_icone')" />
-              <div class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center" :style="{ background: hexToRgba(form.cor_icone, 0.12) }">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" :style="{ color: form.cor_icone }"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6z"/></svg>
+        <div class="grid grid-cols-2 gap-4 max-w-md">
+          <button
+            v-for="opt in temaOpcoes"
+            :key="'sis-' + opt.value"
+            type="button"
+            class="relative rounded-xl border-2 overflow-hidden transition-all text-left"
+            :class="form.tema_sistema === opt.value ? 'border-primary shadow-lg ring-1 ring-primary/20' : 'border-gray-200 hover:border-gray-300'"
+            @click="setTemaSistema(opt.value)"
+          >
+            <div class="h-20 p-3 flex flex-col justify-between" :style="{ background: opt.bg }">
+              <div class="h-2.5 w-16 rounded-full" style="background: #f97316" />
+              <div class="flex gap-1.5">
+                <div class="w-6 h-6 rounded" :style="{ background: opt.sidebar }" />
+                <div class="flex-1 h-6 rounded" :style="{ background: opt.card, border: '1px solid rgba(128,128,128,0.15)' }" />
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Direção do degradê -->
-        <div v-if="usarGradPrimaria || usarGradFundo || usarGradSidebar || usarGradCard" class="border-t border-gray-100 pt-4 space-y-2">
-          <label class="text-sm font-medium text-gray-700">Direção do degradê</label>
-          <div class="flex flex-wrap gap-2">
-            <button
-              v-for="dir in direcoes"
-              :key="dir.value"
-              type="button"
-              class="px-3 py-1.5 rounded-lg text-xs font-medium border-2 transition-all"
-              :class="form.grad_direction === dir.value ? 'border-gray-800 bg-gray-100' : 'border-gray-200 hover:border-gray-300'"
-              @click="form.grad_direction = dir.value"
-            >
-              {{ dir.label }}
-            </button>
-          </div>
+            <div class="flex items-center gap-2 px-3 py-2 bg-white border-t border-gray-100">
+              <span class="text-sm font-bold text-gray-800">{{ opt.label }}</span>
+              <svg v-if="form.tema_sistema === opt.value" class="w-4 h-4 text-primary ml-auto" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            </div>
+          </button>
         </div>
       </section>
 
-      <!-- Preview -->
-      <section class="bg-white rounded-2xl border border-primary-10 shadow-sm p-6 space-y-4">
-        <h2 class="text-base font-bold text-gray-800">Preview</h2>
-        <div class="rounded-xl overflow-hidden border border-gray-200 shadow-md">
-          <div class="h-10 flex items-center justify-between px-4" :style="{ background: previewSidebarBg }">
-            <div class="flex items-center gap-2">
-              <img v-if="form.logo_url" :src="form.logo_url" class="w-5 h-5 object-contain rounded" alt="Logo" />
-              <div v-else class="w-5 h-5 rounded-md flex items-center justify-center" :style="{ background: previewPrimaryBg }">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" :style="{ color: form.cor_primaria_texto }"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
-              </div>
-              <span class="text-xs font-bold" :style="{ color: form.cor_card_texto }">{{ form.nome_empresa || 'SignPRO' }}</span>
-            </div>
-            <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black" :style="{ background: previewPrimaryBg, color: form.cor_primaria_texto }">A</div>
-          </div>
-          <div class="flex" :style="{ background: previewFundoBg }">
-            <div class="w-10 shrink-0 flex flex-col items-center py-3 gap-2.5 border-r" :style="{ background: previewSidebarBg, borderColor: 'rgba(128,128,128,0.1)' }">
-              <div v-for="i in 4" :key="i" class="w-4 h-4 rounded" :style="{ background: i === 1 ? previewPrimaryBg : 'rgba(128,128,128,0.15)' }" />
-            </div>
-            <div class="flex-1 p-3 space-y-2.5">
-              <div class="h-7 rounded-lg" :style="{ background: previewPrimaryBg }" />
-              <div class="grid grid-cols-3 gap-2">
-                <div v-for="i in 3" :key="i" class="rounded-lg p-2 space-y-1" :style="{ background: previewCardBg, border: '1px solid rgba(128,128,128,0.1)' }">
-                  <div class="h-1.5 rounded-full w-10" :style="{ background: 'rgba(128,128,128,0.2)' }" />
-                  <div class="h-3 rounded w-8 font-black text-[8px] flex items-center" :style="{ color: form.cor_card_texto }">{{ ['€ 400', '12', '3'][i-1] }}</div>
-                  <div class="h-1 rounded-full w-12" :style="{ background: 'rgba(128,128,128,0.12)' }" />
-                </div>
-              </div>
-              <div class="flex gap-2">
-                <div class="px-3 py-1.5 rounded-lg text-[10px] font-bold" :style="{ background: previewPrimaryBg, color: form.cor_primaria_texto }">Salvar</div>
-                <div class="px-3 py-1.5 rounded-lg text-[10px] font-bold" :style="{ background: 'rgba(128,128,128,0.1)', color: form.cor_card_texto }">Cancelar</div>
+      <!-- Tema da Vitrine Pública -->
+      <section class="bg-white rounded-2xl border border-primary-10 shadow-sm p-6 space-y-5">
+        <div>
+          <h2 class="text-base font-bold text-gray-800">Tema da Vitrine Pública</h2>
+          <p class="text-xs text-gray-400 mt-1">Aparência das páginas vistas pelo cliente final (loja, catálogo e agendamento online).</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 max-w-md">
+          <button
+            v-for="opt in temaOpcoes"
+            :key="'loja-' + opt.value"
+            type="button"
+            class="relative rounded-xl border-2 overflow-hidden transition-all text-left"
+            :class="form.tema_loja === opt.value ? 'border-primary shadow-lg ring-1 ring-primary/20' : 'border-gray-200 hover:border-gray-300'"
+            @click="form.tema_loja = opt.value"
+          >
+            <div class="h-20 p-3 flex flex-col justify-between" :style="{ background: opt.bg }">
+              <div class="h-2.5 w-16 rounded-full" style="background: #f97316" />
+              <div class="flex gap-1.5">
+                <div class="flex-1 h-6 rounded" :style="{ background: opt.card, border: '1px solid rgba(128,128,128,0.15)' }" />
+                <div class="flex-1 h-6 rounded" :style="{ background: opt.card, border: '1px solid rgba(128,128,128,0.15)' }" />
               </div>
             </div>
-          </div>
+            <div class="flex items-center gap-2 px-3 py-2 bg-white border-t border-gray-100">
+              <span class="text-sm font-bold text-gray-800">{{ opt.label }}</span>
+              <svg v-if="form.tema_loja === opt.value" class="w-4 h-4 text-primary ml-auto" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            </div>
+          </button>
         </div>
       </section>
 
@@ -1017,7 +860,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { usePersonalizacao, type PersonalizacaoConfig } from '~/composables/usePersonalizacao'
 import { createSupabaseClient } from '~/lib/supabase'
 import { useEmpresa } from '~/composables/useEmpresa'
@@ -1049,16 +892,7 @@ const { empresaId, loadEmpresa } = useEmpresa()
 
 const { config, loading, saving, uploadingLogo, error, loadPersonalizacao, savePersonalizacao, uploadLogo, applyTheme, DEFAULTS } = usePersonalizacao()
 
-function hexToRgba(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(107,114,128,${alpha})`
-  return `rgba(${r},${g},${b},${alpha})`
-}
-
 const savedFeedback = ref(false)
-const formLoaded = ref(false)
 
 // ── Horários de agendamento ──────────────────────────────────────────
 const DIAS_SEMANA = [
@@ -1168,19 +1002,17 @@ function toggleDia(dia: number) {
 
 const form = reactive<PersonalizacaoConfig>({ ...DEFAULTS })
 
-// Controles de toggle para degradê
-const usarGradPrimaria = ref(false)
-const usarGradFundo    = ref(false)
-const usarGradSidebar  = ref(false)
-const usarGradCard     = ref(false)
-
-const direcoes = [
-  { label: '↘ Diagonal', value: '135deg' },
-  { label: '→ Direita',  value: '90deg'  },
-  { label: '↓ Baixo',    value: '180deg' },
-  { label: '↗ Diagonal', value: '45deg'  },
-  { label: '← Esquerda', value: '270deg' },
+// Opções de tema (para os seletores de sistema e vitrine)
+const temaOpcoes = [
+  { value: 'light' as const, label: 'Claro', bg: '#f8fafc', sidebar: '#0f172a', card: '#ffffff' },
+  { value: 'dark'  as const, label: 'Escuro', bg: '#0b0e14', sidebar: '#111318', card: '#181b22' },
 ]
+
+/** Define o tema do sistema no form e aplica preview imediato. */
+function setTemaSistema(mode: 'light' | 'dark') {
+  form.tema_sistema = mode
+  applyTheme(mode)
+}
 
 /** Converte logo_size (string nomeada ou numérica) → px */
 const logoSizePx = computed(() => {
@@ -1209,54 +1041,6 @@ function onLogoDocSlider(e: Event) {
   if (_logoDocSaveTimer) clearTimeout(_logoDocSaveTimer)
   _logoDocSaveTimer = setTimeout(() => handleSave(), 500)
 }
-
-// Computed para preview — usa degradê se ativado
-const previewPrimaryBg = computed(() =>
-  usarGradPrimaria.value && form.cor_primaria_grad
-    ? `linear-gradient(${form.grad_direction}, ${form.cor_primaria}, ${form.cor_primaria_grad})`
-    : form.cor_primaria
-)
-const previewFundoBg = computed(() =>
-  usarGradFundo.value && form.cor_fundo_grad
-    ? `linear-gradient(${form.grad_direction}, ${form.cor_fundo}, ${form.cor_fundo_grad})`
-    : form.cor_fundo
-)
-const previewSidebarBg = computed(() =>
-  usarGradSidebar.value && form.cor_sidebar_grad
-    ? `linear-gradient(${form.grad_direction}, ${form.cor_sidebar}, ${form.cor_sidebar_grad})`
-    : form.cor_sidebar
-)
-const previewCardBg = computed(() =>
-  usarGradCard.value && form.cor_card_grad
-    ? `linear-gradient(${form.grad_direction}, ${form.cor_card}, ${form.cor_card_grad})`
-    : form.cor_card
-)
-
-const temasProntos = [
-  // ─── DARK PREMIUM ───────────────────────────────────────────────
-  { nome: '🖤 Neon Studio',     cor_primaria: '#22c55e', cor_primaria_texto: '#ffffff', cor_fundo: '#0f172a', cor_sidebar: '#0f172a', cor_card: '#1e293b', cor_card_texto: '#e2e8f0', cor_primaria_grad: '#16a34a', cor_fundo_grad: '#1e293b', cor_sidebar_grad: '#1e293b', cor_card_grad: null, grad_direction: '180deg', cor_botao: '#22c55e', cor_botao_texto: '#000000', cor_icone: '#4ade80' },
-  { nome: '🔥 Fire Print',      cor_primaria: '#f97316', cor_primaria_texto: '#ffffff', cor_fundo: '#0c0a09', cor_sidebar: '#1c1917', cor_card: '#1c1917', cor_card_texto: '#fafaf9', cor_primaria_grad: '#ef4444', cor_fundo_grad: '#1c1917', cor_sidebar_grad: '#292524', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#f97316', cor_botao_texto: '#000000', cor_icone: '#fb923c' },
-  { nome: '⚡ Electric Blue',   cor_primaria: '#3b82f6', cor_primaria_texto: '#ffffff', cor_fundo: '#020617', cor_sidebar: '#0f172a', cor_card: '#1e293b', cor_card_texto: '#e2e8f0', cor_primaria_grad: '#06b6d4', cor_fundo_grad: '#0f172a', cor_sidebar_grad: '#1e293b', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#3b82f6', cor_botao_texto: '#ffffff', cor_icone: '#60a5fa' },
-  { nome: '🎨 Iron Design',     cor_primaria: '#a855f7', cor_primaria_texto: '#ffffff', cor_fundo: '#09090b', cor_sidebar: '#18181b', cor_card: '#27272a', cor_card_texto: '#fafafa', cor_primaria_grad: '#ec4899', cor_fundo_grad: '#18181b', cor_sidebar_grad: '#27272a', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#a855f7', cor_botao_texto: '#ffffff', cor_icone: '#c084fc' },
-  { nome: '🌊 Ocean Vinyl',     cor_primaria: '#06b6d4', cor_primaria_texto: '#ffffff', cor_fundo: '#042f2e', cor_sidebar: '#0f3d3c', cor_card: '#134e4a', cor_card_texto: '#ccfbf1', cor_primaria_grad: '#14b8a6', cor_fundo_grad: '#0f3d3c', cor_sidebar_grad: '#134e4a', cor_card_grad: null, grad_direction: '180deg', cor_botao: '#06b6d4', cor_botao_texto: '#000000', cor_icone: '#22d3ee' },
-  { nome: '🥊 Bold Red',        cor_primaria: '#ef4444', cor_primaria_texto: '#ffffff', cor_fundo: '#0f172a', cor_sidebar: '#1e293b', cor_card: '#1e293b', cor_card_texto: '#f1f5f9', cor_primaria_grad: '#dc2626', cor_fundo_grad: '#1e293b', cor_sidebar_grad: '#334155', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#ef4444', cor_botao_texto: '#ffffff', cor_icone: '#f87171' },
-  { nome: '✨ Gold Premium',    cor_primaria: '#eab308', cor_primaria_texto: '#000000', cor_fundo: '#0c0a09', cor_sidebar: '#1c1917', cor_card: '#292524', cor_card_texto: '#fafaf9', cor_primaria_grad: '#f59e0b', cor_fundo_grad: '#1c1917', cor_sidebar_grad: '#292524', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#eab308', cor_botao_texto: '#000000', cor_icone: '#fbbf24' },
-  { nome: '💚 Lime Fresh',      cor_primaria: '#84cc16', cor_primaria_texto: '#000000', cor_fundo: '#0f172a', cor_sidebar: '#1e293b', cor_card: '#1e293b', cor_card_texto: '#f1f5f9', cor_primaria_grad: '#22c55e', cor_fundo_grad: '#1e293b', cor_sidebar_grad: '#334155', cor_card_grad: null, grad_direction: '90deg',  cor_botao: '#84cc16', cor_botao_texto: '#000000', cor_icone: '#a3e635' },
-
-  // ─── LIGHT PREMIUM ────────────────────────────────────────────────
-  { nome: '☀️ Fresh Green',     cor_primaria: '#16a34a', cor_primaria_texto: '#ffffff', cor_fundo: '#f0fdf4', cor_sidebar: '#166534', cor_card: '#ffffff', cor_card_texto: '#1f2937', cor_primaria_grad: '#22c55e', cor_fundo_grad: null, cor_sidebar_grad: '#15803d', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#16a34a', cor_botao_texto: '#ffffff', cor_icone: '#ffffff' },
-  { nome: '🌤️ Energize',       cor_primaria: '#ea580c', cor_primaria_texto: '#ffffff', cor_fundo: '#fffbeb', cor_sidebar: '#9a3412', cor_card: '#ffffff', cor_card_texto: '#1f2937', cor_primaria_grad: '#dc2626', cor_fundo_grad: null, cor_sidebar_grad: '#b91c1c', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#ea580c', cor_botao_texto: '#ffffff', cor_icone: '#ffffff' },
-  { nome: '💎 Clean Blue',      cor_primaria: '#2563eb', cor_primaria_texto: '#ffffff', cor_fundo: '#f8fafc', cor_sidebar: '#1e40af', cor_card: '#ffffff', cor_card_texto: '#1e293b', cor_primaria_grad: '#0891b2', cor_fundo_grad: null, cor_sidebar_grad: '#1e3a8a', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#2563eb', cor_botao_texto: '#ffffff', cor_icone: '#ffffff' },
-  { nome: '🌿 Mint Light',      cor_primaria: '#0d9488', cor_primaria_texto: '#ffffff', cor_fundo: '#f0fdfa', cor_sidebar: '#134e4a', cor_card: '#ffffff', cor_card_texto: '#1f2937', cor_primaria_grad: '#06b6d4', cor_fundo_grad: null, cor_sidebar_grad: '#164e63', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#0d9488', cor_botao_texto: '#ffffff', cor_icone: '#ffffff' },
-  { nome: '🩷 Aurora Pink',     cor_primaria: '#ec4899', cor_primaria_texto: '#ffffff', cor_fundo: '#fdf2f8', cor_sidebar: '#9d174d', cor_card: '#ffffff', cor_card_texto: '#1f2937', cor_primaria_grad: '#a855f7', cor_fundo_grad: null, cor_sidebar_grad: '#be185d', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#ec4899', cor_botao_texto: '#ffffff', cor_icone: '#ffffff' },
-  { nome: '👑 Royal Indigo',    cor_primaria: '#4f46e5', cor_primaria_texto: '#ffffff', cor_fundo: '#eef2ff', cor_sidebar: '#3730a3', cor_card: '#ffffff', cor_card_texto: '#312e81', cor_primaria_grad: '#7c3aed', cor_fundo_grad: null, cor_sidebar_grad: '#4c1d95', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#4f46e5', cor_botao_texto: '#ffffff', cor_icone: '#ffffff' },
-
-  // ─── CONTRAST / BOLD ──────────────────────────────────────────────
-  { nome: '🖤 Stealth',         cor_primaria: '#22c55e', cor_primaria_texto: '#000000', cor_fundo: '#000000', cor_sidebar: '#000000', cor_card: '#111111', cor_card_texto: '#ffffff', cor_primaria_grad: null,     cor_fundo_grad: '#111111', cor_sidebar_grad: '#111111', cor_card_grad: null, grad_direction: '180deg', cor_botao: '#22c55e', cor_botao_texto: '#000000', cor_icone: '#22c55e' },
-  { nome: '⚪ Minimal',         cor_primaria: '#18181b', cor_primaria_texto: '#ffffff', cor_fundo: '#ffffff', cor_sidebar: '#18181b', cor_card: '#ffffff', cor_card_texto: '#18181b', cor_primaria_grad: null,     cor_fundo_grad: null, cor_sidebar_grad: '#27272a', cor_card_grad: null, grad_direction: '180deg', cor_botao: '#18181b', cor_botao_texto: '#ffffff', cor_icone: '#ffffff' },
-  { nome: '🟣 Purple Beast',    cor_primaria: '#7c3aed', cor_primaria_texto: '#ffffff', cor_fundo: '#0f0720', cor_sidebar: '#1a0a3e', cor_card: '#1e1145', cor_card_texto: '#e9d5ff', cor_primaria_grad: '#a855f7', cor_fundo_grad: '#1a0a3e', cor_sidebar_grad: '#1e1145', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#7c3aed', cor_botao_texto: '#ffffff', cor_icone: '#a78bfa' },
-  { nome: '🩵 Soft Blue',       cor_primaria: '#0ea5e9', cor_primaria_texto: '#ffffff', cor_fundo: '#0c4a6e', cor_sidebar: '#082f49', cor_card: '#0c4a6e', cor_card_texto: '#e0f2fe', cor_primaria_grad: '#38bdf8', cor_fundo_grad: '#082f49', cor_sidebar_grad: '#0c4a6e', cor_card_grad: null, grad_direction: '180deg', cor_botao: '#0ea5e9', cor_botao_texto: '#000000', cor_icone: '#38bdf8' },
-]
 
 // ── Dados da Empresa ──────────────────────────────────────────────────────────
 const dadosEmpresa = reactive({
@@ -1491,11 +1275,6 @@ onMounted(async () => {
   await Promise.all([loadPersonalizacao(false), loadHorarios(), carregarDadosEmpresa()])
   loading.value = false
   Object.assign(form, config.value)
-  // Inicializa toggles com base nos dados salvos
-  usarGradPrimaria.value = !!form.cor_primaria_grad
-  usarGradFundo.value    = !!form.cor_fundo_grad
-  usarGradSidebar.value  = !!form.cor_sidebar_grad
-  usarGradCard.value     = !!form.cor_card_grad
   // Carrega billing se PT
   if (dadosEmpresa.pais === 'PT') {
     await loadBillingStatus()
@@ -1503,55 +1282,7 @@ onMounted(async () => {
   }
   // Carrega integrações de marketing + WhatsApp
   await Promise.all([loadMktIntegracoes(), loadWppConfig()])
-  // Só habilita o watcher de preview depois de carregar os dados salvos
-  nextTick(() => { formLoaded.value = true })
 })
-
-// Limpa campos de gradiente quando toggle é desligado
-watch(usarGradPrimaria, (v) => { if (!v) form.cor_primaria_grad = null })
-watch(usarGradFundo,    (v) => { if (!v) form.cor_fundo_grad    = null })
-watch(usarGradSidebar,  (v) => { if (!v) form.cor_sidebar_grad  = null })
-watch(usarGradCard,     (v) => { if (!v) form.cor_card_grad     = null })
-
-// Preview em tempo real — só aplica depois que os dados salvos foram carregados
-watch(form, (val) => {
-  if (!formLoaded.value) return
-  applyTheme(val)
-}, { deep: true })
-
-function aplicarTema(tema: typeof temasProntos[0]) {
-  form.cor_primaria       = tema.cor_primaria
-  form.cor_primaria_texto = tema.cor_primaria_texto
-  form.cor_fundo          = tema.cor_fundo
-  form.cor_sidebar        = tema.cor_sidebar
-  form.cor_card           = tema.cor_card
-  form.cor_card_texto     = tema.cor_card_texto
-  form.cor_primaria_grad  = tema.cor_primaria_grad  ?? null
-  form.cor_fundo_grad     = tema.cor_fundo_grad     ?? null
-  form.cor_sidebar_grad   = tema.cor_sidebar_grad   ?? null
-  form.cor_card_grad      = tema.cor_card_grad      ?? null
-  form.grad_direction     = tema.grad_direction     ?? '135deg'
-  form.cor_botao          = tema.cor_botao          ?? tema.cor_primaria
-  form.cor_botao_texto    = tema.cor_botao_texto    ?? '#ffffff'
-  form.cor_icone          = tema.cor_icone          ?? tema.cor_primaria
-  usarGradPrimaria.value  = !!tema.cor_primaria_grad
-  usarGradFundo.value     = !!tema.cor_fundo_grad
-  usarGradSidebar.value   = !!tema.cor_sidebar_grad
-  usarGradCard.value      = !!tema.cor_card_grad
-}
-
-function isTemaSelecionado(tema: typeof temasProntos[0]): boolean {
-  return form.cor_primaria === tema.cor_primaria
-    && form.cor_fundo === tema.cor_fundo
-    && (form.cor_primaria_grad ?? null) === (tema.cor_primaria_grad ?? null)
-}
-
-function sanitizeHex(field: keyof PersonalizacaoConfig) {
-  const val = form[field] as string
-  if (val && !/^#[0-9A-Fa-f]{0,6}$/.test(val)) {
-    ;(form as any)[field] = val.replace(/[^#0-9A-Fa-f]/g, '')
-  }
-}
 
 async function handleLogoUpload(event: Event) {
   const input = event.target as HTMLInputElement
@@ -1606,11 +1337,9 @@ async function handleSave() {
 }
 
 function handleReset() {
-  Object.assign(form, DEFAULTS)
-  usarGradPrimaria.value = false
-  usarGradFundo.value    = false
-  usarGradSidebar.value  = false
-  usarGradCard.value     = false
+  form.tema_sistema = 'light'
+  form.tema_loja = 'light'
+  applyTheme('light')
 }
 
 async function handleRemoveLogo() {

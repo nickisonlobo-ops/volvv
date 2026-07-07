@@ -36,15 +36,15 @@ import { usePersonalizacao } from '~/composables/usePersonalizacao'
 import { useGlobalOS } from '~/composables/useGlobalOS'
 
 const route = useRoute()
-const { loadPersonalizacao, applyTheme, config } = usePersonalizacao()
+const { loadPersonalizacao, applyTheme, currentTheme } = usePersonalizacao()
 const { showGlobalOS, globalOS, globalItensOS, fecharOS } = useGlobalOS()
 
 onMounted(async () => {
   await loadPersonalizacao()
 })
 
-// Re-aplica o tema a cada troca de rota
+// Re-aplica o tema a cada troca de rota (garante consistência entre páginas)
 watch(() => route.path, () => {
-  applyTheme(config.value)
+  applyTheme(currentTheme.value)
 })
 </script>
