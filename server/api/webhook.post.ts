@@ -1,12 +1,8 @@
 import type { ParsedMessage } from '../utils/webhookParser'
-import { parseMetaMessagingWebhook } from '../utils/metaMessagingParser'
 
 /**
- * Webhook de mensagens: WhatsApp (repassado pela Datafy, formato Meta com
- * `changes[].value`) OU nativo do Instagram/Messenger (`object: 'instagram'|
- * 'page'`, formato `messaging[]` — bem diferente do WhatsApp). Faz upsert da
- * conversa e grava as mensagens no Supabase (idempotente), com `canal` pra
- * distinguir a origem.
+ * Webhook da Datafy (formato Meta). Recebe mensagens/echoes/status,
+ * faz upsert da conversa e grava as mensagens no Supabase (idempotente).
  */
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -15,8 +11,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const supabase = useSupabaseServer()
-    const nativo = body?.object === 'instagram' || body?.object === 'page'
-    const events = nativo ? parseMetaMessagingWebhook(body) : parseWebhook(body)
+    const events = parseWebhook(body)
 
     console.log(`[webhook] parseou ${events.length} eventos`)
 
@@ -54,10 +49,7 @@ async function persistMessage(supabase: ReturnType<typeof useSupabaseServer>, ev
   const conversationId = await upsertConversation(supabase, ev)
   if (!conversationId) return
 
-  const canal = ev.canal ?? 'whatsapp'
-  // WhatsApp manda um media_id opaco (precisa resolver via Datafy pra virar URL).
-  // Instagram/Messenger já mandam a URL direta do anexo em mediaId — usa como está.
-  const mediaUrl = ev.mediaId ? (canal === 'whatsapp' ? await resolveMediaUrl(ev.mediaId, ev.phoneNumberId) : ev.mediaId) : null
+  const mediaUrl = ev.mediaId ? await resolveMediaUrl(ev.mediaId, ev.phoneNumberId) : null
 
   const { data: inserted, error } = await supabase
     .from('messages')
@@ -65,14 +57,13 @@ async function persistMessage(supabase: ReturnType<typeof useSupabaseServer>, ev
       {
         conversation_id: conversationId,
         wa_message_id: ev.waMessageId,
-        canal,
         direction: ev.direction,
         kind: ev.kind,
         from_wa_id: ev.fromWaId,
         to_wa_id: ev.toWaId ?? null,
         body: ev.body ?? null,
         caption: ev.caption ?? null,
-        media_id: canal === 'whatsapp' ? (ev.mediaId ?? null) : null,
+        media_id: ev.mediaId ?? null,
         media_url: mediaUrl,
         status: ev.direction === 'out' ? 'sent' : null,
         wa_timestamp: ev.waTimestamp,
@@ -123,7 +114,6 @@ async function upsertConversation(
   const row: Record<string, unknown> = {
     phone_number_id: ev.phoneNumberId,
     wa_id: ev.contactWaId,
-    canal: ev.canal ?? 'whatsapp',
     display_phone_number: ev.displayPhoneNumber ?? null,
     waba_id: ev.wabaId ?? null,
   }
@@ -132,7 +122,7 @@ async function upsertConversation(
 
   const { data, error } = await supabase
     .from('conversations')
-    .upsert(row, { onConflict: 'canal,phone_number_id,wa_id' })
+    .upsert(row, { onConflict: 'phone_number_id,wa_id' })
     .select('id')
     .single()
 

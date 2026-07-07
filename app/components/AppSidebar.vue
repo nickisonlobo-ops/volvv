@@ -130,7 +130,6 @@ const allNavSections = [
     items: [
       { to: '/', icon: 'home', label: 'Início', minPerfil: 'all' },
       { to: '/chat', icon: 'chat', label: 'WhatsApp', minPerfil: 'all' },
-      { to: '/mensagens', icon: 'chat', label: 'Central de Mensagens', minPerfil: 'all' },
       { to: '/agendamentos', icon: 'calendar', label: 'Agendamentos', minPerfil: 'all' },
       { to: '/servicos', icon: 'sparkles', label: 'Serviços', minPerfil: 'all' },
       { to: '/clientes', icon: 'identification', label: 'Clientes', minPerfil: 'all' },

@@ -1,6 +1,5 @@
 <template>
   <section class="chat-area-conversas">
-    <slot name="header"></slot>
     <ChatHeaderConversa v-model:busca="busca" v-model:filtro="filtro" @kanban="$emit('kanban')" />
     <ChatListaConversa :conversas="conversasFiltradas" :ativa-id="ativaId" @selecionar="$emit('selecionar', $event)" />
   </section>

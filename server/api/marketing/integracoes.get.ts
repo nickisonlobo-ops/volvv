@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   const supabase = useSupabaseServer()
   const { data, error } = await supabase
     .from('marketing_integracoes')
-    .select('id, plataforma, conta_nome, account_id, status, erro_msg, ultimo_sync, ativo, updated_at, meta_page_id, meta_msg_page_id, meta_msg_page_nome, meta_msg_instagram_business_id, meta_msg_instagram_usuario')
+    .select('id, plataforma, conta_nome, account_id, status, erro_msg, ultimo_sync, ativo, updated_at')
     .eq('empresa_id', empresaId)
     .order('plataforma', { ascending: true })
 

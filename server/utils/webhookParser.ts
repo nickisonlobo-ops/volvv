@@ -5,16 +5,13 @@ import type { Kind } from '../../app/types/chat'
  * uma lista plana de eventos: mensagens (recebidas/enviadas) e status.
  */
 
-export type Canal = 'whatsapp' | 'instagram' | 'facebook'
-
 export interface ParsedMessage {
   type: 'message'
   direction: 'in' | 'out'
-  canal?: Canal          // default 'whatsapp' quando ausente (compat com o parser antigo)
-  phoneNumberId?: string  // "caixa de entrada": número do WhatsApp, Page ID ou IG Business ID
+  phoneNumberId?: string
   displayPhoneNumber?: string
   wabaId?: string
-  contactWaId: string // chave da conversa (o contato): wa_id, PSID ou IGSID
+  contactWaId: string // chave da conversa (o contato)
   contactName?: string
   contactUserId?: string
   waMessageId: string
@@ -29,7 +26,6 @@ export interface ParsedMessage {
 
 export interface ParsedStatus {
   type: 'status'
-  canal?: Canal
   waMessageId: string
   status: 'sent' | 'delivered' | 'read' | 'failed'
   waTimestamp: string

@@ -79,37 +79,6 @@ export async function testarMeta(creds: Credenciais): Promise<TesteConexao> {
 }
 
 /**
- * Busca o Page Access Token e o ID da conta comercial do Instagram vinculada
- * à Página conectada — necessários pra enviar mensagens (Send API) via
- * Messenger/Instagram. Usa o mesmo User Access Token já testado em testarMeta.
- * Sem page_id configurado, ou se a Página não aparecer entre as gerenciadas
- * pelo usuário do token, devolve tudo undefined (mensageria fica indisponível
- * até o usuário configurar a Página certa — não bloqueia a conexão de anúncios).
- */
-export async function buscarCredenciaisMensageria(
-  creds: Credenciais,
-  pageId: string,
-): Promise<{ pageNome?: string; pageAccessToken?: string; instagramBusinessId?: string; instagramUsuario?: string }> {
-  if (!creds.accessToken || !pageId) return {}
-  try {
-    const res = await $fetch<{ data: { id: string; name?: string; access_token?: string; instagram_business_account?: { id: string; username?: string } }[] }>(
-      `${GRAPH}/me/accounts`,
-      { query: { fields: 'id,name,access_token,instagram_business_account{id,username}', limit: 100, access_token: creds.accessToken } },
-    )
-    const pagina = (res.data || []).find((p) => p.id === pageId)
-    return {
-      pageNome: pagina?.name,
-      pageAccessToken: pagina?.access_token,
-      instagramBusinessId: pagina?.instagram_business_account?.id,
-      instagramUsuario: pagina?.instagram_business_account?.username,
-    }
-  } catch (e: any) {
-    console.error('[meta] falha ao buscar credenciais de mensageria:', e?.data?.error?.message || e?.message)
-    return {}
-  }
-}
-
-/**
  * Busca métricas do período e campanhas ativas.
  * @param since 'YYYY-MM-DD'  @param until 'YYYY-MM-DD'
  */

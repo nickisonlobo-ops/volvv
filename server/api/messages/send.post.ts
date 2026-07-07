@@ -1,15 +1,10 @@
-import { getCredenciaisMensageriaPorInbox } from '../../utils/marketing/marketingConfig'
-import { sendMetaMessage } from '../../utils/metaMessagingSend'
-
 /**
  * Envia uma mensagem de texto pela conversa informada.
  * body: { conversationId: string, text: string }
  *
- * Resolve o contato/inbox pela conversa e envia pelo canal certo — WhatsApp
- * (via Datafy) ou Instagram/Messenger (via Meta Send API, com o Page Access
- * Token da integração conectada) — persiste a mensagem (out, status 'sent')
- * e atualiza a prévia da conversa. O echo/status que voltarem pelo webhook
- * são idempotentes (wa_message_id).
+ * Resolve o número/contato pela conversa, envia via Datafy, persiste a
+ * mensagem (out, status 'sent') e atualiza a prévia da conversa.
+ * O echo/status que voltarem pelo webhook são idempotentes (wa_message_id).
  */
 export default defineEventHandler(async (event) => {
   const { conversationId, text } = await readBody<{ conversationId?: string; text?: string }>(event)
@@ -23,7 +18,7 @@ export default defineEventHandler(async (event) => {
   // 1) dados da conversa (destinatário + inbox)
   const { data: conv, error: convErr } = await supabase
     .from('conversations')
-    .select('id, wa_id, phone_number_id, display_phone_number, canal')
+    .select('id, wa_id, phone_number_id, display_phone_number')
     .eq('id', conversationId)
     .single()
 
@@ -31,23 +26,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'conversa não encontrada' })
   }
 
-  const canal = conv.canal ?? 'whatsapp'
-
-  // 2) envia pelo canal certo
-  let waMessageId: string | null = null
-  if (canal === 'whatsapp') {
-    waMessageId = await sendTextMessage(conv.phone_number_id, conv.wa_id, text.trim())
-  } else {
-    const cred = await getCredenciaisMensageriaPorInbox(conv.phone_number_id)
-    if (!cred) {
-      throw createError({ statusCode: 400, statusMessage: 'Integração Meta sem Page Access Token configurado. Reconecte em Configurações → Marketing.' })
-    }
-    const res = await sendMetaMessage(conv.phone_number_id, conv.wa_id, text.trim(), cred.pageAccessToken)
-    if (!res.ok) {
-      throw createError({ statusCode: 502, statusMessage: res.erro || 'Falha ao enviar mensagem.' })
-    }
-    waMessageId = res.id ?? null
-  }
+  // 2) envia via Datafy
+  const waMessageId = await sendTextMessage(conv.phone_number_id, conv.wa_id, text.trim())
 
   // 3) persiste a mensagem enviada
   const nowIso = new Date().toISOString()
@@ -57,7 +37,6 @@ export default defineEventHandler(async (event) => {
       {
         conversation_id: conv.id,
         wa_message_id: waMessageId,
-        canal,
         direction: 'out',
         kind: 'text',
         from_wa_id: conv.display_phone_number,
