@@ -8,6 +8,7 @@
 
 import type { Credenciais, Plataforma } from './types'
 import { buscarCredenciaisMensageria } from './metaAds'
+import { inscreverPaginaNoWebhook } from '../metaMessagingSend'
 
 /** Lista as credenciais ativas da empresa (com os segredos — server-only). */
 export async function getIntegracoesAtivas(empresaId: string | number): Promise<Credenciais[]> {
@@ -96,6 +97,13 @@ export async function selecionarPaginaMensageria(
   const info = await buscarCredenciaisMensageria(creds, pageId)
   if (!info.pageAccessToken) {
     return { ok: false, erro: 'Não foi possível obter o token dessa Página. Confirme que sua conta administra essa Página no Facebook.' }
+  }
+
+  // Sem isso a Meta não entrega os eventos de mensagem pro webhook, mesmo
+  // com a URL de callback já verificada — é um passo separado por Página.
+  const inscricao = await inscreverPaginaNoWebhook(pageId, info.pageAccessToken)
+  if (!inscricao.ok) {
+    return { ok: false, erro: `Página conectada, mas falhou ao inscrever no webhook: ${inscricao.erro}` }
   }
 
   const supabase = useSupabaseServer()
