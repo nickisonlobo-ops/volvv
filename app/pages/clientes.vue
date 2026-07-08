@@ -14,20 +14,17 @@
     <template #actions>
       <button
         type="button"
-        class="inline-flex items-center gap-2 text-sm font-semibold px-3 sm:px-5 py-2.5 rounded-xl transition-all duration-200"
-        :class="filtroAberto
-          ? 'bg-white text-primary shadow-lg scale-[1.02]'
-          : 'bg-white/10 text-white hover:bg-white/20 border border-white/15 backdrop-blur-sm'"
+        class="btn-header"
         @click="filtroAberto = !filtroAberto"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
         <span class="hidden sm:inline">Filtros</span>
-        <span v-if="filtrosAtivos > 0" class="inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-white text-primary text-xs font-black">{{ filtrosAtivos }}</span>
+        <span v-if="filtrosAtivos > 0" class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-white/20 text-white text-[10px] font-black">{{ filtrosAtivos }}</span>
       </button>
       <button
         v-if="isAdminOrGerente"
         type="button"
-        class="inline-flex items-center gap-2 text-sm font-bold px-3 sm:px-5 py-2.5 rounded-xl bg-white text-primary hover:bg-primary-5 shadow-lg transition-all duration-200 hover:scale-[1.02]"
+        class="btn-header btn-header--solid"
         @click="abrirAdicionar"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
@@ -37,22 +34,22 @@
 
     <!-- Stats (cards claros no painel) -->
     <div v-if="!loading" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-      <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 16px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+      <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 16px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
         <div style="font-size:11px;font-weight:700;color:#6b7079;text-transform:uppercase;letter-spacing:.5px">Total</div>
         <div style="font-size:24px;font-weight:800;color:#0f1216;letter-spacing:-.5px;margin:6px 0 2px">{{ clientes.length }}</div>
         <div style="font-size:11.5px;color:#8b9099">cliente(s)</div>
       </div>
-      <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 16px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+      <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 16px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
         <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:#16a34a"></span><div style="font-size:11px;font-weight:700;color:#6b7079;text-transform:uppercase;letter-spacing:.5px">Ativos</div></div>
         <div style="font-size:24px;font-weight:800;color:#0f1216;letter-spacing:-.5px;margin:6px 0 2px">{{ clientesAtivos }}</div>
         <div style="font-size:11.5px;color:#8b9099">habilitados</div>
       </div>
-      <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 16px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+      <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 16px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
         <div style="font-size:11px;font-weight:700;color:#6b7079;text-transform:uppercase;letter-spacing:.5px">Com E-mail</div>
         <div style="font-size:24px;font-weight:800;color:#0f1216;letter-spacing:-.5px;margin:6px 0 2px">{{ comEmail }}</div>
         <div style="font-size:11.5px;color:#8b9099">de {{ clientes.length }} cadastrados</div>
       </div>
-      <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 16px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+      <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 16px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
         <div style="font-size:11px;font-weight:700;color:#6b7079;text-transform:uppercase;letter-spacing:.5px">Cidades</div>
         <div style="font-size:24px;font-weight:800;color:#0f1216;letter-spacing:-.5px;margin:6px 0 2px">{{ cidadesUnicas.length }}</div>
         <div style="font-size:11.5px;color:#8b9099">distintas</div>

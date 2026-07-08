@@ -679,8 +679,8 @@ const loading = ref(true)
 const lineTooltip = ref<number | null>(null)
 
 // ── Constantes visuais ────────────────────────────────────────────────────────
-const DONUT_COLORS = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#14b8a6', '#f97316']
-const CATEGORY_COLORS = ['#0ea5e9', '#8b5cf6', '#f59e0b', '#ef4444', '#10b981', '#ec4899', '#14b8a6', '#f97316']
+const DONUT_COLORS = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#14b8a6', '#fc6404']
+const CATEGORY_COLORS = ['#0ea5e9', '#8b5cf6', '#f59e0b', '#ef4444', '#10b981', '#ec4899', '#14b8a6', '#fc6404']
 const CHART_H = 150
 const donutCircumference = 2 * Math.PI * 44
 

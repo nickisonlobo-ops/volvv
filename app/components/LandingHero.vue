@@ -123,7 +123,7 @@
               <div class="bar flex-1" style="height:46%;background:#52525b"></div>
               <div class="bar flex-1" style="height:66%;background:#52525b"></div>
               <div class="bar flex-1" style="height:78%;background:#71717a"></div>
-              <div class="bar flex-1" style="height:100%;background:linear-gradient(180deg,#fb923c,#f97316)"></div>
+              <div class="bar flex-1" style="height:100%;background:linear-gradient(180deg,#fb923c,#fc6404)"></div>
             </div>
           </div>
         </div>
@@ -287,7 +287,7 @@ onUnmounted(() => {
 
 /* Texto com brilho degrade em movimento */
 .hero-shimmer {
-  background: linear-gradient(100deg, #f97316 20%, #fed7aa 40%, #f97316 60%);
+  background: linear-gradient(100deg, #fc6404 20%, #fed7aa 40%, #fc6404 60%);
   background-size: 220% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }

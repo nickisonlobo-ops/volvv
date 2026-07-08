@@ -5,13 +5,13 @@
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
       <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full opacity-15 blur-[160px]" style="background: radial-gradient(circle, #ea580c, transparent 70%)"></div>
       <div class="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full opacity-10 blur-[120px]" style="background: radial-gradient(circle, #3b82f6, transparent 70%)"></div>
-      <div class="absolute top-0 right-0 w-[400px] h-[400px] rounded-full opacity-8 blur-[100px]" style="background: radial-gradient(circle, #f97316, transparent 70%)"></div>
+      <div class="absolute top-0 right-0 w-[400px] h-[400px] rounded-full opacity-8 blur-[100px]" style="background: radial-gradient(circle, #fc6404, transparent 70%)"></div>
       <!-- Grid -->
       <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 60px 60px;"></div>
       <!-- Particles -->
       <div class="particle" style="top:10%;right:15%;width:12px;height:12px;background:#ea580c"></div>
       <div class="particle" style="top:20%;right:35%;width:8px;height:8px;background:#ea580c;animation-delay:.7s"></div>
-      <div class="particle" style="top:55%;left:10%;width:10px;height:10px;background:#f97316;animation-delay:1.3s"></div>
+      <div class="particle" style="top:55%;left:10%;width:10px;height:10px;background:#fc6404;animation-delay:1.3s"></div>
       <div class="particle" style="bottom:25%;left:25%;width:7px;height:7px;background:#fb923c;animation-delay:.4s"></div>
       <div class="particle" style="bottom:35%;right:20%;width:9px;height:9px;background:#ea580c;animation-delay:1s"></div>
     </div>

@@ -61,14 +61,14 @@
               <span class="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{{ itens.length }} item(s)</span>
             </div>
             <div v-if="loadingItens" class="flex items-center justify-center py-10">
-              <span class="inline-block w-7 h-7 border-[3px] rounded-full animate-spin" style="border-color: rgba(0,0,0,0.08); border-top-color: var(--color-primary, #f97316)" />
+              <span class="inline-block w-7 h-7 border-[3px] rounded-full animate-spin" style="border-color: rgba(0,0,0,0.08); border-top-color: var(--color-primary, #fc6404)" />
             </div>
             <div v-else class="space-y-3">
               <div v-for="(item, idx) in itens" :key="item.id" class="rounded-2xl border border-gray-100 bg-gradient-to-br from-white to-gray-50/30 hover:border-gray-200 hover:shadow-md transition-all overflow-hidden group">
                 <!-- Item header -->
                 <div class="flex items-center justify-between px-5 py-3.5">
                   <div class="flex items-center gap-3 min-w-0">
-                    <span class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black text-white flex-shrink-0" style="background: var(--color-primary, #f97316)">{{ idx + 1 }}</span>
+                    <span class="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black text-white flex-shrink-0" style="background: var(--color-primary, #fc6404)">{{ idx + 1 }}</span>
                     <div class="min-w-0">
                       <p class="text-sm font-bold text-gray-900 truncate">{{ item.descricao }}</p>
                       <p class="text-[10px] text-gray-400 font-medium">{{ item.material_nome ?? '' }}</p>
@@ -144,7 +144,7 @@
               </div>
               <div class="border-t border-gray-200 pt-3 mt-3 flex justify-between items-center">
                 <span class="text-base font-black text-gray-900">Total</span>
-                <span class="text-2xl font-black" style="color: var(--color-primary, #f97316)">{{ formatCurrency(orcamento.valor_total) }}</span>
+                <span class="text-2xl font-black" style="color: var(--color-primary, #fc6404)">{{ formatCurrency(orcamento.valor_total) }}</span>
               </div>
             </div>
           </section>
@@ -258,10 +258,10 @@
 
             <!-- Link gerado -->
             <div v-if="linkGerado" class="mt-4 p-4 rounded-2xl border" style="background: var(--color-primary-5, rgba(249,115,22,0.05)); border-color: var(--color-primary-20, rgba(249,115,22,0.2))">
-              <label class="text-[10px] font-black uppercase tracking-[0.15em] mb-2 block" style="color: var(--color-primary, #f97316)">Link de Aprovação</label>
+              <label class="text-[10px] font-black uppercase tracking-[0.15em] mb-2 block" style="color: var(--color-primary, #fc6404)">Link de Aprovação</label>
               <div class="flex items-center gap-2">
                 <input type="text" :value="linkGerado" readonly class="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs text-gray-700 font-mono" />
-                <button type="button" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white transition-colors" style="background: var(--color-primary, #f97316)" @click="copiarLink">
+                <button type="button" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white transition-colors" style="background: var(--color-primary, #fc6404)" @click="copiarLink">
                   {{ linkCopiado ? '✓ Copiado' : 'Copiar' }}
                 </button>
               </div>

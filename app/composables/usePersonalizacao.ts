@@ -29,7 +29,7 @@ export interface PersonalizacaoConfig {
 }
 
 const DEFAULTS: PersonalizacaoConfig = {
-  cor_primaria: '#f97316',
+  cor_primaria: '#fc6404',
   cor_primaria_texto: '#ffffff',
   cor_fundo: '#12151c',
   cor_sidebar: '#0a0d12',
@@ -45,7 +45,7 @@ const DEFAULTS: PersonalizacaoConfig = {
   cor_sidebar_grad: null,
   cor_card_grad: null,
   grad_direction: '135deg',
-  cor_botao: '#f97316',
+  cor_botao: '#fc6404',
   cor_botao_texto: '#ffffff',
   cor_icone: '#fb923c',
 }

@@ -115,7 +115,7 @@
         <div v-if="notifAberto" class="sidebar__notif-panel">
           <div class="sidebar__notif-head">
             <span class="text-sm font-bold" style="color:#0f1216">Notificações</span>
-            <button v-if="naoLidas > 0" type="button" class="text-[10px] font-bold" style="color:#f97316" @click="marcarTodasComoLidas">Marcar todas como lidas</button>
+            <button v-if="naoLidas > 0" type="button" class="text-[10px] font-bold" style="color:#fc6404" @click="marcarTodasComoLidas">Marcar todas como lidas</button>
           </div>
           <div class="sidebar__notif-list">
             <div v-if="notificacoes.length === 0" class="py-8 text-center text-sm" style="color:#9aa1ab">Nenhuma notificação</div>
@@ -127,14 +127,14 @@
               @click="abrirNotificacao(notif)"
             >
               <div class="sidebar__notif-dot-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9A6 6 0 1 0 6 9c0 5-2.5 6.5-2.5 6.5h17S18 14 18 9zM10 19a2 2 0 0 0 4 0"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fc6404" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9A6 6 0 1 0 6 9c0 5-2.5 6.5-2.5 6.5h17S18 14 18 9zM10 19a2 2 0 0 0 4 0"/></svg>
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-xs font-bold truncate" style="color:#0f1216">{{ notif.titulo }}</p>
                 <p class="text-[11px] truncate" style="color:#6b7079">{{ notif.mensagem }}</p>
                 <p class="text-[10px] mt-0.5" style="color:#9aa1ab">{{ formatNotifTime(notif.created_at) }}</p>
               </div>
-              <span v-if="!notif.lida" class="w-2 h-2 rounded-full shrink-0 mt-1.5" style="background:#f97316" />
+              <span v-if="!notif.lida" class="w-2 h-2 rounded-full shrink-0 mt-1.5" style="background:#fc6404" />
             </div>
           </div>
         </div>
@@ -377,7 +377,7 @@ const navSections = computed(() =>
   color:          #fff;
 }
 .sidebar__brand-accent {
-  background:       linear-gradient(120deg, #fb923c, #f97316);
+  background:       linear-gradient(120deg, #fb923c, #fc6404);
   -webkit-background-clip: text;
   background-clip:  text;
   color:            transparent;
@@ -389,7 +389,7 @@ const navSections = computed(() =>
   margin-top:     3px;
   white-space:    nowrap;
 }
-.sidebar__dot { color: #f97316; }
+.sidebar__dot { color: #fc6404; }
 
 /* ── Nav ────────────────────────────────────────────────────────────── */
 .sidebar__nav {
@@ -476,7 +476,7 @@ const navSections = computed(() =>
   color:           #9aa4b2;
 }
 .sidebar__item:hover .sidebar__item-icon { color: #cbd2db; }
-.sidebar__item--active .sidebar__item-icon { color: var(--color-primary, #f97316); }
+.sidebar__item--active .sidebar__item-icon { color: var(--color-primary, #fc6404); }
 .sidebar__item-label {
   flex:          1;
   overflow:      hidden;
@@ -484,7 +484,7 @@ const navSections = computed(() =>
 }
 .sidebar__badge {
   margin-left:     auto;
-  background:      var(--color-primary, #f97316);
+  background:      var(--color-primary, #fc6404);
   color:           #fff;
   font-size:       10.5px;
   font-weight:     700;
@@ -594,7 +594,7 @@ const navSections = computed(() =>
   height:          16px;
   padding:         0 4px;
   border-radius:   8px;
-  background:      #f97316;
+  background:      #fc6404;
   color:           #fff;
   font-size:       9.5px;
   font-weight:     700;

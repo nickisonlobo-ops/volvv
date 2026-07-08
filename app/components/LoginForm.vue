@@ -21,7 +21,7 @@
               : 'text-white/50 hover:text-white/70',
           activeTab === tab.key ? '' : '',
           ]"
-          :style="activeTab === tab.key ? 'background: linear-gradient(135deg, #ea580c, #f97316)' : ''"
+          :style="activeTab === tab.key ? 'background: linear-gradient(135deg, #ea580c, #fc6404)' : ''"
           @click="activeTab = tab.key"
         >
           {{ tab.label }}
@@ -61,7 +61,7 @@
       <p v-if="authError" class="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2.5 text-center">
         {{ authError }}
       </p>
-      <AppButton variant="secondary" size="lg" type="submit" :loading="authLoading" class="mt-2 w-full font-bold !text-white !border-0" style="background: linear-gradient(135deg, #ea580c, #f97316)">
+      <AppButton variant="secondary" size="lg" type="submit" :loading="authLoading" class="mt-2 w-full font-bold !text-white !border-0" style="background: linear-gradient(135deg, #ea580c, #fc6404)">
         Entrar
       </AppButton>
     </form>
@@ -121,7 +121,7 @@
       <p v-if="registerSuccess" class="text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-2.5 text-center">
         Cadastro realizado! Verifique seu e-mail para confirmar a conta.
       </p>
-      <AppButton variant="secondary" size="lg" type="submit" :loading="authLoading" class="mt-2 w-full font-bold !text-white !border-0" style="background: linear-gradient(135deg, #ea580c, #f97316)">
+      <AppButton variant="secondary" size="lg" type="submit" :loading="authLoading" class="mt-2 w-full font-bold !text-white !border-0" style="background: linear-gradient(135deg, #ea580c, #fc6404)">
         Criar conta
       </AppButton>
     </form>

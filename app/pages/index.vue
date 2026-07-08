@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full flex flex-col px-2 pt-2 sm:px-5 sm:pt-4" style="background:#08090b">
+  <div class="min-h-full flex flex-col px-0 pt-2 sm:px-5 sm:pt-4" style="background:#08090b">
 
     <!-- �.��.��.��.��.��.��.��.��.��.��.� VIS�fO FUNCIONÁRIO �.��.��.��.��.��.��.��.��.��.��.� -->
     <template v-if="!adminLoading && !isAdminOrGerente">
@@ -378,58 +378,24 @@
     <!-- �.��.��.��.��.��.��.��.��.��.��.� VIS�fO ADMIN �.��.��.��.��.��.��.��.��.��.��.� -->
     <template v-if="!adminLoading && isAdminOrGerente">
 
-      <!-- HEADER CARD — Estilo premium como outras páginas -->
-      <div class="relative rounded-t-3xl overflow-hidden shadow-xl" :style="{ background: 'var(--color-sidebar, #0a0d12)', border: '2px solid rgba(255,255,255,0.16)' }">
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.08),transparent_60%)]" />
-        <div class="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/[0.03] pointer-events-none" />
-        <div class="absolute -bottom-20 left-1/4 w-96 h-96 rounded-full bg-white/[0.02] pointer-events-none" />
+      <!-- HEADER CARD — Totalmente preto com borda cinza -->
+      <div class="relative rounded-t-3xl overflow-hidden shadow-xl mx-0 sm:mx-3" style="background:#000;border:2px solid rgba(255,255,255,0.16)">
+        <div class="absolute inset-0 pointer-events-none" style="background:url('/dashboard-bg.png') 34% center / auto 135% no-repeat;filter:brightness(1.12) contrast(1.03)"></div>
+        <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(90deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0) 70%)"></div>
 
-        <!-- Globo decorativo: grade de pontos + arcos de conexão -->
-        <svg class="absolute -right-10 top-1/2 -translate-y-1/2 w-[420px] h-[420px] opacity-[0.35] pointer-events-none hidden md:block" viewBox="0 0 400 400" aria-hidden="true">
-          <defs>
-            <radialGradient id="globeFade" cx="50%" cy="50%" r="50%">
-              <stop offset="60%" stop-color="#fff" stop-opacity="1" />
-              <stop offset="100%" stop-color="#fff" stop-opacity="0" />
-            </radialGradient>
-            <mask id="globeMask">
-              <rect x="0" y="0" width="400" height="400" fill="url(#globeFade)" />
-            </mask>
-          </defs>
-          <g mask="url(#globeMask)">
-            <circle cx="200" cy="200" r="150" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1" />
-            <ellipse cx="200" cy="200" rx="150" ry="55" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
-            <ellipse cx="200" cy="200" rx="150" ry="105" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
-            <ellipse cx="200" cy="200" rx="55" ry="150" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
-            <ellipse cx="200" cy="200" rx="105" ry="150" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
-            <line x1="50" y1="200" x2="350" y2="200" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
-            <line x1="200" y1="50" x2="200" y2="350" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
-            <path d="M 90 130 Q 220 90 310 190" fill="none" stroke="rgba(249,115,22,0.55)" stroke-width="1.5" stroke-dasharray="2,4" />
-            <path d="M 110 280 Q 230 260 300 150" fill="none" stroke="rgba(239,68,68,0.4)" stroke-width="1.5" stroke-dasharray="2,4" />
-            <circle cx="90" cy="130" r="3.5" fill="#f97316" />
-            <circle cx="90" cy="130" r="7" fill="none" stroke="#f97316" stroke-width="1" opacity="0.5" />
-            <circle cx="310" cy="190" r="3" fill="#fb923c" />
-            <circle cx="230" cy="260" r="2.5" fill="#ef4444" />
-            <circle cx="150" cy="230" r="2" fill="#fff" opacity="0.6" />
-            <circle cx="260" cy="120" r="2" fill="#fff" opacity="0.4" />
-          </g>
-        </svg>
-
-        <div class="relative px-4 sm:px-8 pt-6 sm:pt-9 pb-6 sm:pb-9">
-          <div class="flex flex-wrap items-start justify-between gap-3 sm:gap-6">
+        <div class="relative px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-7">
+          <div class="flex flex-wrap items-center justify-between gap-3 sm:gap-6">
             <div class="flex items-center gap-3 sm:gap-5">
-              <div class="flex items-center justify-center w-10 sm:w-14 h-10 sm:h-14 rounded-2xl bg-white/[0.12] backdrop-blur-sm border border-white/20 shadow-lg">
-                <svg class="w-5 sm:w-7 h-5 sm:h-7 text-white" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+              <div class="flex items-center justify-center w-10 sm:w-14 h-10 sm:h-14 shrink-0">
+                <svg class="w-7 sm:w-10 h-7 sm:h-10" style="color: #fc6404" fill="currentColor" viewBox="0 0 24 24">
+                  <rect x="3" y="13.5" width="3.8" height="7.5" rx="1.4" opacity="0.45" />
+                  <rect x="10.1" y="9" width="3.8" height="12" rx="1.4" opacity="0.72" />
+                  <rect x="17.2" y="4" width="3.8" height="17" rx="1.4" />
                 </svg>
               </div>
               <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="text-xs font-semibold text-white/80 uppercase tracking-widest">Gestão</span>
-                  <span class="w-1 h-1 rounded-full bg-white/40" />
-                  <span class="text-xs text-white/50 hidden sm:inline">Visão Geral</span>
-                </div>
                 <h1 class="text-xl sm:text-3xl font-bold text-white tracking-tight leading-none">Dashboard</h1>
-                <p class="text-sm text-gray-300/80 mt-1.5">{{ periodoLabel }}</p>
+                <p class="text-xs font-semibold text-white/50 uppercase tracking-widest mt-1.5">Visão Geral</p>
               </div>
             </div>
 
@@ -437,21 +403,21 @@
             <div class="flex items-center gap-2">
               <button
                 type="button"
-                class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 text-white hover:bg-white/30 transition-all duration-200"
+                class="btn-header btn-header--icon"
                 title="Atualizar dados"
                 @click="refresh()"
               >
-                <svg class="w-5 h-5" :class="loading ? 'animate-spin' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                <svg class="w-5 h-5" :class="loading ? 'animate-spin' : ''" style="color: #fc6404" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
               </button>
               <button
                 type="button"
-                class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/95 text-sm font-bold shadow-lg transition-all duration-200 hover:scale-[1.02] backdrop-blur-sm"
-                :style="{ color: 'var(--color-primary, #6366f1)' }"
+                class="btn-header btn-header--icon-sm"
+                title="Filtros"
                 @click="filtroAberto = !filtroAberto"
               >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
-                Filtros
-                <span v-if="periodoFiltro !== 'mes_atual'" class="w-2 h-2 rounded-full bg-current" />
+                <svg class="w-5 h-5" style="color: #fc6404" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+                <span class="hidden sm:inline">Filtros</span>
+                <span v-if="periodoFiltro !== 'mes_atual'" class="w-2 h-2 rounded-full" style="background: #fc6404" />
               </button>
             </div>
           </div>
@@ -519,7 +485,7 @@
 
         <!-- Alertas e Prazos -->
         <div v-if="alertas.temAlertas" style="display:flex;align-items:center;gap:14px;background:linear-gradient(90deg,#fdf7ee,#fcf5ef);border:1px solid #f2e7d7;border-radius:14px;padding:12px 18px">
-          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9A6 6 0 1 0 6 9c0 5-2.5 6.5-2.5 6.5h17S18 14 18 9zM10 19a2 2 0 0 0 4 0"/></svg>
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fc6404" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9A6 6 0 1 0 6 9c0 5-2.5 6.5-2.5 6.5h17S18 14 18 9zM10 19a2 2 0 0 0 4 0"/></svg>
           <div>
             <div style="font-weight:700;font-size:13px;color:#1a1d21">Alertas e Prazos</div>
             <div style="font-size:11.5px;color:#9aa1ab;margin-top:1px">{{ totalAlertas }} {{ totalAlertas === 1 ? 'item exige' : 'itens exigem' }} sua atenção</div>
@@ -542,7 +508,7 @@
         <div class="grid grid-cols-2 md:grid-cols-4 2xl:grid-cols-7 gap-3" :style="{ marginTop: alertas.temAlertas ? '14px' : '0' }">
 
           <!-- Faturamento -->
-          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+          <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.05)">
             <div style="display:flex;align-items:center;gap:9px">
               <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#e3f7ea;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M10.2 14.2c0 .9.8 1.5 1.8 1.5s1.8-.5 1.8-1.4-.8-1.2-1.8-1.4-1.8-.5-1.8-1.4.8-1.4 1.8-1.4 1.8.6 1.8 1.5"/></svg></span>
               <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">FATURAMENTO</span>
@@ -553,18 +519,18 @@
           </div>
 
           <!-- Despesas -->
-          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+          <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.05)">
             <div style="display:flex;align-items:center;gap:9px">
               <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#fdeaea;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="13" rx="2.2"/><path d="M4 9.5h16M7.5 14.5h3"/></svg></span>
               <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">DESPESAS</span>
             </div>
             <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px" class="truncate">{{ formatCurrency(financeiro.despesas) }}</div>
             <div style="font-size:11px;font-weight:700;white-space:nowrap" :style="{ color: varColor(-comparativo.variacaoDespesas) }">{{ fmtVar(comparativo.variacaoDespesas) }} <span style="color:#8b9099;font-weight:500">vs. mês anterior</span></div>
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="margin-top:8px"><path :d="sparklineDespesas" fill="none" stroke="#f97316" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="margin-top:8px"><path :d="sparklineDespesas" fill="none" stroke="#fc6404" stroke-width="1.6" stroke-linecap="round"/></svg>
           </div>
 
           <!-- Lucro Estimado -->
-          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+          <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.05)">
             <div style="display:flex;align-items:center;gap:9px">
               <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#e4edfd;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5l4.5-4.5 3.5 2.5 6.5-6.5M19 8v4.5h-4.5"/></svg></span>
               <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">LUCRO ESTIMADO</span>
@@ -575,7 +541,7 @@
           </div>
 
           <!-- A Receber -->
-          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+          <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.05)">
             <div style="display:flex;align-items:center;gap:9px">
               <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#e3f7ea;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M10.2 14.2c0 .9.8 1.5 1.8 1.5s1.8-.5 1.8-1.4-.8-1.2-1.8-1.4-1.8-.5-1.8-1.4.8-1.4 1.8-1.4 1.8.6 1.8 1.5"/></svg></span>
               <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">A RECEBER</span>
@@ -585,7 +551,7 @@
           </div>
 
           <!-- A Pagar -->
-          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+          <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.05)">
             <div style="display:flex;align-items:center;gap:9px">
               <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#fdeee2;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="13" rx="2.2"/><path d="M4 9.5h16M7.5 14.5h3"/></svg></span>
               <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">A PAGAR</span>
@@ -595,7 +561,7 @@
           </div>
 
           <!-- Contas Vencidas -->
-          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+          <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.05)">
             <div style="display:flex;align-items:center;gap:9px">
               <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#fdeaea;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 3.5 19h17z"/><path d="M12 10v4M12 16.5v.01" stroke-width="2.2"/></svg></span>
               <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">CONTAS VENCIDAS</span>
@@ -608,7 +574,7 @@
           </div>
 
           <!-- Saldo Previsto -->
-          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+          <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.05)">
             <div style="display:flex;align-items:center;gap:9px">
               <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#f1eafd;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.4" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="2.1"/><circle cx="15.5" cy="8.5" r="2.1"/><circle cx="8.5" cy="15.5" r="2.1"/><circle cx="15.5" cy="15.5" r="2.1"/></svg></span>
               <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">SALDO PREVISTO</span>
@@ -629,7 +595,7 @@
           </div>
 
           <!-- Status de Produção -->
-          <div class="xl:mb-[44px]" style="background:#fff;border:1px solid #ecece9;border-radius:18px;padding:18px 20px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+          <div class="xl:mb-[44px]" style="background:#fff;border:1px solid #e2e5ea;border-radius:18px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
             <div style="display:flex;align-items:center;justify-content:space-between">
               <div style="font-size:15.5px;font-weight:700;color:#0f1216;letter-spacing:-.2px">Status de Produção</div>
               <NuxtLink to="/adesivos-ordens-servico" style="display:flex;align-items:center;gap:8px;border:1px solid #e5e5e2;border-radius:10px;padding:8px 13px;font-size:12.5px;font-weight:600;color:#31363e;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></NuxtLink>
@@ -695,7 +661,7 @@
       <!-- ═══════════════════════════════ ROW: PIPELINE + ATIVIDADES + RESUMO FINANCEIRO -->
       <div class="grid grid-cols-1 xl:grid-cols-[1.42fr_1fr_1.89fr] gap-3.5 mt-3.5">
         <!-- Pipeline de Orçamentos -->
-        <div style="background:#fff;border:1px solid #ecece9;border-radius:18px;padding:18px 20px;box-shadow:0 1px 2px rgba(0,0,0,.02);display:flex;flex-direction:column">
+        <div style="background:#fff;border:1px solid #e2e5ea;border-radius:18px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.05);display:flex;flex-direction:column">
           <div style="display:flex;align-items:center;justify-content:space-between">
             <div style="font-size:15.5px;font-weight:700;color:#0f1216;letter-spacing:-.2px">Pipeline de Orçamentos</div>
             <div style="display:flex;align-items:center;gap:8px;border:1px solid #e5e5e2;border-radius:10px;padding:8px 13px;font-size:12.5px;font-weight:600;color:#31363e;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)">{{ periodoLabel }} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
@@ -727,7 +693,7 @@
 
             <div style="display:flex;gap:3px;margin-top:22px;height:8px">
               <div v-if="pipeline.rascunho > 0" style="background:#3652ad;border-radius:4px 0 0 4px" :style="{ flex: pipeline.rascunho }" />
-              <div v-if="pipeline.enviado > 0" style="background:#f97316" :style="{ flex: pipeline.enviado }" />
+              <div v-if="pipeline.enviado > 0" style="background:#fc6404" :style="{ flex: pipeline.enviado }" />
               <div v-if="pipeline.aprovado > 0" style="background:#22a749" :style="{ flex: pipeline.aprovado }" />
               <div v-if="(pipeline.rejeitado + pipeline.vencido) > 0" style="background:#a78bfa;border-radius:0 4px 4px 0" :style="{ flex: pipeline.rejeitado + pipeline.vencido }" />
             </div>
@@ -751,7 +717,7 @@
         </div>
 
         <!-- Atividades Recentes -->
-        <div style="background:#fff;border:1px solid #ecece9;border-radius:18px;padding:18px 18px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+        <div style="background:#fff;border:1px solid #e2e5ea;border-radius:18px;padding:18px 18px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
             <div style="font-size:15.5px;font-weight:700;color:#0f1216;letter-spacing:-.2px">Atividades Recentes</div>
             <NuxtLink to="/adesivos-orcamentos" style="font-size:12.5px;font-weight:700;color:#3b82f6">Ver todas</NuxtLink>
@@ -859,7 +825,7 @@
       <!-- ═══ fim painel de conteúdo ═══ -->
 
       <!-- FAB — Nova OS -->
-      <NuxtLink to="/adesivos-ordens-servico" class="hidden xl:flex" style="position:fixed;right:38px;bottom:28px;width:60px;height:60px;border-radius:50%;background:#f97316;color:#fff;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(249,115,22,.45);z-index:40" title="Nova Ordem de Serviço">
+      <NuxtLink to="/adesivos-ordens-servico" class="hidden xl:flex" style="position:fixed;right:38px;bottom:28px;width:60px;height:60px;border-radius:50%;background:#fc6404;color:#fff;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(249,115,22,.45);z-index:40" title="Nova Ordem de Serviço">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       </NuxtLink>
 

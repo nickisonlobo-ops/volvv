@@ -210,6 +210,11 @@ function abrirNotificacao(notif: any) {
   gap:             0.5rem;
 }
 
+/* Mobile (< lg): topbar oculta — usuário/notificações/sair ficam no menu (AppBottomNav) */
+@media (max-width: 1023px) {
+  .app-header { display: none !important; }
+}
+
 @media (min-width: 640px) {
   .app-header { padding: 0 1.5rem; }
 }

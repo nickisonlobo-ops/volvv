@@ -17,18 +17,18 @@
           <div style="display:flex;justify-content:space-between;align-items:flex-start">
             <div>
               <div class="ico" style="background:rgba(249,115,22,.13);border:1px solid rgba(249,115,22,.22)">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="4" width="4.5" height="16" rx="1.5" stroke="#f97316" stroke-width="1.8"/><rect x="9.75" y="4" width="4.5" height="11" rx="1.5" stroke="#f97316" stroke-width="1.8"/><rect x="16" y="4" width="4.5" height="14" rx="1.5" stroke="#f97316" stroke-width="1.8"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="4" width="4.5" height="16" rx="1.5" stroke="#fc6404" stroke-width="1.8"/><rect x="9.75" y="4" width="4.5" height="11" rx="1.5" stroke="#fc6404" stroke-width="1.8"/><rect x="16" y="4" width="4.5" height="14" rx="1.5" stroke="#fc6404" stroke-width="1.8"/></svg>
               </div>
               <h3 class="ttl">Kanban de produção</h3>
               <p class="desc" style="max-width:340px">Acompanhe cada pedido por etapas visuais — arte, aprovação, produção, acabamento e entrega — e nunca perca um prazo.</p>
             </div>
-            <span style="font-size:11px;font-weight:700;color:#f97316;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.2);padding:5px 11px;border-radius:100px;white-space:nowrap">12 O.S. ativas</span>
+            <span style="font-size:11px;font-weight:700;color:#fc6404;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.2);padding:5px 11px;border-radius:100px;white-space:nowrap">12 O.S. ativas</span>
           </div>
           <div class="plx" data-depth="14" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:22px">
             <div>
               <div class="klabel">Arte</div>
-              <div class="kcard" style="border-left:3px solid #f97316;margin-bottom:8px"><div style="font-size:11px;font-weight:600">Banner 3×1m</div><div style="font-size:9px;color:#71717a;margin-top:3px">Studio Vibe</div></div>
-              <div class="kcard" style="border-left:3px solid #f97316"><div style="font-size:11px;font-weight:600">Fachada ACM</div><div style="font-size:9px;color:#71717a;margin-top:3px">Padaria Sol</div></div>
+              <div class="kcard" style="border-left:3px solid #fc6404;margin-bottom:8px"><div style="font-size:11px;font-weight:600">Banner 3×1m</div><div style="font-size:9px;color:#71717a;margin-top:3px">Studio Vibe</div></div>
+              <div class="kcard" style="border-left:3px solid #fc6404"><div style="font-size:11px;font-weight:600">Fachada ACM</div><div style="font-size:9px;color:#71717a;margin-top:3px">Padaria Sol</div></div>
             </div>
             <div>
               <div class="klabel">Impressão</div>
@@ -60,11 +60,11 @@
         <!-- Orçamentos -->
         <div class="card">
           <div class="ico" style="background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.2)">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="#f97316" stroke-width="1.8"/><line x1="8.5" y1="8" x2="15.5" y2="8" stroke="#f97316" stroke-width="1.8" stroke-linecap="round"/><line x1="8.5" y1="12" x2="15.5" y2="12" stroke="#f97316" stroke-width="1.8" stroke-linecap="round"/><line x1="8.5" y1="16" x2="12.5" y2="16" stroke="#f97316" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="#fc6404" stroke-width="1.8"/><line x1="8.5" y1="8" x2="15.5" y2="8" stroke="#fc6404" stroke-width="1.8" stroke-linecap="round"/><line x1="8.5" y1="12" x2="15.5" y2="12" stroke="#fc6404" stroke-width="1.8" stroke-linecap="round"/><line x1="8.5" y1="16" x2="12.5" y2="16" stroke="#fc6404" stroke-width="1.8" stroke-linecap="round"/></svg>
           </div>
           <h3 class="ttl">Orçamentos inteligentes</h3>
           <p class="desc">Crie orçamentos profissionais em segundos com cálculo automático de materiais e margem.</p>
-          <div class="det"><span class="mono" style="color:#e4e4e7">12 m² × {{ money('89') }}</span><span style="margin-left:auto;color:#f97316;font-weight:700">{{ money('1.068') }}</span></div>
+          <div class="det"><span class="mono" style="color:#e4e4e7">12 m² × {{ money('89') }}</span><span style="margin-left:auto;color:#fc6404;font-weight:700">{{ money('1.068') }}</span></div>
         </div>
 
         <!-- Ordens de serviço -->
@@ -140,7 +140,7 @@
               <div><div style="font-size:12.5px;font-weight:600;margin-bottom:3px">Margem baixa em placas ACM</div><div style="font-size:11px;color:#a1a1aa;line-height:1.5">Custo do insumo subiu 12%. Sugiro reajustar o m² em 8% para manter a margem alvo.</div></div>
             </div>
             <div style="display:flex;gap:10px;padding:12px;background:#161219;border:1px solid rgba(168,85,247,.14);border-radius:10px">
-              <div style="width:6px;border-radius:3px;background:#f97316;flex-shrink:0"></div>
+              <div style="width:6px;border-radius:3px;background:#fc6404;flex-shrink:0"></div>
               <div><div style="font-size:12.5px;font-weight:600;margin-bottom:3px">Oportunidade com Studio Vibe</div><div style="font-size:11px;color:#a1a1aa;line-height:1.5">Cliente recorrente há 40 dias sem novo pedido. Bom momento para um follow-up.</div></div>
             </div>
           </div>

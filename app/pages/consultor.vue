@@ -776,7 +776,7 @@
           <!-- KPI Cards estoque -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
 
-            <div class="relative rounded-xl overflow-hidden p-4 border border-white/60 shadow-sm" :style="{ background: 'var(--color-primary-bg, linear-gradient(135deg,#f97316,#fb923c))' }">
+            <div class="relative rounded-xl overflow-hidden p-4 border border-white/60 shadow-sm" :style="{ background: 'var(--color-primary-bg, linear-gradient(135deg,#fc6404,#fb923c))' }">
               <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.1),transparent_70%)]"></div>
               <div class="relative">
                 <p class="text-[9px] font-black uppercase tracking-[0.18em] text-white/60 mb-1.5">Total Produtos</p>
@@ -809,7 +809,7 @@
           </div>
 
           <!-- Curva ABC mini visualização -->
-          <div v-if="est.curvaABC.length > 0" class="mb-5 rounded-xl overflow-hidden border border-white/20 shadow-sm" :style="{ background: 'var(--color-primary-bg, linear-gradient(135deg,#f97316,#fb923c))' }">
+          <div v-if="est.curvaABC.length > 0" class="mb-5 rounded-xl overflow-hidden border border-white/20 shadow-sm" :style="{ background: 'var(--color-primary-bg, linear-gradient(135deg,#fc6404,#fb923c))' }">
             <div class="relative px-5 py-4">
               <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_right,rgba(255,255,255,0.08),transparent_60%)]"></div>
               <div class="relative">

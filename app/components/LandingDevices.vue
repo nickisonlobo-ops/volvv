@@ -59,14 +59,14 @@
                           <div class="dev-bar flex-1" style="height:64%;background:#52525b"></div>
                           <div class="dev-bar flex-1" style="height:56%;background:#71717a"></div>
                           <div class="dev-bar flex-1" style="height:80%;background:#a1a1aa"></div>
-                          <div class="dev-bar flex-1" style="height:100%;background:linear-gradient(180deg,#fb923c,#f97316)"></div>
+                          <div class="dev-bar flex-1" style="height:100%;background:linear-gradient(180deg,#fb923c,#fc6404)"></div>
                         </div>
                       </div>
                       <div class="w-[132px] bg-[#18181b] border border-white/[0.06] rounded-lg p-3 flex flex-col items-center justify-center gap-2">
                         <div class="relative w-[84px] h-[84px]">
                           <svg width="84" height="84" viewBox="0 0 84 84" class="dev-donut-svg">
                             <circle cx="42" cy="42" r="34" fill="none" stroke="#232326" stroke-width="8" />
-                            <circle ref="donutLaptop" cx="42" cy="42" r="34" fill="none" stroke="#f97316" stroke-width="8" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6" />
+                            <circle ref="donutLaptop" cx="42" cy="42" r="34" fill="none" stroke="#fc6404" stroke-width="8" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6" />
                           </svg>
                           <div class="absolute inset-0 flex items-center justify-center">
                             <span ref="numMeta" class="font-['Sora'] font-extrabold text-[16px]">0%</span>
@@ -124,7 +124,7 @@
                         <div class="relative w-11 h-11">
                           <svg width="44" height="44" viewBox="0 0 44 44" class="dev-donut-svg">
                             <circle cx="22" cy="22" r="17" fill="none" stroke="#232326" stroke-width="4.5" />
-                            <circle ref="donutArte" cx="22" cy="22" r="17" fill="none" stroke="#f97316" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="106.8" stroke-dashoffset="106.8" />
+                            <circle ref="donutArte" cx="22" cy="22" r="17" fill="none" stroke="#fc6404" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="106.8" stroke-dashoffset="106.8" />
                           </svg>
                           <div class="absolute inset-0 flex items-center justify-center"><span ref="numArte" class="font-['Sora'] font-bold text-[9px]">0%</span></div>
                         </div>

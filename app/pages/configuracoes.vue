@@ -776,7 +776,7 @@
             <button
               type="button"
               class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
-              style="background: var(--color-primary, #f97316)"
+              style="background: var(--color-primary, #fc6404)"
               :disabled="billingLoading || !billingForm.accountName || !billingForm.apiKey"
               @click="handleConnectBilling"
             >
@@ -932,7 +932,7 @@
               <button
                 type="button"
                 class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
-                style="background: var(--color-primary, #f97316)"
+                style="background: var(--color-primary, #fc6404)"
                 :disabled="mktLoading[p.id] || !mktForm[p.id].account_id || !mktForm[p.id].access_token"
                 @click="conectarMkt(p.id)"
               >
@@ -1235,7 +1235,7 @@ const previewCardBg = computed(() =>
 const temasProntos = [
   // ─── DARK PREMIUM ───────────────────────────────────────────────
   { nome: '🖤 Neon Studio',     cor_primaria: '#22c55e', cor_primaria_texto: '#ffffff', cor_fundo: '#0f172a', cor_sidebar: '#0f172a', cor_card: '#1e293b', cor_card_texto: '#e2e8f0', cor_primaria_grad: '#16a34a', cor_fundo_grad: '#1e293b', cor_sidebar_grad: '#1e293b', cor_card_grad: null, grad_direction: '180deg', cor_botao: '#22c55e', cor_botao_texto: '#000000', cor_icone: '#4ade80' },
-  { nome: '🔥 Fire Print',      cor_primaria: '#f97316', cor_primaria_texto: '#ffffff', cor_fundo: '#0c0a09', cor_sidebar: '#1c1917', cor_card: '#1c1917', cor_card_texto: '#fafaf9', cor_primaria_grad: '#ef4444', cor_fundo_grad: '#1c1917', cor_sidebar_grad: '#292524', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#f97316', cor_botao_texto: '#000000', cor_icone: '#fb923c' },
+  { nome: '🔥 Fire Print',      cor_primaria: '#fc6404', cor_primaria_texto: '#ffffff', cor_fundo: '#0c0a09', cor_sidebar: '#1c1917', cor_card: '#1c1917', cor_card_texto: '#fafaf9', cor_primaria_grad: '#ef4444', cor_fundo_grad: '#1c1917', cor_sidebar_grad: '#292524', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#fc6404', cor_botao_texto: '#000000', cor_icone: '#fb923c' },
   { nome: '⚡ Electric Blue',   cor_primaria: '#3b82f6', cor_primaria_texto: '#ffffff', cor_fundo: '#020617', cor_sidebar: '#0f172a', cor_card: '#1e293b', cor_card_texto: '#e2e8f0', cor_primaria_grad: '#06b6d4', cor_fundo_grad: '#0f172a', cor_sidebar_grad: '#1e293b', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#3b82f6', cor_botao_texto: '#ffffff', cor_icone: '#60a5fa' },
   { nome: '🎨 Iron Design',     cor_primaria: '#a855f7', cor_primaria_texto: '#ffffff', cor_fundo: '#09090b', cor_sidebar: '#18181b', cor_card: '#27272a', cor_card_texto: '#fafafa', cor_primaria_grad: '#ec4899', cor_fundo_grad: '#18181b', cor_sidebar_grad: '#27272a', cor_card_grad: null, grad_direction: '135deg', cor_botao: '#a855f7', cor_botao_texto: '#ffffff', cor_icone: '#c084fc' },
   { nome: '🌊 Ocean Vinyl',     cor_primaria: '#06b6d4', cor_primaria_texto: '#ffffff', cor_fundo: '#042f2e', cor_sidebar: '#0f3d3c', cor_card: '#134e4a', cor_card_texto: '#ccfbf1', cor_primaria_grad: '#14b8a6', cor_fundo_grad: '#0f3d3c', cor_sidebar_grad: '#134e4a', cor_card_grad: null, grad_direction: '180deg', cor_botao: '#06b6d4', cor_botao_texto: '#000000', cor_icone: '#22d3ee' },

@@ -1,5 +1,5 @@
 <template>
-  <div style="background:#fff;border:1px solid #ecece9;border-radius:18px;padding:18px 20px 12px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+  <div style="background:#fff;border:1px solid #e2e5ea;border-radius:18px;padding:18px 20px 12px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
     <div style="display:flex;align-items:flex-start;justify-content:space-between">
       <div>
         <div style="font-size:15.5px;font-weight:700;color:#0f1216;letter-spacing:-.2px">Evolução da Receita</div>
@@ -13,7 +13,7 @@
 
     <div style="display:flex;justify-content:flex-end;gap:18px;margin-top:6px;font-size:12px;font-weight:600;color:#31363e">
       <span style="display:flex;align-items:center;gap:7px"><span style="width:10px;height:10px;border-radius:3px;background:#10b981"></span>Receita</span>
-      <span style="display:flex;align-items:center;gap:7px"><span style="width:10px;height:10px;border-radius:3px;background:#f97316"></span>A Receber</span>
+      <span style="display:flex;align-items:center;gap:7px"><span style="width:10px;height:10px;border-radius:3px;background:#fc6404"></span>A Receber</span>
       <span style="display:flex;align-items:center;gap:7px"><span style="width:10px;height:10px;border-radius:3px;background:#ef4444"></span>Despesas</span>
     </div>
 
@@ -40,12 +40,12 @@
 
         <!-- linhas -->
         <path v-if="points.length" :d="lineReceita" fill="none" stroke="#10b981" stroke-width="2.8" stroke-linecap="round" />
-        <path v-if="points.length" :d="lineAReceber" fill="none" stroke="#f97316" stroke-width="2.6" stroke-linecap="round" />
+        <path v-if="points.length" :d="lineAReceber" fill="none" stroke="#fc6404" stroke-width="2.6" stroke-linecap="round" />
         <path v-if="points.length" :d="lineDespesas" fill="none" stroke="#ef4444" stroke-width="2.6" stroke-linecap="round" />
 
         <!-- dots -->
         <g fill="#10b981"><circle v-for="(p, i) in points" :key="`dr${i}`" :cx="p.x" :cy="p.yReceita" r="4" /></g>
-        <g fill="#f97316"><circle v-for="(p, i) in points" :key="`da${i}`" :cx="p.x" :cy="p.yAReceber" r="3.4" /></g>
+        <g fill="#fc6404"><circle v-for="(p, i) in points" :key="`da${i}`" :cx="p.x" :cy="p.yAReceber" r="3.4" /></g>
         <g fill="#ef4444"><circle v-for="(p, i) in points" :key="`dd${i}`" :cx="p.x" :cy="p.yDespesas" r="3.4" /></g>
 
         <!-- hover -->
@@ -72,7 +72,7 @@
             <span style="font-weight:700;margin-left:auto">{{ formatCurrency(points[tip].receita) }}</span>
           </div>
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-            <span style="width:8px;height:8px;border-radius:50%;background:#f97316"></span>
+            <span style="width:8px;height:8px;border-radius:50%;background:#fc6404"></span>
             <span style="color:#8b9099">A Receber:</span>
             <span style="font-weight:700;margin-left:auto">{{ formatCurrency(points[tip].aReceber) }}</span>
           </div>

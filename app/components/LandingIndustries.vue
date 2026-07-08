@@ -157,11 +157,11 @@ onUnmounted(() => {
   background: radial-gradient(ellipse, rgba(249,115,22,.14), transparent 65%);
   filter: blur(46px);
 }
-.ind-rule { width: 44px; height: 2px; background: linear-gradient(90deg, transparent, #f97316, transparent); }
-.ind-dot { width: 5px; height: 5px; border-radius: 50%; background: #f97316; box-shadow: 0 0 12px rgba(249,115,22,.8); }
+.ind-rule { width: 44px; height: 2px; background: linear-gradient(90deg, transparent, #fc6404, transparent); }
+.ind-dot { width: 5px; height: 5px; border-radius: 50%; background: #fc6404; box-shadow: 0 0 12px rgba(249,115,22,.8); }
 
 .ind-shimmer {
-  background: linear-gradient(100deg, #fb923c 20%, #fed7aa 45%, #f97316 70%);
+  background: linear-gradient(100deg, #fb923c 20%, #fed7aa 45%, #fc6404 70%);
   background-size: 220% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: indShimmer 5s ease-in-out infinite;
@@ -191,7 +191,7 @@ onUnmounted(() => {
 .ind-ico { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; background: rgba(249,115,22,.16); border: 1px solid rgba(249,115,22,.35); color: #fb923c; margin-bottom: 12px; backdrop-filter: blur(2px); }
 .ind-title { font: 700 14px/1.25 'Sora'; color: #fff; margin: 0 0 12px; }
 .ind-arrow { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(249,115,22,.4); color: #fb923c; display: flex; align-items: center; justify-content: center; transition: background .25s ease, color .25s ease, transform .25s ease; }
-.ind-card:hover .ind-arrow { background: #f97316; color: #0a0a0b; transform: rotate(45deg); }
+.ind-card:hover .ind-arrow { background: #fc6404; color: #0a0a0b; transform: rotate(45deg); }
 
 /* Borda com gradiente cônico rotativo no hover (mesmo padrão das outras seções) */
 @property --a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
