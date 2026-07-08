@@ -1,5 +1,5 @@
 <template>
-  <div style="background:#fff;border:1px solid #e2e5ea;border-radius:18px;padding:18px 20px 12px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
+  <div style="background:#fff;border:1px solid #e2e5ea;border-radius:18px;padding:18px 20px 12px;box-shadow:0 1px 3px rgba(0,0,0,.05);height:100%">
     <div style="display:flex;align-items:flex-start;justify-content:space-between">
       <div>
         <div style="font-size:15.5px;font-weight:700;color:#0f1216;letter-spacing:-.2px">Evolução da Receita</div>

@@ -587,7 +587,7 @@
       <!-- ═══════════════════════════════════ ROW: EVOLUÇÃO DA RECEITA + STATUS DE PRODUÇÃO -->
       <div class="grid grid-cols-1 xl:grid-cols-[1.3fr_1fr] gap-3.5 mt-3.5">
           <!-- Evolução da Receita -->
-          <div>
+          <div class="xl:h-full">
             <DashboardCharts
               :evolucao-mensal="evolucaoMensal"
               :format-currency="formatCurrency"
@@ -768,18 +768,18 @@
             <span style="display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:8px 13px;font-size:12.5px;font-weight:600;color:#e5e7eb">{{ periodoLabel }}</span>
           </div>
 
-          <div style="position:relative;display:flex;align-items:center;gap:26px;margin-top:14px">
+          <div class="flex flex-col sm:flex-row items-center gap-5 sm:gap-[26px]" style="position:relative;margin-top:14px">
             <!-- Anel receitas/despesas/lucro -->
-            <div style="position:relative;flex:none;width:180px;height:180px">
-              <svg width="180" height="180" viewBox="0 0 120 120" style="transform:rotate(-90deg)">
-                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="12" />
+            <div style="position:relative;flex:none;width:200px;height:200px">
+              <svg width="200" height="200" viewBox="0 0 120 120" style="transform:rotate(-90deg)">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="8" />
                 <circle
                   v-for="(seg, i) in resumoSegments"
                   :key="`rs${i}`"
-                  cx="60" cy="60" r="50"
+                  cx="60" cy="60" r="54"
                   fill="none"
                   :stroke="seg.color"
-                  stroke-width="12"
+                  stroke-width="8"
                   :stroke-dasharray="`${seg.dash} ${seg.gap}`"
                   :stroke-dashoffset="seg.offset"
                 />
@@ -792,7 +792,7 @@
             </div>
 
             <!-- Lista -->
-            <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+            <div class="w-full sm:w-auto" style="flex:1;display:flex;flex-direction:column;min-width:0">
               <div style="display:flex;align-items:center;gap:11px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07)">
                 <span style="width:13px;height:13px;border-radius:50%;background:#22c55e;box-shadow:0 3px 8px rgba(34,197,94,.4)"></span>
                 <span style="flex:1;font-size:13.5px;font-weight:500;color:#d3d8de">Receitas</span>
@@ -823,11 +823,6 @@
       </div>
       </div>
       <!-- ═══ fim painel de conteúdo ═══ -->
-
-      <!-- FAB — Nova OS -->
-      <NuxtLink to="/adesivos-ordens-servico" class="hidden xl:flex" style="position:fixed;right:38px;bottom:28px;width:60px;height:60px;border-radius:50%;background:#fc6404;color:#fff;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(249,115,22,.45);z-index:40" title="Nova Ordem de Serviço">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-      </NuxtLink>
 
       <!-- Botão "Tentar novamente" após timeout de 10s -->
       <div v-if="loading && loadingTimeout" class="flex justify-center mb-6">
@@ -960,7 +955,7 @@ const resumoSegments = computed(() => buildRingSegments([
   { value: financeiro.value.faturamento, color: '#22c55e' },
   { value: financeiro.value.despesas, color: '#ef4444' },
   { value: financeiro.value.lucroEstimado, color: '#3b82f6' },
-], 50))
+], 54))
 
 // ── Atividade: cores do ícone (hex, para inline style) ───────────────────────
 function atividadeSquareBg(tipo: string): string {

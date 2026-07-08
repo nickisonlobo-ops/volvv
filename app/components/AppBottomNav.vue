@@ -270,6 +270,12 @@ const navItems = computed(() =>
 .fab-btn--open   { transform: rotate(180deg) !important; }
 .fab-btn--open:hover { transform: rotate(180deg) scale(1.06) !important; }
 
+/* Desktop (lg+): esconde o FAB — a navegação fica na sidebar.
+   (media query scoped p/ vencer a especificidade de .fab-btn e valer o lg:hidden) */
+@media (min-width: 1024px) {
+  .fab-btn { display: none; }
+}
+
 /* ── Painel ──────────────────────────────────────────────────────────── */
 .nav-panel {
   position:    fixed;
