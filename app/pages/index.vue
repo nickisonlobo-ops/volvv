@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full flex flex-col px-0 pt-2 sm:px-5 sm:pt-4" style="background:#08090b">
+  <div class="min-h-full flex flex-col px-0 pt-2 sm:px-5 sm:pt-4 bg-white sm:bg-[#08090b]">
 
     <!-- �.��.��.��.��.��.��.��.��.��.��.� VIS�fO FUNCIONÁRIO �.��.��.��.��.��.��.��.��.��.��.� -->
     <template v-if="!adminLoading && !isAdminOrGerente">
@@ -379,11 +379,11 @@
     <template v-if="!adminLoading && isAdminOrGerente">
 
       <!-- HEADER CARD — Totalmente preto com borda cinza -->
-      <div class="relative rounded-t-3xl overflow-hidden shadow-xl mx-0 sm:mx-3" style="background:#000;border:2px solid rgba(255,255,255,0.16)">
+      <div class="relative rounded-t-3xl overflow-hidden shadow-xl mx-4 sm:mx-3" style="background:#000;border:2px solid rgba(255,255,255,0.16)">
         <div class="absolute inset-0 pointer-events-none" style="background:url('/dashboard-bg.png') 34% center / auto 135% no-repeat;filter:brightness(1.12) contrast(1.03)"></div>
         <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(90deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0) 70%)"></div>
 
-        <div class="relative px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-7">
+        <div class="relative px-4 sm:px-8 pt-9 sm:pt-7 pb-9 sm:pb-7">
           <div class="flex flex-wrap items-center justify-between gap-3 sm:gap-6">
             <div class="flex items-center gap-3 sm:gap-5">
               <div class="flex items-center justify-center w-10 sm:w-14 h-10 sm:h-14 shrink-0">
@@ -481,7 +481,7 @@
       </Transition>
 
       <!-- ═══════════════════════════════════ PAINEL DE CONTEÚDO (claro) ═══════════════════ -->
-      <div style="background:#f1f2f4;border-radius:22px 22px 0 0;padding:20px;color:#1a1d21" class="flex-1 sm:-mx-4">
+      <div style="background:#f1f2f4;border:1px solid #cbd0d8;border-radius:22px 22px 0 0;padding:20px;color:#1a1d21" class="flex-1 sm:-mx-4">
 
         <!-- Alertas e Prazos -->
         <div v-if="alertas.temAlertas" style="display:flex;align-items:center;gap:14px;background:linear-gradient(90deg,#fdf7ee,#fcf5ef);border:1px solid #f2e7d7;border-radius:14px;padding:12px 18px">
