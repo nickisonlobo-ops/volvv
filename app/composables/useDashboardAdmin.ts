@@ -263,21 +263,11 @@ export function useDashboardAdmin(): DashboardAdminState {
       return sum + (v.preco_veiculo ?? 0) + itemsTotal
     }, 0)
 
-    // RECEITA: Agendamentos concluídos no período
-    const { data: agendConcluidos } = await supabase
-      .from('agendamentos')
-      .select('valor_total')
-      .eq('empresa_id', empresaId.value)
-      .eq('status', 'concluido')
-      .not('valor_total', 'is', null)
-      .gt('valor_total', 0)
-      .gte('data_hora', inicio)
-      .lte('data_hora', fim)
-
-    const receitaAgendamentos = (agendConcluidos ?? []).reduce((sum, a) => sum + (a.valor_total ?? 0), 0)
-
-    // Faturamento = todas as fontes de receita
-    const faturamento = receitaContas + receitaOS + receitaVendas + receitaAgendamentos
+    // Faturamento = receita realizada no período.
+    // OBS: agendamentos NÃO são somados aqui direto. Ao concluir, o agendamento já lança
+    // um contas_pagar (tipo=receber, status=pago) — então ele já entra via `receitaContas`.
+    // Somá-lo de novo pela tabela `agendamentos` duplicava o valor no faturamento.
+    const faturamento = receitaContas + receitaOS + receitaVendas
 
     // DESPESAS: contas (tipo ≠ receber, status ≠ cancelado) no período
     const { data: contas } = await supabase
@@ -556,8 +546,10 @@ export function useDashboardAdmin(): DashboardAdminState {
     const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0)
     const fimRange = `${ultimoDia.getFullYear()}-${String(ultimoDia.getMonth() + 1).padStart(2, '0')}-${String(ultimoDia.getDate()).padStart(2, '0')}`
 
-    // 4 queries em paralelo (em vez de ~72 sequenciais)
-    const [vendasRes, contasRes, agendRes, osRes] = await Promise.all([
+    // 3 queries em paralelo (em vez de ~72 sequenciais)
+    // Agendamentos não são consultados aqui: ao concluir já viram contas_pagar
+    // (receber/pago) e entram via `receitaContas` — evita dobra no faturamento.
+    const [vendasRes, contasRes, osRes] = await Promise.all([
       supabase.from('vendas')
         .select('preco_veiculo, data_venda, vendas_itens(preco_unitario, quantidade, valor_total)')
         .eq('empresa_id', empresaId.value)
@@ -567,14 +559,6 @@ export function useDashboardAdmin(): DashboardAdminState {
       supabase.from('contas_pagar')
         .select('valor, data_vencimento, data_pagamento, status, tipo')
         .eq('empresa_id', empresaId.value),
-      supabase.from('agendamentos')
-        .select('data_hora, valor_total')
-        .eq('empresa_id', empresaId.value)
-        .eq('status', 'concluido')
-        .not('valor_total', 'is', null)
-        .gt('valor_total', 0)
-        .gte('data_hora', inicioRange)
-        .lte('data_hora', fimRange + 'T23:59:59'),
       supabase.from('ordens_servico_adesivo')
         .select('valor_total, data_entrega')
         .eq('empresa_id', empresaId.value)
@@ -587,7 +571,6 @@ export function useDashboardAdmin(): DashboardAdminState {
 
     const vendasData = vendasRes.data ?? []
     const contasData = contasRes.data ?? []
-    const agendData = agendRes.data ?? []
     const osData = osRes.data ?? []
 
     // Processar em memória por mês
@@ -608,14 +591,6 @@ export function useDashboardAdmin(): DashboardAdminState {
           return sum + (v.preco_veiculo ?? 0) + itemsTotal
         }, 0)
 
-      const receitaAgendamentos = agendData
-        .filter((a: any) => {
-          if (!a.data_hora) return false
-          const da = new Date(a.data_hora)
-          return da.getFullYear() === year && da.getMonth() + 1 === month
-        })
-        .reduce((sum, a: any) => sum + (a.valor_total ?? 0), 0)
-
       const receitaOS = osData
         .filter((os: any) => {
           if (!os.data_entrega) return false
@@ -634,7 +609,7 @@ export function useDashboardAdmin(): DashboardAdminState {
         })
         .reduce((sum, c: any) => sum + (c.valor ?? 0), 0)
 
-      const faturamento = receitaVendas + receitaAgendamentos + receitaOS + receitaContas
+      const faturamento = receitaVendas + receitaOS + receitaContas
 
       const despesas = contasData
         .filter((c: any) => {
@@ -708,7 +683,23 @@ export function useDashboardAdmin(): DashboardAdminState {
       (sum, c) => sum + (c.valor ?? 0), 0
     )
 
-    const faturamentoAnterior = receitaOSAnterior + receitaContasAnterior
+    // Receita anterior: Vendas finalizadas no período anterior (simétrico ao atual)
+    const { data: vendasAnterior } = await supabase
+      .from('vendas')
+      .select('preco_veiculo, vendas_itens(preco_unitario, quantidade, valor_total)')
+      .eq('empresa_id', empresaId.value)
+      .eq('status', 'finalizada')
+      .gte('data_venda', prevInicio)
+      .lte('data_venda', prevFim)
+
+    const receitaVendasAnterior = (vendasAnterior ?? []).reduce((sum, v: any) => {
+      const itemsTotal = (v.vendas_itens ?? []).reduce((s: number, it: any) => s + (it.valor_total ?? it.preco_unitario * it.quantidade), 0)
+      return sum + (v.preco_veiculo ?? 0) + itemsTotal
+    }, 0)
+
+    // Mesmo conjunto de fontes do período atual: contas (pago) + OS entregues + vendas.
+    // Agendamento entra via receitaContasAnterior (já lançado em contas_pagar), sem dobra.
+    const faturamentoAnterior = receitaOSAnterior + receitaContasAnterior + receitaVendasAnterior
 
     // Despesas anteriores
     const { data: contasAnterior } = await supabase
@@ -854,11 +845,13 @@ export function useDashboardAdmin(): DashboardAdminState {
         fetchAtividade(),
         fetchTopClientes(),
         fetchEvolucaoMensal(),
-        fetchComparativo(),
         fetchTicketMedio(),
         fetchProximosVencimentos(),
       ])
-      await fetchAlertas()
+      // fetchComparativo depende de financeiro.value (faturamento/despesas do período
+      // atual), então só pode rodar depois que fetchFinanceiro terminou — senão lê 0
+      // e o comparativo dá -100%.
+      await Promise.allSettled([fetchComparativo(), fetchAlertas()])
     } finally {
       loading.value = false
     }

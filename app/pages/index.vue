@@ -515,7 +515,10 @@
             </div>
             <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px" class="truncate">{{ formatCurrency(financeiro.faturamento) }}</div>
             <div style="font-size:11px;font-weight:700;white-space:nowrap" :style="{ color: varColor(comparativo.variacaoFaturamento) }">{{ fmtVar(comparativo.variacaoFaturamento) }} <span style="color:#8b9099;font-weight:500">vs. mês anterior</span></div>
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="margin-top:8px"><path :d="sparklineFaturamento" fill="none" stroke="#22c55e" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div style="position:relative;margin-top:8px">
+              <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="display:block"><path :d="sparklineFaturamento" fill="none" stroke="#22c55e" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span :style="{ top: sparkEndFaturamento }" style="position:absolute;left:100%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 2px #fff"></span>
+            </div>
           </div>
 
           <!-- Despesas -->
@@ -525,19 +528,25 @@
               <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">DESPESAS</span>
             </div>
             <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px" class="truncate">{{ formatCurrency(financeiro.despesas) }}</div>
-            <div style="font-size:11px;font-weight:700;white-space:nowrap" :style="{ color: varColor(-comparativo.variacaoDespesas) }">{{ fmtVar(comparativo.variacaoDespesas) }} <span style="color:#8b9099;font-weight:500">vs. mês anterior</span></div>
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="margin-top:8px"><path :d="sparklineDespesas" fill="none" stroke="#fc6404" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div style="font-size:11px;font-weight:700;white-space:nowrap" :style="{ color: varColor(comparativo.variacaoDespesas) }">{{ fmtVar(comparativo.variacaoDespesas) }} <span style="color:#8b9099;font-weight:500">vs. mês anterior</span></div>
+            <div style="position:relative;margin-top:8px">
+              <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="display:block"><path :d="sparklineDespesas" fill="none" stroke="#fc6404" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span :style="{ top: sparkEndDespesas }" style="position:absolute;left:100%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#fc6404;box-shadow:0 0 0 2px #fff"></span>
+            </div>
           </div>
 
           <!-- Lucro Estimado -->
-          <div style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.05)">
+          <div class="col-span-2 md:col-span-1" style="background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.05)">
             <div style="display:flex;align-items:center;gap:9px">
               <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#e4edfd;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5l4.5-4.5 3.5 2.5 6.5-6.5M19 8v4.5h-4.5"/></svg></span>
               <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">LUCRO ESTIMADO</span>
             </div>
             <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px" class="truncate">{{ formatCurrency(financeiro.lucroEstimado) }}</div>
             <div style="font-size:11px;font-weight:700;white-space:nowrap" :style="{ color: varColor(variacaoLucro) }">{{ fmtVar(variacaoLucro) }} <span style="color:#8b9099;font-weight:500">vs. mês anterior</span></div>
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="margin-top:8px"><path :d="sparklineLucro" fill="none" stroke="#3b82f6" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div style="position:relative;margin-top:8px">
+              <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="display:block"><path :d="sparklineLucro" fill="none" stroke="#3b82f6" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span :style="{ top: sparkEndLucro }" style="position:absolute;left:100%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#3b82f6;box-shadow:0 0 0 2px #fff"></span>
+            </div>
           </div>
 
           <!-- A Receber -->
@@ -600,21 +609,19 @@
               <div style="font-size:15.5px;font-weight:700;color:#0f1216;letter-spacing:-.2px">Status de Produção</div>
               <NuxtLink to="/adesivos-ordens-servico" style="display:flex;align-items:center;gap:8px;border:1px solid #e5e5e2;border-radius:10px;padding:8px 13px;font-size:12.5px;font-weight:600;color:#31363e;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></NuxtLink>
             </div>
-            <div style="display:flex;align-items:center;gap:26px;margin-top:20px;padding:0 4px">
+            <div class="flex flex-col sm:flex-row items-center gap-5 sm:gap-[26px]" style="margin-top:20px;padding:0 4px">
               <div style="position:relative;flex:none">
-                <svg width="150" height="150" viewBox="0 0 150 150">
-                  <circle cx="75" cy="75" r="62" fill="none" stroke="#e9ebee" stroke-width="15" />
+                <svg width="200" height="200" viewBox="0 0 120 120" style="transform:rotate(-90deg)">
+                  <circle cx="60" cy="60" r="54" fill="none" stroke="#e9ebee" stroke-width="8" />
                   <circle
                     v-for="(seg, i) in producaoSegmentsBig"
                     :key="`ps${i}`"
-                    cx="75" cy="75" r="62"
+                    cx="60" cy="60" r="54"
                     fill="none"
                     :stroke="seg.color"
-                    stroke-width="15"
-                    stroke-linecap="round"
-                    :stroke-dasharray="`${seg.dash} ${ringBig - seg.dash}`"
+                    stroke-width="8"
+                    :stroke-dasharray="`${seg.dash} ${seg.gap}`"
                     :stroke-dashoffset="seg.offset"
-                    transform="rotate(-90 75 75)"
                   />
                 </svg>
                 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
@@ -622,7 +629,7 @@
                   <div style="font-size:11px;color:#6b7079;font-weight:500;margin-top:3px">OS no total</div>
                 </div>
               </div>
-              <div style="flex:1;display:flex;flex-direction:column;gap:17px">
+              <div class="w-full sm:w-auto" style="flex:1;display:flex;flex-direction:column;gap:17px">
                 <div style="display:flex;align-items:center;gap:12px">
                   <span style="width:28px;height:28px;flex:none;border-radius:50%;background:#e4edfd;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7 4 12l5 5M4 12h11a5 5 0 0 1 5 5v1"/></svg></span>
                   <span style="font-size:19px;font-weight:800;color:#0f1216;min-width:16px">{{ producao.osEmProducao }}</span>
@@ -788,6 +795,7 @@
                 <div style="font-size:11px;color:#9aa4b2;font-weight:500">Lucro Estimado</div>
                 <div style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-.5px;margin:3px 0" class="truncate">{{ formatCurrency(financeiro.lucroEstimado) }}</div>
                 <div style="font-size:11px;font-weight:700" :style="{ color: varColor(variacaoLucro) }">{{ fmtVar(variacaoLucro) }}</div>
+                <div style="font-size:9px;color:#9aa4b2;font-weight:500;margin-top:1px">vs. mês anterior</div>
               </div>
             </div>
 
@@ -880,8 +888,6 @@ const taxaConversao = computed(() => {
 
 // ── Anéis (donut SVG) — helper de segmentos ──────────────────────────────────
 const ringCircumference = 2 * Math.PI * 50 // r = 50 (viewBox 120)
-const ringBig = 2 * Math.PI * 62           // r = 62 (viewBox 150)
-
 interface RingSegment { value: number; color: string }
 function buildRingSegments(items: RingSegment[], radius = 50) {
   const C = 2 * Math.PI * radius
@@ -914,8 +920,10 @@ const variacaoLucro = computed(() => {
 })
 
 function fmtVar(v: number): string {
-  const sign = v >= 0 ? '+' : ''
-  return `${sign}${v.toFixed(1).replace('.', ',')}%`
+  const abs = Math.abs(v).toFixed(1).replace('.', ',')
+  if (v > 0) return `↑ ${abs}%`
+  if (v < 0) return `↓ ${abs}%`
+  return `${abs}%`
 }
 function varColor(v: number): string {
   return v >= 0 ? '#16a34a' : '#dc2626'
@@ -941,7 +949,7 @@ const producaoSegmentsBig = computed(() => buildRingSegments([
   { value: producao.value.osFaturamento, color: '#06b6d4' },
   { value: producao.value.processosAtivos, color: '#a855f7' },
   { value: producao.value.osAtrasadas, color: '#f59e0b' },
-], 62))
+], 54))
 
 // ── Resumo Financeiro (donut) ────────────────────────────────────────────────
 const resumoTotal = computed(() =>
@@ -1007,6 +1015,18 @@ const sparklineDespesas = computed(() =>
 const sparklineLucro = computed(() =>
   buildSparklinePath(evolucaoMensal.value.map(e => e.faturamento - e.despesas))
 )
+
+// Posição vertical (top %) do último ponto da sparkline — para a bolinha no fim da linha
+function sparkEndTop(values: number[]): string {
+  if (values.length === 0) return `${(15 / 30) * 100}%`
+  const max = Math.max(...values)
+  const last = values[values.length - 1] ?? 0
+  const y = max <= 0 ? 28 : 28 - (Math.max(last, 0) / max) * 26
+  return `${(y / 30) * 100}%`
+}
+const sparkEndFaturamento = computed(() => sparkEndTop(evolucaoMensal.value.map(e => e.faturamento)))
+const sparkEndDespesas = computed(() => sparkEndTop(evolucaoMensal.value.map(e => e.despesas)))
+const sparkEndLucro = computed(() => sparkEndTop(evolucaoMensal.value.map(e => e.faturamento - e.despesas)))
 
 watch(loading, (isLoading) => {
   if (isLoading) {
