@@ -29,25 +29,25 @@ export interface PersonalizacaoConfig {
 }
 
 const DEFAULTS: PersonalizacaoConfig = {
-  cor_primaria: '#ec4899',
+  cor_primaria: '#f97316',
   cor_primaria_texto: '#ffffff',
-  cor_fundo: '#f9fafb',
-  cor_sidebar: '#ec4899',
-  cor_card: '#ffffff',
-  cor_card_texto: '#374151',
+  cor_fundo: '#12151c',
+  cor_sidebar: '#0a0d12',
+  cor_card: '#181c25',
+  cor_card_texto: '#e5e7eb',
   nome_empresa: '',
   logo_url: null,
   logo_orcamento_url: null,
   logo_orcamento_size: '160',
   logo_size: 'md',
-  cor_primaria_grad: '#a855f7',
+  cor_primaria_grad: '#ef4444',
   cor_fundo_grad: null,
-  cor_sidebar_grad: '#a855f7',
+  cor_sidebar_grad: null,
   cor_card_grad: null,
   grad_direction: '135deg',
-  cor_botao: '#ffffff',
-  cor_botao_texto: '#ec4899',
-  cor_icone: '#ffffff',
+  cor_botao: '#f97316',
+  cor_botao_texto: '#ffffff',
+  cor_icone: '#fb923c',
 }
 
 export function usePersonalizacao() {

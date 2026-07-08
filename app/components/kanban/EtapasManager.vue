@@ -91,7 +91,7 @@
             : '',
           draggingIndex === index ? 'opacity-50' : ''
         ]"
-        draggable="true"
+        :draggable="!etapa.is_sistema"
         @dragstart="onEtapaDragStart($event, index)"
         @dragover.prevent="onEtapaDragOver($event, index)"
         @dragleave="onEtapaDragLeave"
@@ -101,9 +101,10 @@
         <!-- Drag handle -->
         <button
           type="button"
-          class="flex-shrink-0 cursor-grab active:cursor-grabbing p-1 rounded transition-colors"
-          style="color: var(--color-card-texto, #94a3b8); opacity: 0.6"
-          title="Arrastar para reordenar"
+          class="flex-shrink-0 p-1 rounded transition-colors"
+          :class="etapa.is_sistema ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'"
+          :style="{ color: 'var(--color-card-texto, #94a3b8)', opacity: etapa.is_sistema ? '0.25' : '0.6' }"
+          :title="etapa.is_sistema ? 'Etapa fixa — posição bloqueada' : 'Arrastar para reordenar'"
           @mousedown.stop
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -153,11 +154,20 @@
           </div>
           <div v-else class="flex items-center gap-2">
             <span
-              class="text-sm font-medium truncate cursor-pointer hover:underline"
+              class="text-sm font-medium truncate"
+              :class="podeEditar(etapa) ? 'cursor-pointer hover:underline' : ''"
               style="color: var(--color-card-texto, #1e293b)"
-              @click="iniciarEdicao(etapa)"
+              @click="podeEditar(etapa) && iniciarEdicao(etapa)"
             >
               {{ etapa.nome }}
+            </span>
+            <span
+              v-if="etapa.is_sistema"
+              class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-gray-300"
+              title="Etapa fixa do sistema"
+            >
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+              Fixa
             </span>
             <span
               v-if="etapa.is_final"
@@ -199,8 +209,9 @@
             :class="etapa.is_final
               ? 'text-green-600 bg-green-50 dark:bg-green-900/20'
               : ''"
-            :style="!etapa.is_final ? { color: 'var(--color-card-texto, #94a3b8)', opacity: '0.7' } : {}"
-            :title="etapa.is_final ? 'Etapa final (clique para desmarcar)' : 'Marcar como etapa final'"
+            :style="!etapa.is_final ? { color: 'var(--color-card-texto, #94a3b8)', opacity: etapa.is_sistema ? '0.3' : '0.7' } : {}"
+            :disabled="etapa.is_sistema"
+            :title="etapa.is_sistema ? 'Etapa fixa do sistema' : (etapa.is_final ? 'Etapa final (clique para desmarcar)' : 'Marcar como etapa final')"
             @click="handleToggleFinal(etapa)"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -354,7 +365,13 @@ async function handleCriarEtapa() {
 }
 
 // ─── Edição inline ────────────────────────────────────────
+// Etapas fixas do sistema não podem ser renomeadas/excluídas/desmarcadas
+function podeEditar(etapa: Etapa): boolean {
+  return !etapa.is_sistema
+}
+
 function iniciarEdicao(etapa: Etapa) {
+  if (etapa.is_sistema) return
   editandoId.value = etapa.id
   editNome.value = etapa.nome
   Object.keys(editErrors).forEach((k) => delete editErrors[k])
@@ -413,6 +430,10 @@ async function handleAlterarCor(etapa: Etapa, novaCor: string) {
 // ─── Toggle Final ─────────────────────────────────────────
 async function handleToggleFinal(etapa: Etapa) {
   erroGeral.value = ''
+  if (etapa.is_sistema) {
+    erroGeral.value = 'Esta etapa é fixa do sistema e não pode ser alterada.'
+    return
+  }
   const novoFinal = !etapa.is_final
 
   try {
@@ -434,12 +455,16 @@ async function handleToggleFinal(etapa: Etapa) {
 
 // ─── Excluir ──────────────────────────────────────────────
 function podeExcluir(etapa: Etapa): boolean {
+  if (etapa.is_sistema) return false
   if (etapas.value.length <= 2) return false
   if (etapasComItens.value.has(etapa.id)) return false
   return true
 }
 
 function tituloExcluir(etapa: Etapa): string {
+  if (etapa.is_sistema) {
+    return 'Etapa fixa do sistema — não pode ser excluída'
+  }
   if (etapas.value.length <= 2) {
     return 'Pipeline deve ter no mínimo 2 etapas'
   }
@@ -462,7 +487,28 @@ async function handleExcluir(etapa: Etapa) {
 }
 
 // ─── Drag and Drop (reordenação de etapas) ────────────────
+// Garante que as etapas fixas fiquem ancoradas: Aguardando na 1ª posição
+// e Faturamento → Finalizado como as duas últimas (nesta ordem).
+function ordemFixaValida(lista: Etapa[]): boolean {
+  if (lista.length === 0) return true
+  const temAguardando = lista.some(e => e.papel === 'aguardando_producao')
+  if (temAguardando && lista[0]?.papel !== 'aguardando_producao') return false
+
+  const finIdx = lista.findIndex(e => e.papel === 'entregue' || e.is_final)
+  if (finIdx !== -1 && finIdx !== lista.length - 1) return false
+
+  const fatIdx = lista.findIndex(e => e.papel === 'faturamento')
+  if (fatIdx !== -1 && finIdx !== -1 && fatIdx !== finIdx - 1) return false
+
+  return true
+}
+
 function onEtapaDragStart(event: DragEvent, index: number) {
+  // Etapas fixas do sistema não podem ser arrastadas
+  if (etapas.value[index]?.is_sistema) {
+    event.preventDefault()
+    return
+  }
   draggingIndex.value = index
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = 'move'
@@ -496,6 +542,13 @@ async function onEtapaDrop(event: DragEvent, targetIndex: number) {
   const novaLista = [...etapas.value]
   const [moved] = novaLista.splice(draggingIndex.value, 1)
   novaLista.splice(targetIndex, 0, moved)
+
+  // Validar que as etapas fixas mantêm suas posições (Aguardando primeira; Faturamento/Finalizado por último)
+  if (!ordemFixaValida(novaLista)) {
+    draggingIndex.value = null
+    erroGeral.value = 'As etapas fixas (Aguardando, Faturamento e Finalizado) não podem sair de posição.'
+    return
+  }
 
   // Atualizar UI imediatamente (optimistic)
   const listaAnterior = [...etapas.value]

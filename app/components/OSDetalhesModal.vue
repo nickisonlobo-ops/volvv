@@ -372,6 +372,7 @@ const statusConfig: Record<StatusOS, { bg: string; text: string; dot: string; la
   aguardando_producao: { bg: 'bg-amber-500/10 border border-amber-500/30', text: 'text-amber-500', dot: 'bg-amber-400', label: 'Aguardando Produção' },
   em_producao: { bg: 'bg-primary text-primary-text', text: 'text-primary-text', dot: 'bg-primary-text', label: 'Em Produção' },
   pronto: { bg: 'bg-green-600/10 border border-green-600/30', text: 'text-green-500', dot: 'bg-green-400', label: 'Pronto' },
+  faturamento: { bg: 'bg-cyan-600/10 border border-cyan-600/30', text: 'text-cyan-500', dot: 'bg-cyan-400', label: 'Faturamento' },
   entregue: { bg: 'bg-emerald-600/10 border border-emerald-600/30', text: 'text-emerald-500', dot: 'bg-emerald-400', label: 'Entregue' },
   cancelado: { bg: 'bg-red-600/10 border border-red-600/30', text: 'text-red-500', dot: 'bg-red-400', label: 'Cancelado' },
 }
@@ -418,13 +419,19 @@ const whatsappLink = computed(() => {
   return `https://wa.me/55${digits}`
 })
 
+// Deriva o status da OS a partir de uma etapa: usa o `papel` (fonte semântica)
+// e cai no fallback posicional para etapas customizadas sem papel.
+function statusDaEtapa(etapa: any): StatusOS {
+  if (etapa?.papel) return etapa.papel as StatusOS
+  if (etapa?.is_final) return 'entregue'
+  if (etapa?.posicao === 0) return 'aguardando_producao'
+  return 'em_producao'
+}
+
 const nextStatus = computed<StatusOS | null>(() => {
   if (!props.ordemServico) return null
   if (!nextEtapa.value) return null
-  // Determinar status baseado na posição/is_final (não no nome)
-  if (nextEtapa.value.is_final) return 'entregue'
-  if (nextEtapa.value.posicao === 0) return 'aguardando_producao'
-  return 'em_producao'
+  return statusDaEtapa(nextEtapa.value)
 })
 
 // ─── Etapas do Kanban (dinâmicas) ────────────────────────────────────────────
@@ -436,7 +443,7 @@ watch(() => props.show, async (show) => {
     try {
       const { data } = await supabase
         .from('pipeline_etapas')
-        .select('id, nome, posicao, is_final, cor')
+        .select('id, nome, posicao, is_final, cor, papel')
         .eq('empresa_id', empresaId.value)
         .eq('pipeline_tipo', 'producao')
         .order('posicao', { ascending: true })
@@ -585,15 +592,7 @@ async function avancarStatus() {
   atualizandoStatus.value = true
   try {
     // Montar payload: atualizar etapa_id + status + timestamps
-    // Determinar status baseado na posição/is_final (não no nome)
-    let novoStatus: string
-    if (nextEtapa.value.is_final) {
-      novoStatus = 'entregue'
-    } else if (nextEtapa.value.posicao === 0) {
-      novoStatus = 'aguardando_producao'
-    } else {
-      novoStatus = 'em_producao'
-    }
+    const novoStatus: string = statusDaEtapa(nextEtapa.value)
 
     const updatePayload: Record<string, unknown> = {
       etapa_id: nextEtapa.value.id,
@@ -628,14 +627,7 @@ async function moverParaEtapa(etapa: any) {
 
   atualizandoStatus.value = true
   try {
-    let novoStatus: string
-    if (etapa.is_final) {
-      novoStatus = 'entregue'
-    } else if (etapa.posicao === 0) {
-      novoStatus = 'aguardando_producao'
-    } else {
-      novoStatus = 'em_producao'
-    }
+    const novoStatus: string = statusDaEtapa(etapa)
 
     const updatePayload: Record<string, unknown> = {
       etapa_id: etapa.id,

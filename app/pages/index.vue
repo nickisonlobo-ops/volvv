@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-transparent p-3 sm:p-8">
+  <div class="min-h-full flex flex-col px-2 pt-2 sm:px-5 sm:pt-4" style="background:#08090b">
 
     <!-- �.��.��.��.��.��.��.��.��.��.��.� VIS�fO FUNCIONÁRIO �.��.��.��.��.��.��.��.��.��.��.� -->
     <template v-if="!adminLoading && !isAdminOrGerente">
@@ -379,13 +379,42 @@
     <template v-if="!adminLoading && isAdminOrGerente">
 
       <!-- HEADER CARD — Estilo premium como outras páginas -->
-      <div class="relative rounded-3xl overflow-hidden mb-6 shadow-xl">
-        <div class="absolute inset-0" :style="{ background: 'var(--color-primary-bg, linear-gradient(135deg, #6366f1, #8b5cf6))' }" />
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.1),transparent_60%)]" />
+      <div class="relative rounded-t-3xl overflow-hidden shadow-xl" :style="{ background: 'var(--color-sidebar, #0a0d12)', border: '2px solid rgba(255,255,255,0.16)' }">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.08),transparent_60%)]" />
         <div class="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/[0.03] pointer-events-none" />
         <div class="absolute -bottom-20 left-1/4 w-96 h-96 rounded-full bg-white/[0.02] pointer-events-none" />
 
-        <div class="relative px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-7">
+        <!-- Globo decorativo: grade de pontos + arcos de conexão -->
+        <svg class="absolute -right-10 top-1/2 -translate-y-1/2 w-[420px] h-[420px] opacity-[0.35] pointer-events-none hidden md:block" viewBox="0 0 400 400" aria-hidden="true">
+          <defs>
+            <radialGradient id="globeFade" cx="50%" cy="50%" r="50%">
+              <stop offset="60%" stop-color="#fff" stop-opacity="1" />
+              <stop offset="100%" stop-color="#fff" stop-opacity="0" />
+            </radialGradient>
+            <mask id="globeMask">
+              <rect x="0" y="0" width="400" height="400" fill="url(#globeFade)" />
+            </mask>
+          </defs>
+          <g mask="url(#globeMask)">
+            <circle cx="200" cy="200" r="150" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1" />
+            <ellipse cx="200" cy="200" rx="150" ry="55" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
+            <ellipse cx="200" cy="200" rx="150" ry="105" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
+            <ellipse cx="200" cy="200" rx="55" ry="150" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
+            <ellipse cx="200" cy="200" rx="105" ry="150" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
+            <line x1="50" y1="200" x2="350" y2="200" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
+            <line x1="200" y1="50" x2="200" y2="350" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
+            <path d="M 90 130 Q 220 90 310 190" fill="none" stroke="rgba(249,115,22,0.55)" stroke-width="1.5" stroke-dasharray="2,4" />
+            <path d="M 110 280 Q 230 260 300 150" fill="none" stroke="rgba(239,68,68,0.4)" stroke-width="1.5" stroke-dasharray="2,4" />
+            <circle cx="90" cy="130" r="3.5" fill="#f97316" />
+            <circle cx="90" cy="130" r="7" fill="none" stroke="#f97316" stroke-width="1" opacity="0.5" />
+            <circle cx="310" cy="190" r="3" fill="#fb923c" />
+            <circle cx="230" cy="260" r="2.5" fill="#ef4444" />
+            <circle cx="150" cy="230" r="2" fill="#fff" opacity="0.6" />
+            <circle cx="260" cy="120" r="2" fill="#fff" opacity="0.4" />
+          </g>
+        </svg>
+
+        <div class="relative px-4 sm:px-8 pt-6 sm:pt-9 pb-6 sm:pb-9">
           <div class="flex flex-wrap items-start justify-between gap-3 sm:gap-6">
             <div class="flex items-center gap-3 sm:gap-5">
               <div class="flex items-center justify-center w-10 sm:w-14 h-10 sm:h-14 rounded-2xl bg-white/[0.12] backdrop-blur-sm border border-white/20 shadow-lg">
@@ -428,25 +457,6 @@
           </div>
         </div>
       </div>
-
-      <!-- 1. ALERTAS — Compact horizontal bar -->
-      <section
-        v-if="alertas.temAlertas"
-        class="flex items-center gap-3 rounded-xl border border-primary-10 bg-theme-card px-4 py-2.5 mb-5 shadow-sm"
-      >
-        <div class="flex items-center gap-2 shrink-0">
-          <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
-          <span class="text-xs font-bold" style="color: var(--color-card-texto)">Alertas e Prazos</span>
-        </div>
-        <div class="flex-1 flex items-center justify-center">
-          <span class="inline-flex items-center gap-2 text-xs font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full">
-            <template v-if="alertas.osAtrasadas > 0">{{ alertas.osAtrasadas }} OS atrasada{{ alertas.osAtrasadas > 1 ? 's' : '' }} • Prazo vencido</template>
-            <template v-else-if="alertas.contasVencidas > 0">{{ alertas.contasVencidas }} conta{{ alertas.contasVencidas > 1 ? 's' : '' }} vencida{{ alertas.contasVencidas > 1 ? 's' : '' }}</template>
-            <template v-else>{{ alertas.orcamentosExpirando }} orçamento{{ alertas.orcamentosExpirando > 1 ? 's' : '' }} expirando</template>
-            <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-          </span>
-        </div>
-      </section>
 
       <!-- FILTRO DE PERÍODO (slide-down panel) -->
       <Transition name="slide-down">
@@ -504,298 +514,354 @@
         </div>
       </Transition>
 
-      <!-- ═══════════════════════════════════════════════════════ SEÇÃO: FINANCEIRO -->
-      <div class="mb-10">
-        <div class="flex items-center gap-2 px-1 mb-5">
-          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Financeiro</span>
-          <div class="flex-1 h-px bg-primary-10" />
-        </div>
+      <!-- ═══════════════════════════════════ PAINEL DE CONTEÚDO (claro) ═══════════════════ -->
+      <div style="background:#f1f2f4;border-radius:22px 22px 0 0;padding:20px;color:#1a1d21" class="flex-1 sm:-mx-4">
 
-        <!-- 2. FINANCIAL METRIC CARDS with sparklines -->
-        <div v-if="loading" class="grid grid-cols-2 md:grid-cols-4 2xl:grid-cols-7 gap-3 sm:gap-4">
-          <div v-for="i in 7" :key="i" class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm animate-pulse">
-            <div class="h-4 w-24 bg-primary-10 rounded mb-3" />
-            <div class="h-7 w-32 bg-primary-10 rounded mb-2" />
-            <div class="h-3 w-20 bg-primary-5 rounded" />
+        <!-- Alertas e Prazos -->
+        <div v-if="alertas.temAlertas" style="display:flex;align-items:center;gap:14px;background:linear-gradient(90deg,#fdf7ee,#fcf5ef);border:1px solid #f2e7d7;border-radius:14px;padding:12px 18px">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9A6 6 0 1 0 6 9c0 5-2.5 6.5-2.5 6.5h17S18 14 18 9zM10 19a2 2 0 0 0 4 0"/></svg>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:#1a1d21">Alertas e Prazos</div>
+            <div style="font-size:11.5px;color:#9aa1ab;margin-top:1px">{{ totalAlertas }} {{ totalAlertas === 1 ? 'item exige' : 'itens exigem' }} sua atenção</div>
           </div>
-        </div>
-
-        <div v-else class="grid grid-cols-2 md:grid-cols-4 2xl:grid-cols-7 gap-3 sm:gap-4">
-        <!-- Faturamento -->
-        <div class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm">
-          <div class="flex items-center gap-2.5 mb-2">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center" :style="{ background: 'var(--color-primary-5)', border: '1px solid var(--color-primary-10)' }">
-              <svg class="w-5 h-5" :style="{ color: 'var(--color-primary)' }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <div style="flex:1;display:flex;justify-content:center">
+            <div style="display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #f3ddc3;border-radius:20px;padding:8px 15px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+              <span style="width:7px;height:7px;border-radius:50%;background:#ef4444"></span>
+              <span style="font-size:12px;font-weight:700;color:#b45309">
+                <template v-if="alertas.osAtrasadas > 0">{{ alertas.osAtrasadas }} OS atrasada{{ alertas.osAtrasadas > 1 ? 's' : '' }} • Prazo vencido</template>
+                <template v-else-if="alertas.contasVencidas > 0">{{ alertas.contasVencidas }} conta{{ alertas.contasVencidas > 1 ? 's' : '' }} vencida{{ alertas.contasVencidas > 1 ? 's' : '' }}</template>
+                <template v-else>{{ alertas.orcamentosExpirando }} orçamento{{ alertas.orcamentosExpirando > 1 ? 's' : '' }} expirando</template>
+              </span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
             </div>
-            <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Faturamento</span>
           </div>
-          <p class="text-xl sm:text-2xl font-black truncate" style="color: var(--color-card-texto)">{{ formatCurrency(financeiro.faturamento) }}</p>
-          <p class="text-[11px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.75">receitas no período</p>
-          <svg class="w-full h-8 mt-2" viewBox="0 0 100 30" preserveAspectRatio="none">
-            <path fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" :d="sparklineFaturamento" />
-          </svg>
+          <NuxtLink to="/adesivos-ordens-servico" style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#6b7079">Ver todos <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></NuxtLink>
         </div>
 
-        <!-- Despesas -->
-        <div class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm">
-          <div class="flex items-center gap-2.5 mb-2">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center" :style="{ background: 'var(--color-primary-5)', border: '1px solid var(--color-primary-10)' }">
-              <svg class="w-5 h-5" :style="{ color: 'var(--color-primary)' }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+        <!-- KPI CARDS -->
+        <div class="grid grid-cols-2 md:grid-cols-4 2xl:grid-cols-7 gap-3" :style="{ marginTop: alertas.temAlertas ? '14px' : '0' }">
+
+          <!-- Faturamento -->
+          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#e3f7ea;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M10.2 14.2c0 .9.8 1.5 1.8 1.5s1.8-.5 1.8-1.4-.8-1.2-1.8-1.4-1.8-.5-1.8-1.4.8-1.4 1.8-1.4 1.8.6 1.8 1.5"/></svg></span>
+              <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">FATURAMENTO</span>
             </div>
-            <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Despesas</span>
+            <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px" class="truncate">{{ formatCurrency(financeiro.faturamento) }}</div>
+            <div style="font-size:11px;font-weight:700;white-space:nowrap" :style="{ color: varColor(comparativo.variacaoFaturamento) }">{{ fmtVar(comparativo.variacaoFaturamento) }} <span style="color:#8b9099;font-weight:500">vs. mês anterior</span></div>
+            <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="margin-top:8px"><path :d="sparklineFaturamento" fill="none" stroke="#22c55e" stroke-width="1.6" stroke-linecap="round"/></svg>
           </div>
-          <p class="text-xl sm:text-2xl font-black truncate" style="color: var(--color-card-texto)">{{ formatCurrency(financeiro.despesas) }}</p>
-          <p class="text-[11px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.75">contas no período</p>
-          <svg class="w-full h-8 mt-2" viewBox="0 0 100 30" preserveAspectRatio="none">
-            <path fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" :d="sparklineDespesas" />
-          </svg>
-        </div>
 
-        <!-- Lucro Estimado -->
-        <div class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm">
-          <div class="flex items-center gap-2.5 mb-2">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center" :style="{ background: 'var(--color-primary-5)', border: '1px solid var(--color-primary-10)' }">
-              <svg class="w-5 h-5" :style="{ color: 'var(--color-primary)' }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
+          <!-- Despesas -->
+          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#fdeaea;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="13" rx="2.2"/><path d="M4 9.5h16M7.5 14.5h3"/></svg></span>
+              <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">DESPESAS</span>
             </div>
-            <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Lucro Estimado</span>
+            <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px" class="truncate">{{ formatCurrency(financeiro.despesas) }}</div>
+            <div style="font-size:11px;font-weight:700;white-space:nowrap" :style="{ color: varColor(-comparativo.variacaoDespesas) }">{{ fmtVar(comparativo.variacaoDespesas) }} <span style="color:#8b9099;font-weight:500">vs. mês anterior</span></div>
+            <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="margin-top:8px"><path :d="sparklineDespesas" fill="none" stroke="#f97316" stroke-width="1.6" stroke-linecap="round"/></svg>
           </div>
-          <p class="text-xl sm:text-2xl font-black truncate" style="color: var(--color-card-texto)">{{ formatCurrency(financeiro.lucroEstimado) }}</p>
-          <p class="text-[11px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.75">faturamento - despesas</p>
-          <svg class="w-full h-8 mt-2" viewBox="0 0 100 30" preserveAspectRatio="none">
-            <path fill="none" stroke="#059669" stroke-width="1.5" stroke-linecap="round" :d="sparklineLucro" />
-          </svg>
+
+          <!-- Lucro Estimado -->
+          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px 10px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#e4edfd;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5l4.5-4.5 3.5 2.5 6.5-6.5M19 8v4.5h-4.5"/></svg></span>
+              <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">LUCRO ESTIMADO</span>
+            </div>
+            <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px" class="truncate">{{ formatCurrency(financeiro.lucroEstimado) }}</div>
+            <div style="font-size:11px;font-weight:700;white-space:nowrap" :style="{ color: varColor(variacaoLucro) }">{{ fmtVar(variacaoLucro) }} <span style="color:#8b9099;font-weight:500">vs. mês anterior</span></div>
+            <svg viewBox="0 0 100 30" preserveAspectRatio="none" width="100%" height="38" style="margin-top:8px"><path :d="sparklineLucro" fill="none" stroke="#3b82f6" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+
+          <!-- A Receber -->
+          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#e3f7ea;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M10.2 14.2c0 .9.8 1.5 1.8 1.5s1.8-.5 1.8-1.4-.8-1.2-1.8-1.4-1.8-.5-1.8-1.4.8-1.4 1.8-1.4 1.8.6 1.8 1.5"/></svg></span>
+              <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">A RECEBER</span>
+            </div>
+            <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px" class="truncate">{{ formatCurrency(previsao.aReceber) }}</div>
+            <div style="font-size:11.5px;color:#7c828b;font-weight:500;white-space:nowrap">{{ previsao.qtdReceber }} conta(s) pendente(s)</div>
+          </div>
+
+          <!-- A Pagar -->
+          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#fdeee2;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="13" rx="2.2"/><path d="M4 9.5h16M7.5 14.5h3"/></svg></span>
+              <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">A PAGAR</span>
+            </div>
+            <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px" class="truncate">{{ formatCurrency(previsao.aPagar) }}</div>
+            <div style="font-size:11.5px;color:#7c828b;font-weight:500;white-space:nowrap">{{ previsao.qtdPagar }} conta(s) pendente(s)</div>
+          </div>
+
+          <!-- Contas Vencidas -->
+          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#fdeaea;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 3.5 19h17z"/><path d="M12 10v4M12 16.5v.01" stroke-width="2.2"/></svg></span>
+              <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">CONTAS VENCIDAS</span>
+            </div>
+            <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px">{{ financeiro.contasVencidas }}</div>
+            <div style="font-size:11.5px;font-weight:500;white-space:nowrap">
+              <template v-if="financeiro.contasVencidas > 0"><b style="color:#dc2626;font-weight:700">{{ formatCurrency(financeiro.valorContasVencidas) }}</b> <span style="color:#5a6069">em aberto</span></template>
+              <template v-else><span style="color:#16a34a;font-weight:600">tudo em dia ✅</span></template>
+            </div>
+          </div>
+
+          <!-- Saldo Previsto -->
+          <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#f1eafd;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.4" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="2.1"/><circle cx="15.5" cy="8.5" r="2.1"/><circle cx="8.5" cy="15.5" r="2.1"/><circle cx="15.5" cy="15.5" r="2.1"/></svg></span>
+              <span style="font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#31363e;white-space:nowrap">SALDO PREVISTO</span>
+            </div>
+            <div style="font-size:20.5px;font-weight:800;letter-spacing:-.7px;color:#0f1216;white-space:nowrap;margin:10px 0 4px" class="truncate">{{ formatCurrency(previsao.saldo) }}</div>
+            <div style="font-size:11.5px;color:#7c828b;font-weight:500;white-space:nowrap">receber - pagar (não pagas)</div>
+          </div>
         </div>
 
-        <!-- Contas Vencidas -->
-        <div class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm" :class="financeiro.contasVencidas > 0 ? 'ring-2 ring-red-100' : ''">
-          <div class="flex items-center gap-2.5 mb-2">
-            <div
-              class="w-10 h-10 rounded-full flex items-center justify-center"
-              :class="financeiro.contasVencidas > 0 ? 'bg-red-100' : ''"
-              :style="financeiro.contasVencidas > 0 ? {} : { background: 'var(--color-primary-5)', border: '1px solid var(--color-primary-10)' }"
+      <!-- ═══════════════════════════════════ ROW: EVOLUÇÃO DA RECEITA + STATUS DE PRODUÇÃO -->
+      <div class="grid grid-cols-1 xl:grid-cols-[1.3fr_1fr] gap-3.5 mt-3.5">
+          <!-- Evolução da Receita -->
+          <div>
+            <DashboardCharts
+              :evolucao-mensal="evolucaoMensal"
+              :format-currency="formatCurrency"
+            />
+          </div>
+
+          <!-- Status de Produção -->
+          <div class="xl:mb-[44px]" style="background:#fff;border:1px solid #ecece9;border-radius:18px;padding:18px 20px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-size:15.5px;font-weight:700;color:#0f1216;letter-spacing:-.2px">Status de Produção</div>
+              <NuxtLink to="/adesivos-ordens-servico" style="display:flex;align-items:center;gap:8px;border:1px solid #e5e5e2;border-radius:10px;padding:8px 13px;font-size:12.5px;font-weight:600;color:#31363e;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)">Ver detalhes <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></NuxtLink>
+            </div>
+            <div style="display:flex;align-items:center;gap:26px;margin-top:20px;padding:0 4px">
+              <div style="position:relative;flex:none">
+                <svg width="150" height="150" viewBox="0 0 150 150">
+                  <circle cx="75" cy="75" r="62" fill="none" stroke="#e9ebee" stroke-width="15" />
+                  <circle
+                    v-for="(seg, i) in producaoSegmentsBig"
+                    :key="`ps${i}`"
+                    cx="75" cy="75" r="62"
+                    fill="none"
+                    :stroke="seg.color"
+                    stroke-width="15"
+                    stroke-linecap="round"
+                    :stroke-dasharray="`${seg.dash} ${ringBig - seg.dash}`"
+                    :stroke-dashoffset="seg.offset"
+                    transform="rotate(-90 75 75)"
+                  />
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                  <div style="font-size:29px;font-weight:800;color:#0f1216;line-height:1">{{ producaoTotalGeral }}</div>
+                  <div style="font-size:11px;color:#6b7079;font-weight:500;margin-top:3px">OS no total</div>
+                </div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:17px">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="width:28px;height:28px;flex:none;border-radius:50%;background:#e4edfd;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7 4 12l5 5M4 12h11a5 5 0 0 1 5 5v1"/></svg></span>
+                  <span style="font-size:19px;font-weight:800;color:#0f1216;min-width:16px">{{ producao.osEmProducao }}</span>
+                  <div style="flex:1;line-height:1.25;margin-left:4px"><div style="font-size:13px;font-weight:700;color:#2563eb">OS em Produção</div><div style="font-size:11.5px;color:#8b9099">Ordens de Serviço ativas</div></div>
+                  <span style="font-size:15px;font-weight:800;color:#0f1216">{{ producaoPctGeral(producao.osEmProducao) }}%</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="width:28px;height:28px;flex:none;border-radius:50%;background:#e3f7ea;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="7.5"/></svg></span>
+                  <span style="font-size:19px;font-weight:800;color:#0f1216;min-width:16px">{{ producao.osProntas }}</span>
+                  <div style="flex:1;line-height:1.25;margin-left:4px"><div style="font-size:13px;font-weight:700;color:#16a34a">OS Prontas</div><div style="font-size:11.5px;color:#8b9099">Finalizadas e entregues</div></div>
+                  <span style="font-size:15px;font-weight:800;color:#0f1216">{{ producaoPctGeral(producao.osProntas) }}%</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="width:28px;height:28px;flex:none;border-radius:50%;background:#cffafe;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h4"/></svg></span>
+                  <span style="font-size:19px;font-weight:800;color:#0f1216;min-width:16px">{{ producao.osFaturamento }}</span>
+                  <div style="flex:1;line-height:1.25;margin-left:4px"><div style="font-size:13px;font-weight:700;color:#0891b2">Faturamento</div><div style="font-size:11.5px;color:#8b9099">Nota / conferência / pagamento</div></div>
+                  <span style="font-size:15px;font-weight:800;color:#0f1216">{{ producaoPctGeral(producao.osFaturamento) }}%</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="width:28px;height:28px;flex:none;border-radius:50%;background:#f1eafd;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2" fill="#7c3aed" stroke="none"/></svg></span>
+                  <span style="font-size:19px;font-weight:800;color:#0f1216;min-width:16px">{{ producao.processosAtivos }}</span>
+                  <div style="flex:1;line-height:1.25;margin-left:4px"><div style="font-size:13px;font-weight:700;color:#7c3aed">Processos Ativos</div><div style="font-size:11.5px;color:#8b9099">Processos em andamento</div></div>
+                  <span style="font-size:15px;font-weight:800;color:#0f1216">{{ producaoPctGeral(producao.processosAtivos) }}%</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="width:28px;height:28px;flex:none;border-radius:50%;background:#fdeee2;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 4.5 18h15z"/></svg></span>
+                  <span style="font-size:19px;font-weight:800;color:#0f1216;min-width:16px">{{ producao.osAtrasadas }}</span>
+                  <div style="flex:1;line-height:1.25;margin-left:4px"><div style="font-size:13px;font-weight:700;color:#ef4444">OS com prazo vencido</div><div style="font-size:11.5px;color:#8b9099">Requer atenção urgente</div></div>
+                  <span style="font-size:15px;font-weight:800;color:#0f1216">{{ producaoPctGeral(producao.osAtrasadas) }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- ═══════════════════════════════ ROW: PIPELINE + ATIVIDADES + RESUMO FINANCEIRO -->
+      <div class="grid grid-cols-1 xl:grid-cols-[1.42fr_1fr_1.89fr] gap-3.5 mt-3.5">
+        <!-- Pipeline de Orçamentos -->
+        <div style="background:#fff;border:1px solid #ecece9;border-radius:18px;padding:18px 20px;box-shadow:0 1px 2px rgba(0,0,0,.02);display:flex;flex-direction:column">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:15.5px;font-weight:700;color:#0f1216;letter-spacing:-.2px">Pipeline de Orçamentos</div>
+            <div style="display:flex;align-items:center;gap:8px;border:1px solid #e5e5e2;border-radius:10px;padding:8px 13px;font-size:12.5px;font-weight:600;color:#31363e;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)">{{ periodoLabel }} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+
+          <template v-if="pipelineTotal > 0">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);margin-top:22px">
+              <div style="padding-right:12px">
+                <div style="font-size:12px;color:#6b7079;font-weight:500">Rascunho</div>
+                <div style="font-size:25px;font-weight:800;color:#0f1216;margin:4px 0 3px;letter-spacing:-.5px">{{ pipeline.rascunho }}</div>
+                <div style="font-size:11.5px;color:#4b5159;font-weight:600;white-space:nowrap">{{ pipelinePct(pipeline.rascunho) }}% do total</div>
+              </div>
+              <div style="padding:0 0 0 14px;border-left:1px solid #ececea">
+                <div style="font-size:12px;color:#6b7079;font-weight:500">Enviado</div>
+                <div style="font-size:25px;font-weight:800;color:#0f1216;margin:4px 0 3px;letter-spacing:-.5px">{{ pipeline.enviado }}</div>
+                <div style="font-size:11.5px;color:#4b5159;font-weight:600;white-space:nowrap">{{ formatCurrency(pipeline.valorEmNegociacao) }}</div>
+              </div>
+              <div style="padding:0 0 0 14px;border-left:1px solid #ececea">
+                <div style="font-size:12px;color:#6b7079;font-weight:500">Aprovado</div>
+                <div style="font-size:25px;font-weight:800;color:#16a34a;margin:4px 0 3px;letter-spacing:-.5px">{{ pipeline.aprovado }}</div>
+                <div style="font-size:11.5px;color:#4b5159;font-weight:600;white-space:nowrap">{{ pipelinePct(pipeline.aprovado) }}% do total</div>
+              </div>
+              <div style="padding:0 0 0 14px;border-left:1px solid #ececea">
+                <div style="font-size:12px;color:#6b7079;font-weight:500">Rej./Venc.</div>
+                <div style="font-size:25px;font-weight:800;color:#0f1216;margin:4px 0 3px;letter-spacing:-.5px">{{ pipeline.rejeitado + pipeline.vencido }}</div>
+                <div style="font-size:11.5px;color:#4b5159;font-weight:600;white-space:nowrap">{{ pipelinePct(pipeline.rejeitado + pipeline.vencido) }}% do total</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:3px;margin-top:22px;height:8px">
+              <div v-if="pipeline.rascunho > 0" style="background:#3652ad;border-radius:4px 0 0 4px" :style="{ flex: pipeline.rascunho }" />
+              <div v-if="pipeline.enviado > 0" style="background:#f97316" :style="{ flex: pipeline.enviado }" />
+              <div v-if="pipeline.aprovado > 0" style="background:#22a749" :style="{ flex: pipeline.aprovado }" />
+              <div v-if="(pipeline.rejeitado + pipeline.vencido) > 0" style="background:#a78bfa;border-radius:0 4px 4px 0" :style="{ flex: pipeline.rejeitado + pipeline.vencido }" />
+            </div>
+
+            <div style="margin-top:22px;background:#f5f5f3;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px">
+              <div style="flex:none">
+                <div style="font-size:12px;color:#6b7079;font-weight:500">Taxa de Conversão</div>
+                <div style="font-size:24px;font-weight:800;color:#0f1216;letter-spacing:-.5px;margin-top:2px">{{ taxaConversao.toFixed(1).replace('.', ',') }}%</div>
+              </div>
+              <div style="flex:1;text-align:center;font-size:12px;font-weight:600;color:#6b7079">aprovados ÷ respondidos</div>
+              <div style="flex:none;width:46px;height:46px;border-radius:13px;background:#ddf3e4;display:flex;align-items:center;justify-content:center">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5l4.5-4.5 3.5 2.5 6.5-6.5M19.5 8v4.5H15"/></svg>
+              </div>
+            </div>
+          </template>
+
+          <div v-else style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 0;gap:8px">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#c7cdd6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>
+            <p style="font-size:13.5px;font-weight:600;color:#9aa1ab">Nenhum orçamento no período</p>
+          </div>
+        </div>
+
+        <!-- Atividades Recentes -->
+        <div style="background:#fff;border:1px solid #ecece9;border-radius:18px;padding:18px 18px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div style="font-size:15.5px;font-weight:700;color:#0f1216;letter-spacing:-.2px">Atividades Recentes</div>
+            <NuxtLink to="/adesivos-orcamentos" style="font-size:12.5px;font-weight:700;color:#3b82f6">Ver todas</NuxtLink>
+          </div>
+
+          <div v-if="atividadesDashboard.length > 0 || producao.osAtrasadas > 0" style="position:relative;display:flex;flex-direction:column;gap:18px">
+            <NuxtLink
+              v-for="item in atividadesDashboard.slice(0, 4)"
+              :key="`${item.tipo}-${item.id}`"
+              :to="atividadeRoute(item)"
+              style="display:flex;align-items:flex-start;gap:10px;position:relative"
             >
-              <svg
-                class="w-5 h-5"
-                :class="financeiro.contasVencidas > 0 ? 'text-red-600' : ''"
-                :style="financeiro.contasVencidas > 0 ? {} : { color: 'var(--color-primary)' }"
-                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-              ><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-            </div>
-            <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Contas Vencidas</span>
+              <span :style="{ width:'33px', height:'33px', flex:'none', borderRadius:'10px', background: atividadeSquareBg(item.tipo), display:'flex', alignItems:'center', justifyContent:'center' }">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" :stroke="atividadeSquareColor(item.tipo)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h4m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.6a1 1 0 0 1 .7.3l5.4 5.4a1 1 0 0 1 .3.7V19a2 2 0 0 1-2 2z"/></svg>
+              </span>
+              <div style="flex:1;line-height:1.35;min-width:0">
+                <div style="font-size:12.5px;font-weight:700;color:#0f1216" class="truncate">{{ item.descricao }}</div>
+                <div v-if="item.clienteNome" style="font-size:11.5px;color:#8b9099;margin-top:1px" class="truncate">Cliente: {{ item.clienteNome }}</div>
+              </div>
+              <span style="font-size:10.5px;color:#9aa1ab;font-weight:500;white-space:nowrap">{{ tempoRelativo(item.criadoEm) }}</span>
+            </NuxtLink>
+
+            <!-- Alerta de prazo vencido (data-backed) -->
+            <NuxtLink v-if="producao.osAtrasadas > 0" to="/adesivos-ordens-servico" style="display:flex;align-items:center;gap:10px;position:relative;background:#fceceb;border-radius:12px;padding:11px 12px;margin:2px -4px 0">
+              <span style="width:33px;height:33px;flex:none;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 3.5 19h17z"/><path d="M12 10v4M12 16.5v.01" stroke-width="2.2"/></svg></span>
+              <div style="flex:1;line-height:1.35;min-width:0">
+                <div style="font-size:12.5px;font-weight:700;color:#b91c1c" class="truncate">{{ producao.osAtrasadas }} OS com prazo vencido</div>
+                <div style="font-size:11.5px;color:#a05252;margin-top:1px">Requer atenção urgente</div>
+              </div>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a05252" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </NuxtLink>
           </div>
-          <p class="text-xl sm:text-2xl font-black" style="color: var(--color-card-texto)">{{ financeiro.contasVencidas }}</p>
-          <p class="text-[11px] mt-0.5" :class="financeiro.contasVencidas > 0 ? 'text-red-500' : ''" :style="financeiro.contasVencidas > 0 ? {} : { color: 'var(--color-card-texto)', opacity: 0.75 }">
-            {{ financeiro.contasVencidas > 0 ? formatCurrency(financeiro.valorContasVencidas) + ' em atraso' : 'tudo em dia ✅' }}
-          </p>
-        </div>
 
-        <!-- A Receber -->
-        <div class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm">
-          <div class="flex items-center gap-2.5 mb-2">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center" :style="{ background: 'var(--color-primary-5)', border: '1px solid var(--color-primary-10)' }">
-              <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">A Receber</span>
-          </div>
-          <p class="text-xl sm:text-2xl font-black truncate" style="color: var(--color-card-texto)">{{ formatCurrency(previsao.aReceber) }}</p>
-          <p class="text-[11px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.75">{{ previsao.qtdReceber }} conta(s) pendente(s)</p>
-        </div>
-
-        <!-- A Pagar -->
-        <div class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm">
-          <div class="flex items-center gap-2.5 mb-2">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center" :style="{ background: 'var(--color-primary-5)', border: '1px solid var(--color-primary-10)' }">
-              <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
-            </div>
-            <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">A Pagar</span>
-          </div>
-          <p class="text-xl sm:text-2xl font-black truncate" style="color: var(--color-card-texto)">{{ formatCurrency(previsao.aPagar) }}</p>
-          <p class="text-[11px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.75">{{ previsao.qtdPagar }} conta(s) pendente(s)</p>
-        </div>
-
-        <!-- Saldo Previsto -->
-        <div class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm">
-          <div class="flex items-center gap-2.5 mb-2">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center" :style="{ background: 'var(--color-primary-5)', border: '1px solid var(--color-primary-10)' }">
-              <svg class="w-5 h-5" :style="{ color: 'var(--color-primary)' }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
-            </div>
-            <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Saldo Previsto</span>
-          </div>
-          <p class="text-xl sm:text-2xl font-black truncate" style="color: var(--color-card-texto)">{{ formatCurrency(previsao.saldo) }}</p>
-          <p class="text-[11px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.75">receber - pagar (não pagas)</p>
-        </div>
-      </div>
-      </div>
-
-      <!-- ═══════════════════════════════════════════════════════ SEÇÃO: ORÇAMENTOS -->
-      <div class="mb-10">
-      <!-- 3. PIPELINE DE ORÇAMENTOS — Horizontal inline section -->
-      <div class="mb-0">
-        <div class="flex items-center gap-2 px-1 mb-4">
-          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Pipeline de Orçamentos</span>
-          <div class="flex-1 h-px bg-primary-10" />
-        </div>
-
-        <div v-if="loading" class="rounded-2xl bg-theme-card border border-primary-10 p-4 shadow-sm animate-pulse">
-          <div class="flex gap-3">
-            <div v-for="i in 5" :key="i" class="h-8 w-20 bg-primary-5 rounded-full" />
+          <div v-else style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 0;gap:8px">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#c7cdd6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
+            <p style="font-size:13.5px;font-weight:600;color:#9aa1ab">Nenhuma atividade recente</p>
           </div>
         </div>
 
-        <div v-else-if="pipelineTotal === 0" class="rounded-2xl bg-theme-card border border-primary-10 p-5 shadow-sm">
-          <div class="flex flex-col items-center py-4 gap-2">
-            <svg class="w-8 h-8" style="color: var(--color-card-texto); opacity: 0.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-            <p class="text-sm font-semibold" style="color: var(--color-card-texto); opacity: 0.75">Nenhum orçamento no período</p>
-          </div>
-        </div>
+        <!-- Resumo Financeiro (card escuro com anel) -->
+        <div class="xl:-mt-[44px]" style="background:linear-gradient(150deg,#16181c,#0d0e11);border-radius:18px;padding:18px 22px;position:relative;overflow:hidden;color:#e5e7eb">
+          <div style="position:absolute;right:-70px;top:-40px;width:300px;height:300px;border-radius:50%;border:1px solid rgba(255,255,255,.04)"></div>
+          <div style="position:absolute;right:-30px;top:0;width:280px;height:280px;border-radius:50%;border:1px solid rgba(255,255,255,.035)"></div>
+          <div style="position:absolute;right:10px;bottom:-90px;width:260px;height:260px;border-radius:50%;border:1px solid rgba(255,255,255,.04)"></div>
 
-        <div v-else class="rounded-2xl bg-theme-card border border-primary-10 p-4 shadow-sm">
-          <!-- Status badges row -->
-          <div class="flex flex-wrap items-center gap-4 mb-3">
-            <div class="flex items-center gap-1.5 text-xs">
-              <span class="w-2.5 h-2.5 rounded-full bg-gray-400" />
-              <span style="color: var(--color-card-texto); opacity: 0.8">Rascunho</span>
-              <span class="font-black" style="color: var(--color-card-texto)">{{ pipeline.rascunho }}</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-xs">
-              <svg class="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
-              <span style="color: var(--color-card-texto); opacity: 0.8">Enviado</span>
-              <span class="font-black" style="color: var(--color-card-texto)">{{ pipeline.enviado }}</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-xs">
-              <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-              <span style="color: var(--color-card-texto); opacity: 0.8">Aprovado</span>
-              <span class="font-black" style="color: var(--color-card-texto)">{{ pipeline.aprovado }}</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-xs">
-              <span class="w-2.5 h-2.5 rounded-full bg-red-500" />
-              <span style="color: var(--color-card-texto); opacity: 0.8">Rejeitado</span>
-              <span class="font-black" style="color: var(--color-card-texto)">{{ pipeline.rejeitado }}</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-xs">
-              <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <span style="color: var(--color-card-texto); opacity: 0.8">Vencido</span>
-              <span class="font-black" style="color: var(--color-card-texto)">{{ pipeline.vencido }}</span>
-            </div>
-
-            <!-- Em Negociação CTA card -->
-            <div class="ml-auto shrink-0 inline-flex items-center gap-2 rounded-xl px-4 py-2" :style="{ background: 'var(--color-primary-5)', border: '1px solid var(--color-primary-10)' }">
-              <span class="text-xs font-semibold" :style="{ color: 'var(--color-primary)' }">Em Negociação</span>
-              <span class="text-sm font-black" style="color: var(--color-card-texto)">{{ formatCurrency(pipeline.valorEmNegociacao) }}</span>
-            </div>
+          <div style="position:relative;display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:15.5px;font-weight:700;color:#fff;letter-spacing:-.2px">Resumo Financeiro</div>
+            <span style="display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:8px 13px;font-size:12.5px;font-weight:600;color:#e5e7eb">{{ periodoLabel }}</span>
           </div>
 
-          <!-- Pipeline progress bar -->
-          <div class="w-full h-1.5 rounded-full bg-primary-5 flex overflow-hidden">
-            <div v-if="pipeline.rascunho > 0" class="bg-gray-400 transition-all" :style="{ width: (pipeline.rascunho / pipelineTotal * 100) + '%' }" />
-            <div v-if="pipeline.enviado > 0" class="bg-blue-500 transition-all" :style="{ width: (pipeline.enviado / pipelineTotal * 100) + '%' }" />
-            <div v-if="pipeline.aprovado > 0" class="bg-green-500 transition-all" :style="{ width: (pipeline.aprovado / pipelineTotal * 100) + '%' }" />
-            <div v-if="pipeline.rejeitado > 0" class="bg-red-500 transition-all" :style="{ width: (pipeline.rejeitado / pipelineTotal * 100) + '%' }" />
-            <div v-if="pipeline.vencido > 0" class="bg-orange-400 transition-all" :style="{ width: (pipeline.vencido / pipelineTotal * 100) + '%' }" />
+          <div style="position:relative;display:flex;align-items:center;gap:26px;margin-top:14px">
+            <!-- Anel receitas/despesas/lucro -->
+            <div style="position:relative;flex:none;width:180px;height:180px">
+              <svg width="180" height="180" viewBox="0 0 120 120" style="transform:rotate(-90deg)">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="12" />
+                <circle
+                  v-for="(seg, i) in resumoSegments"
+                  :key="`rs${i}`"
+                  cx="60" cy="60" r="50"
+                  fill="none"
+                  :stroke="seg.color"
+                  stroke-width="12"
+                  :stroke-dasharray="`${seg.dash} ${seg.gap}`"
+                  :stroke-dashoffset="seg.offset"
+                />
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+                <div style="font-size:11px;color:#9aa4b2;font-weight:500">Lucro Estimado</div>
+                <div style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-.5px;margin:3px 0" class="truncate">{{ formatCurrency(financeiro.lucroEstimado) }}</div>
+                <div style="font-size:11px;font-weight:700" :style="{ color: varColor(variacaoLucro) }">{{ fmtVar(variacaoLucro) }}</div>
+              </div>
+            </div>
+
+            <!-- Lista -->
+            <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+              <div style="display:flex;align-items:center;gap:11px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07)">
+                <span style="width:13px;height:13px;border-radius:50%;background:#22c55e;box-shadow:0 3px 8px rgba(34,197,94,.4)"></span>
+                <span style="flex:1;font-size:13.5px;font-weight:500;color:#d3d8de">Receitas</span>
+                <span style="font-size:13.5px;font-weight:800;color:#fff;letter-spacing:-.2px" class="truncate">{{ formatCurrency(financeiro.faturamento) }}</span>
+                <span style="font-size:12px;color:#9aa4b2;width:38px;text-align:right;font-weight:500">{{ resumoPct(financeiro.faturamento) }}%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:11px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07)">
+                <span style="width:13px;height:13px;border-radius:50%;background:#ef4444;box-shadow:0 3px 8px rgba(239,68,68,.4)"></span>
+                <span style="flex:1;font-size:13.5px;font-weight:500;color:#d3d8de">Despesas</span>
+                <span style="font-size:13.5px;font-weight:800;color:#fff;letter-spacing:-.2px" class="truncate">{{ formatCurrency(financeiro.despesas) }}</span>
+                <span style="font-size:12px;color:#9aa4b2;width:38px;text-align:right;font-weight:500">{{ resumoPct(financeiro.despesas) }}%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:11px;padding:14px 0">
+                <span style="width:13px;height:13px;border-radius:50%;background:#3b82f6;box-shadow:0 3px 8px rgba(59,130,246,.4)"></span>
+                <span style="flex:1;font-size:13.5px;font-weight:500;color:#d3d8de">Lucro</span>
+                <span style="font-size:13.5px;font-weight:800;color:#fff;letter-spacing:-.2px" class="truncate">{{ formatCurrency(financeiro.lucroEstimado) }}</span>
+                <span style="font-size:12px;color:#9aa4b2;width:38px;text-align:right;font-weight:500">{{ resumoPct(financeiro.lucroEstimado) }}%</span>
+              </div>
+            </div>
           </div>
+
+          <NuxtLink to="/financeiro" style="position:relative;margin-top:10px;height:42px;padding:0 18px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#e5e7eb;font-weight:600;font-size:13px;display:flex;align-items:center;gap:10px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="2.2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg>
+            Ver relatório completo
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M9 6l6 6-6 6"/></svg>
+          </NuxtLink>
         </div>
       </div>
       </div>
+      <!-- ═══ fim painel de conteúdo ═══ -->
 
-      <!-- ═══════════════════════════════════════════════════════ SEÇÃO: PRODUÇÃO -->
-      <div class="mb-10">
-      <!-- 4. STATUS DE PRODUÇÃO — Cards with highlighted alert -->
-      <div class="mb-0">
-        <div class="flex items-center gap-2 px-1 mb-4">
-          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--color-card-texto); opacity: 0.75">Status de Produção</span>
-          <div class="flex-1 h-px bg-primary-10" />
-          <span v-if="producao.osAtrasadas > 0" class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/30">
-            ↓ {{ producao.osAtrasadas }} atrasada{{ producao.osAtrasadas > 1 ? 's' : '' }}
-          </span>
-        </div>
-
-        <div v-if="loading" class="grid grid-cols-2 xl:grid-cols-4 gap-3 animate-pulse">
-          <div v-for="i in 4" :key="i" class="h-24 bg-theme-card border border-primary-10 rounded-2xl" />
-        </div>
-
-        <div v-else class="grid grid-cols-2 xl:grid-cols-4 gap-3">
-          <!-- OS em Produção -->
-          <div class="rounded-2xl bg-theme-card border border-primary-10 p-4 shadow-sm flex items-center gap-3 relative overflow-hidden">
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-blue-500 rounded-b-2xl"></div>
-            <div class="shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-blue-50 border border-blue-200">
-              <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.1-5.1m0 0L11.42 4.97m-5.1 5.1H21M3 21h18"/></svg>
-            </div>
-            <div>
-              <p class="text-2xl font-black" style="color: var(--color-card-texto)">{{ producao.osEmProducao }}</p>
-              <p class="text-[11px] font-semibold text-blue-600">OS em Produção</p>
-              <p class="text-[10px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.55">Ordens de Serviço ativas</p>
-            </div>
-          </div>
-
-          <!-- OS Prontas -->
-          <div class="rounded-2xl bg-theme-card border border-primary-10 p-4 shadow-sm flex items-center gap-3 relative overflow-hidden">
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-green-500 rounded-b-2xl"></div>
-            <div class="shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-green-50 border border-green-200">
-              <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <div>
-              <p class="text-2xl font-black" style="color: var(--color-card-texto)">{{ producao.osProntas }}</p>
-              <p class="text-[11px] font-semibold text-green-600">OS Prontas</p>
-              <p class="text-[10px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.55">Finalizadas e entregues</p>
-            </div>
-          </div>
-
-          <!-- Processos Ativos -->
-          <div class="rounded-2xl bg-theme-card border border-primary-10 p-4 shadow-sm flex items-center gap-3 relative overflow-hidden">
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-purple-500 rounded-b-2xl"></div>
-            <div class="shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-purple-50 border border-purple-200">
-              <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
-            </div>
-            <div>
-              <p class="text-2xl font-black" style="color: var(--color-card-texto)">{{ producao.processosAtivos }}</p>
-              <p class="text-[11px] font-semibold text-purple-600">Processos Ativos</p>
-              <p class="text-[10px] mt-0.5" style="color: var(--color-card-texto); opacity: 0.55">Processos em andamento</p>
-            </div>
-          </div>
-
-          <!-- Alert card: OS com prazo vencido -->
-          <div v-if="producao.osAtrasadas > 0" class="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-4 shadow-sm flex items-center gap-3 relative overflow-hidden">
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-amber-500 rounded-b-2xl"></div>
-            <div class="shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
-              <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-2xl font-black text-amber-600">{{ producao.osAtrasadas }}</p>
-              <p class="text-[11px] font-semibold text-amber-600">OS com prazo vencido</p>
-              <p class="text-[10px] mt-0.5 text-amber-500">Requer atenção urgente</p>
-            </div>
-          </div>
-          <!-- Placeholder when no OS atrasadas -->
-          <div v-else class="rounded-2xl bg-theme-card border border-primary-10 p-4 shadow-sm flex items-center justify-center relative overflow-hidden">
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-green-400 rounded-b-2xl"></div>
-            <span class="text-xs font-semibold" style="color: var(--color-card-texto); opacity: 0.75">Sem atrasos ✅</span>
-          </div>
-        </div>
-      </div>
-      </div>
-
-      <!-- 5 & 6. CHARTS SECTION -->
-      <DashboardCharts
-        v-if="!loading"
-        :financeiro="financeiro"
-        :pipeline="pipeline"
-        :producao="producao"
-        :top-clientes="topClientes"
-        :evolucao-mensal="evolucaoMensal"
-        :format-currency="formatCurrency"
-        :periodo-label="periodoLabel"
-      />
-
-      <!-- Loading skeleton for charts -->
-      <div v-if="loading" class="space-y-4 mb-6">
-        <div class="h-px bg-primary-10 my-4" />
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div v-for="i in 3" :key="i" class="rounded-2xl border border-primary-10 bg-theme-card p-5 shadow-sm animate-pulse">
-            <div class="h-4 w-32 bg-primary-10 rounded mb-4" />
-            <div class="h-[200px] bg-primary-5 rounded-xl" />
-          </div>
-        </div>
-      </div>
+      <!-- FAB — Nova OS -->
+      <NuxtLink to="/adesivos-ordens-servico" class="hidden xl:flex" style="position:fixed;right:38px;bottom:28px;width:60px;height:60px;border-radius:50%;background:#f97316;color:#fff;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(249,115,22,.45);z-index:40" title="Nova Ordem de Serviço">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </NuxtLink>
 
       <!-- Botão "Tentar novamente" após timeout de 10s -->
       <div v-if="loading && loadingTimeout" class="flex justify-center mb-6">
@@ -842,6 +908,113 @@ let loadingTimer: ReturnType<typeof setTimeout> | null = null
 const pipelineTotal = computed(() =>
   pipeline.value.rascunho + pipeline.value.enviado + pipeline.value.aprovado + pipeline.value.rejeitado + pipeline.value.vencido
 )
+
+// ── Taxa de conversão ────────────────────────────────────────────────────────
+const taxaConversao = computed(() => {
+  const { aprovado, enviado, rejeitado, vencido } = pipeline.value
+  const total = aprovado + enviado + rejeitado + vencido
+  if (total === 0) return 0
+  return (aprovado / total) * 100
+})
+
+// ── Anéis (donut SVG) — helper de segmentos ──────────────────────────────────
+const ringCircumference = 2 * Math.PI * 50 // r = 50 (viewBox 120)
+const ringBig = 2 * Math.PI * 62           // r = 62 (viewBox 150)
+
+interface RingSegment { value: number; color: string }
+function buildRingSegments(items: RingSegment[], radius = 50) {
+  const C = 2 * Math.PI * radius
+  const total = items.reduce((s, i) => s + Math.max(i.value, 0), 0)
+  if (total <= 0) return []
+  let acc = 0
+  const gapPx = 2 // pequeno espaço entre segmentos
+  return items
+    .filter(i => i.value > 0)
+    .map(i => {
+      const frac = i.value / total
+      const dash = Math.max(frac * C - gapPx, 0)
+      const offset = -acc * C
+      acc += frac
+      return { color: i.color, dash, offset, gap: C - dash }
+    })
+}
+
+// ── Percentuais / variações ──────────────────────────────────────────────────
+function pipelinePct(val: number): number {
+  if (pipelineTotal.value === 0) return 0
+  return Math.round((val / pipelineTotal.value) * 100)
+}
+
+const variacaoLucro = computed(() => {
+  const lucroAnterior = comparativo.value.faturamentoAnterior - comparativo.value.despesasAnterior
+  const lucroAtual = financeiro.value.lucroEstimado
+  if (lucroAnterior <= 0) return 0
+  return ((lucroAtual - lucroAnterior) / lucroAnterior) * 100
+})
+
+function fmtVar(v: number): string {
+  const sign = v >= 0 ? '+' : ''
+  return `${sign}${v.toFixed(1).replace('.', ',')}%`
+}
+function varColor(v: number): string {
+  return v >= 0 ? '#16a34a' : '#dc2626'
+}
+
+const totalAlertas = computed(() =>
+  (alertas.value.osAtrasadas > 0 ? 1 : 0) +
+  (alertas.value.contasVencidas > 0 ? 1 : 0) +
+  (alertas.value.orcamentosExpirando > 0 ? 1 : 0)
+)
+
+// ── Status de Produção (donut) ───────────────────────────────────────────────
+const producaoTotalGeral = computed(() =>
+  producao.value.osEmProducao + producao.value.osProntas + producao.value.osFaturamento + producao.value.processosAtivos + producao.value.osAtrasadas
+)
+function producaoPctGeral(val: number): number {
+  if (producaoTotalGeral.value === 0) return 0
+  return Math.round((val / producaoTotalGeral.value) * 100)
+}
+const producaoSegmentsBig = computed(() => buildRingSegments([
+  { value: producao.value.osEmProducao, color: '#3b82f6' },
+  { value: producao.value.osProntas, color: '#22c55e' },
+  { value: producao.value.osFaturamento, color: '#06b6d4' },
+  { value: producao.value.processosAtivos, color: '#a855f7' },
+  { value: producao.value.osAtrasadas, color: '#f59e0b' },
+], 62))
+
+// ── Resumo Financeiro (donut) ────────────────────────────────────────────────
+const resumoTotal = computed(() =>
+  Math.max(financeiro.value.faturamento, 0) + Math.max(financeiro.value.despesas, 0) + Math.max(financeiro.value.lucroEstimado, 0)
+)
+function resumoPct(val: number): number {
+  if (resumoTotal.value === 0) return 0
+  return Math.round((Math.max(val, 0) / resumoTotal.value) * 100)
+}
+const resumoSegments = computed(() => buildRingSegments([
+  { value: financeiro.value.faturamento, color: '#22c55e' },
+  { value: financeiro.value.despesas, color: '#ef4444' },
+  { value: financeiro.value.lucroEstimado, color: '#3b82f6' },
+], 50))
+
+// ── Atividade: cores do ícone (hex, para inline style) ───────────────────────
+function atividadeSquareBg(tipo: string): string {
+  switch (tipo) {
+    case 'orcamento_criado': return '#e4edfd'
+    case 'orcamento_aprovado': return '#dff3e6'
+    case 'os_criada': return '#f1eafd'
+    case 'conta_criada': return '#fdeee2'
+    default: return '#eef0f2'
+  }
+}
+function atividadeSquareColor(tipo: string): string {
+  switch (tipo) {
+    case 'orcamento_criado': return '#2563eb'
+    case 'orcamento_aprovado': return '#16a34a'
+    case 'os_criada': return '#7c3aed'
+    case 'conta_criada': return '#ea580c'
+    default: return '#6b7079'
+  }
+}
 
 // ── Sparkline helpers ────────────────────────────────────────────────────────
 function buildSparklinePath(values: number[]): string {

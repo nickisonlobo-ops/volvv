@@ -38,6 +38,11 @@ const statusConfig: Record<StatusOS, { bg: string; text: string; dot: string }> 
     text: 'text-green-700',
     dot: 'bg-green-400',
   },
+  faturamento: {
+    bg: 'bg-cyan-50 border border-cyan-200',
+    text: 'text-cyan-700',
+    dot: 'bg-cyan-400',
+  },
   entregue: {
     bg: 'bg-emerald-50 border border-emerald-200',
     text: 'text-emerald-700',

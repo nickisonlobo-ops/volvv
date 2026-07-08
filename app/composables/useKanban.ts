@@ -385,24 +385,28 @@ export function useKanban(pipelineTipo: PipelineTipo) {
       }
     }
 
-    // Para pipeline producao: sincronizar campo `status` baseado na POSIÇÃO da etapa (não no nome)
+    // Para pipeline producao: sincronizar `status` pelo PAPEL da etapa (fonte semântica),
+    // com fallback posicional para etapas customizadas sem papel definido.
     if (pipelineTipo === 'producao' && etapaDestino) {
-      if (etapaDestino.is_final) {
-        // Etapa final = entregue
-        updatePayload.status = 'entregue'
-        if (!updatePayload.data_entrega) {
-          updatePayload.data_entrega = new Date().toISOString()
-        }
+      const papel = (etapaDestino as any).papel as string | null | undefined
+      let novoStatus: string
+      if (papel) {
+        novoStatus = papel // aguardando_producao | em_producao | pronto | faturamento | entregue
+      } else if (etapaDestino.is_final) {
+        novoStatus = 'entregue'
       } else if (etapaDestino.posicao === 0) {
-        // Primeira etapa = aguardando
-        updatePayload.status = 'aguardando_producao'
+        novoStatus = 'aguardando_producao'
       } else {
-        // Qualquer etapa intermediária = em produção
-        updatePayload.status = 'em_producao'
-        // Registrar inicio de produção se saiu da primeira etapa
-        if (etapaOrigem && etapaOrigem.posicao === 0) {
-          updatePayload.data_inicio_producao = new Date().toISOString()
-        }
+        novoStatus = 'em_producao'
+      }
+      updatePayload.status = novoStatus
+
+      if (novoStatus === 'entregue' && !updatePayload.data_entrega) {
+        updatePayload.data_entrega = new Date().toISOString()
+      }
+      // Registrar início de produção ao sair da primeira etapa (Aguardando)
+      if (etapaOrigem && etapaOrigem.posicao === 0 && novoStatus !== 'aguardando_producao') {
+        updatePayload.data_inicio_producao = new Date().toISOString()
       }
     }
 

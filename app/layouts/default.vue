@@ -1,12 +1,12 @@
 ﻿<template>
-  <div class="flex flex-col h-screen overflow-hidden" :style="{ background: 'var(--color-bg, #f8fafc)' }">
-    <TrialBanner />
-    <AppHeader />
+  <div class="flex h-screen overflow-hidden" :style="{ background: 'var(--color-bg, #f8fafc)' }">
+    <AppSidebar />
 
-    <div class="flex flex-1 min-h-0">
-      <AppSidebar />
+    <div class="flex flex-col flex-1 min-h-0 min-w-0">
+      <TrialBanner />
+      <AppHeader />
 
-      <main class="flex-1 overflow-y-auto">
+      <main class="flex-1 overflow-y-auto min-w-0">
         <slot />
       </main>
     </div>

@@ -2,7 +2,7 @@
 
 import { createSupabaseClient } from '~/lib/supabase'
 
-export type StatusOS = 'aguardando_producao' | 'em_producao' | 'pronto' | 'entregue' | 'cancelado'
+export type StatusOS = 'aguardando_producao' | 'em_producao' | 'pronto' | 'faturamento' | 'entregue' | 'cancelado'
 export type FormaPagamento = 'dinheiro' | 'pix' | 'cartao' | 'boleto' | 'parcelado'
 
 export interface OrdemServico {
@@ -46,7 +46,8 @@ export function useOrdensServico() {
   const transicoesValidas: Record<StatusOS, StatusOS[]> = {
     aguardando_producao: ['em_producao', 'cancelado'],
     em_producao: ['pronto', 'cancelado'],
-    pronto: ['entregue', 'cancelado'],
+    pronto: ['faturamento', 'entregue', 'cancelado'],
+    faturamento: ['entregue', 'cancelado'],
     entregue: ['cancelado'],
     cancelado: [],
   }
@@ -56,7 +57,8 @@ export function useOrdensServico() {
    * Transições válidas:
    * - aguardando_producao → em_producao
    * - em_producao → pronto
-   * - pronto → entregue
+   * - pronto → faturamento (ou entregue, p/ compatibilidade)
+   * - faturamento → entregue
    * - qualquer status (exceto cancelado) → cancelado
    */
   function validarTransicaoOS(atual: StatusOS, novo: StatusOS): boolean {
@@ -157,27 +159,28 @@ export function useOrdensServico() {
     if (!empresaId.value) return null
     const { data: etapas } = await supabase
       .from('pipeline_etapas')
-      .select('id, is_final, posicao')
+      .select('id, is_final, posicao, papel')
       .eq('empresa_id', empresaId.value)
       .eq('pipeline_tipo', 'producao')
       .order('posicao', { ascending: true })
 
     if (!etapas || etapas.length === 0) return null
 
+    // 1) Mapeamento nominal por `papel` (fonte semântica — funciona com etapas customizadas)
+    const porPapel = etapas.find(e => (e as any).papel === status)
+    if (porPapel) return porPapel
+
+    // 2) Fallback posicional (empresas antes do backfill / etapas sem papel)
     if (status === 'entregue') {
-      // Etapa final
       return etapas.find(e => e.is_final) ?? etapas[etapas.length - 1]
     } else if (status === 'aguardando_producao') {
-      // Primeira etapa
       return etapas[0]
     } else {
-      // Intermediárias (em_producao, pronto) — pegar a segunda etapa ou intermediárias
-      // em_producao = segunda etapa, pronto = penúltima etapa (antes da final)
+      // Intermediárias (em_producao, pronto, faturamento)
       const nonFinal = etapas.filter(e => !e.is_final)
-      if (status === 'pronto' && nonFinal.length >= 3) {
+      if ((status === 'pronto' || status === 'faturamento') && nonFinal.length >= 3) {
         return nonFinal[nonFinal.length - 1] // penúltima não-final
       }
-      // Default: segunda etapa
       return nonFinal.length >= 2 ? nonFinal[1] : nonFinal[0]
     }
   }

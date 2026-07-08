@@ -44,6 +44,7 @@ export interface PipelineOrcamentos {
 export interface StatusProducao {
   osEmProducao: number
   osProntas: number
+  osFaturamento: number
   processosAtivos: number
   osAtrasadas: number
 }
@@ -138,6 +139,7 @@ export function useDashboardAdmin(): DashboardAdminState {
   const producao = ref<StatusProducao>({
     osEmProducao: 0,
     osProntas: 0,
+    osFaturamento: 0,
     processosAtivos: 0,
     osAtrasadas: 0,
   })
@@ -388,12 +390,21 @@ export function useDashboardAdmin(): DashboardAdminState {
       .eq('empresa_id', empresaId.value)
       .eq('status', 'pronto')
 
+    // OS em faturamento (emissão de nota / conferência / aguardando pagamento)
+    const { count: countFaturamento } = await supabase
+      .from('ordens_servico_adesivo')
+      .select('id', { count: 'exact', head: true })
+      .eq('empresa_id', empresaId.value)
+      .eq('status', 'faturamento')
+
     const items = osEmAndamento ?? []
     const hoje = new Date().toISOString().slice(0, 10)
 
     const osEmProducao = items.length
 
     const osProntas = countProntas ?? 0
+
+    const osFaturamento = countFaturamento ?? 0
 
     // OS atrasadas: usar data_entrega (calendário de entregas) como referência
     const osAtrasadas = items.filter((o) => {
@@ -413,6 +424,7 @@ export function useDashboardAdmin(): DashboardAdminState {
     producao.value = {
       osEmProducao,
       osProntas,
+      osFaturamento,
       processosAtivos: count ?? 0,
       osAtrasadas,
     }

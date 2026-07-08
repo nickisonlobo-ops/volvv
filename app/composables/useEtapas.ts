@@ -7,6 +7,9 @@ import { useEmpresa } from './useEmpresa'
 
 export type PipelineTipo = 'crm' | 'producao' | 'orcamentos' | 'whatsapp'
 
+/** Papel semântico da etapa de produção, mapeado ao status da OS. */
+export type PapelEtapa = 'aguardando_producao' | 'em_producao' | 'pronto' | 'faturamento' | 'entregue'
+
 export interface Etapa {
   id: number
   empresa_id: number
@@ -15,6 +18,8 @@ export interface Etapa {
   cor: string
   posicao: number
   is_final: boolean
+  papel: PapelEtapa | null
+  is_sistema: boolean
   created_at: string
   updated_at: string
 }
@@ -33,7 +38,8 @@ export interface AtualizarEtapaInput {
 
 // ─── Dados de Seed (Etapas Padrão) ───────────────────────
 
-type EtapaSeed = Omit<Etapa, 'id' | 'empresa_id' | 'created_at' | 'updated_at'>
+type EtapaSeed = Omit<Etapa, 'id' | 'empresa_id' | 'created_at' | 'updated_at' | 'papel' | 'is_sistema'>
+  & { papel?: PapelEtapa | null; is_sistema?: boolean }
 
 const SEED_CRM: EtapaSeed[] = [
   { pipeline_tipo: 'crm', nome: 'Lead', cor: '#3b82f6', posicao: 0, is_final: false },
@@ -44,10 +50,11 @@ const SEED_CRM: EtapaSeed[] = [
 ]
 
 const SEED_PRODUCAO: EtapaSeed[] = [
-  { pipeline_tipo: 'producao', nome: 'Aguardando', cor: '#f59e0b', posicao: 0, is_final: false },
-  { pipeline_tipo: 'producao', nome: 'Em Produção', cor: '#3b82f6', posicao: 1, is_final: false },
-  { pipeline_tipo: 'producao', nome: 'Pronto', cor: '#10b981', posicao: 2, is_final: false },
-  { pipeline_tipo: 'producao', nome: 'Entregue', cor: '#059669', posicao: 3, is_final: true },
+  { pipeline_tipo: 'producao', nome: 'Aguardando', cor: '#f59e0b', posicao: 0, is_final: false, papel: 'aguardando_producao', is_sistema: true },
+  { pipeline_tipo: 'producao', nome: 'Em Produção', cor: '#3b82f6', posicao: 1, is_final: false, papel: 'em_producao', is_sistema: false },
+  { pipeline_tipo: 'producao', nome: 'Pronto', cor: '#10b981', posicao: 2, is_final: false, papel: 'pronto', is_sistema: false },
+  { pipeline_tipo: 'producao', nome: 'Faturamento', cor: '#06b6d4', posicao: 3, is_final: false, papel: 'faturamento', is_sistema: true },
+  { pipeline_tipo: 'producao', nome: 'Finalizado', cor: '#059669', posicao: 4, is_final: true, papel: 'entregue', is_sistema: true },
 ]
 
 const SEED_ORCAMENTOS: EtapaSeed[] = [
@@ -137,6 +144,8 @@ export function useEtapas() {
         cor: etapa.cor,
         posicao: etapa.posicao,
         is_final: etapa.is_final,
+        papel: etapa.papel ?? null,
+        is_sistema: etapa.is_sistema ?? false,
       }))
 
       const { data: inserted, error: insertError } = await supabase
@@ -155,24 +164,40 @@ export function useEtapas() {
     return data as Etapa[]
   }
 
-  // ─── Criar etapa na última posição ────────────────────
+  // ─── Criar etapa ──────────────────────────────────────
+  // Insere no fim; porém, se houver etapas fixas "de saída" (Faturamento /
+  // Finalizado), a nova etapa entra ANTES delas para não ficar após a etapa final.
   async function criarEtapa(input: CriarEtapaInput): Promise<Etapa> {
     const empId = await getEmpresaId()
 
-    // Buscar a maior posição atual no pipeline
-    const { data: existing, error: fetchError } = await supabase
+    const { data: todas, error: fetchError } = await supabase
       .from('pipeline_etapas')
-      .select('posicao')
+      .select('id, posicao, papel, is_sistema')
       .eq('empresa_id', empId)
       .eq('pipeline_tipo', input.pipeline_tipo)
-      .order('posicao', { ascending: false })
-      .limit(1)
+      .order('posicao', { ascending: true })
 
     if (fetchError) {
       throw new Error(`Erro ao buscar posição: ${fetchError.message}`)
     }
 
-    const novaPosicao = existing && existing.length > 0 ? existing[0].posicao + 1 : 0
+    const lista = (todas ?? []) as Array<{ id: number; posicao: number; papel: string | null; is_sistema: boolean }>
+
+    // Primeira etapa fixa "de saída" (faturamento/entregue) — a nova entra antes dela
+    const saida = lista.find(e => e.is_sistema && (e.papel === 'faturamento' || e.papel === 'entregue'))
+
+    let novaPosicao: number
+    if (saida) {
+      novaPosicao = saida.posicao
+      // Abre espaço: desloca +1 as etapas na posição de saída em diante
+      await Promise.all(
+        lista
+          .filter(e => e.posicao >= novaPosicao)
+          .map(e => supabase.from('pipeline_etapas').update({ posicao: e.posicao + 1 }).eq('id', e.id))
+      )
+    } else {
+      novaPosicao = lista.length > 0 ? lista[lista.length - 1].posicao + 1 : 0
+    }
 
     const { data, error } = await supabase
       .from('pipeline_etapas')
@@ -197,6 +222,19 @@ export function useEtapas() {
   // ─── Atualizar etapa (nome, cor, is_final) ────────────
   async function atualizarEtapa(etapaId: number, input: AtualizarEtapaInput): Promise<Etapa> {
     const empId = await getEmpresaId()
+
+    // Bloquear renomear etapas de sistema (fixas)
+    if (input.nome !== undefined) {
+      const { data: etapaSistema } = await supabase
+        .from('pipeline_etapas')
+        .select('is_sistema')
+        .eq('id', etapaId)
+        .eq('empresa_id', empId)
+        .single()
+      if (etapaSistema?.is_sistema) {
+        throw new Error('Esta etapa é fixa do sistema e não pode ser renomeada.')
+      }
+    }
 
     // Se marcando como is_final, desmarcar a anterior no mesmo pipeline
     if (input.is_final === true) {
@@ -252,13 +290,18 @@ export function useEtapas() {
     // Buscar a etapa para saber o pipeline_tipo
     const { data: etapa, error: fetchErr } = await supabase
       .from('pipeline_etapas')
-      .select('pipeline_tipo')
+      .select('pipeline_tipo, is_sistema')
       .eq('id', etapaId)
       .eq('empresa_id', empId)
       .single()
 
     if (fetchErr || !etapa) {
       throw new Error('Etapa não encontrada.')
+    }
+
+    // Etapas fixas do sistema não podem ser excluídas
+    if (etapa.is_sistema) {
+      throw new Error('Esta etapa é fixa do sistema e não pode ser excluída.')
     }
 
     // Verificar mínimo de 2 etapas no pipeline

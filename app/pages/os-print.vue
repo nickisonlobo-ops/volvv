@@ -282,6 +282,7 @@ const statusLabels: Record<StatusOS, string> = {
   aguardando_producao: 'Aguardando Produção',
   em_producao: 'Em Produção',
   pronto: 'Pronto',
+  faturamento: 'Faturamento',
   entregue: 'Entregue',
   cancelado: 'Cancelado',
 }
@@ -297,6 +298,7 @@ const statusDotClass = computed(() => {
     aguardando_producao: 'bg-amber-400',
     em_producao: 'bg-blue-400',
     pronto: 'bg-green-400',
+    faturamento: 'bg-cyan-400',
     entregue: 'bg-emerald-400',
     cancelado: 'bg-red-400',
   }
@@ -318,6 +320,7 @@ const activeStepIndex = computed(() => {
     aguardando_producao: 0,
     em_producao: 2,
     pronto: 3,
+    faturamento: 4,
     entregue: 4,
     cancelado: 4,
   }
