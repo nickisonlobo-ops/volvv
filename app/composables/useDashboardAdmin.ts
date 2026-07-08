@@ -223,42 +223,45 @@ export function useDashboardAdmin(): DashboardAdminState {
     const inicioDate = inicio.split('T')[0]
     const fimDate = fim.split('T')[0]
 
-    // RECEITA: Contas a receber pagas no período
-    const { data: contasReceber } = await supabase
-      .from('contas_pagar')
-      .select('valor, data_pagamento, data_vencimento')
-      .eq('empresa_id', empresaId.value)
-      .eq('tipo', 'receber')
-      .eq('status', 'pago')
+    // 4 queries em paralelo (receita: contas a receber pagas, OS entregues, vendas
+    // finalizadas; despesas: contas a pagar) — antes eram 4 idas sequenciais ao banco.
+    const [contasReceberRes, osEntreguesRes, vendasRes, contasRes] = await Promise.all([
+      supabase.from('contas_pagar')
+        .select('valor, data_pagamento, data_vencimento')
+        .eq('empresa_id', empresaId.value)
+        .eq('tipo', 'receber')
+        .eq('status', 'pago'),
+      supabase.from('ordens_servico_adesivo')
+        .select('valor_total')
+        .eq('empresa_id', empresaId.value)
+        .eq('status', 'entregue')
+        .gte('data_entrega', inicioDate)
+        .lte('data_entrega', fimDate),
+      supabase.from('vendas')
+        .select('preco_veiculo, vendas_itens(preco_unitario, quantidade, valor_total)')
+        .eq('empresa_id', empresaId.value)
+        .eq('status', 'finalizada')
+        .gte('data_venda', inicioDate)
+        .lte('data_venda', fimDate),
+      supabase.from('contas_pagar')
+        .select('valor, data_vencimento, status')
+        .eq('empresa_id', empresaId.value)
+        .neq('tipo', 'receber')
+        .neq('status', 'cancelado')
+        .gte('data_vencimento', inicioDate)
+        .lte('data_vencimento', fimDate),
+    ])
 
-    const receitaContas = (contasReceber ?? []).filter(c => {
+    const receitaContas = (contasReceberRes.data ?? []).filter(c => {
       const dateStr = c.data_pagamento ?? c.data_vencimento
       if (!dateStr) return false
       const d = dateStr.split('T')[0]
       return d >= inicioDate && d <= fimDate
     }).reduce((sum, c) => sum + (c.valor ?? 0), 0)
 
-    // RECEITA: OS entregues no período
-    const { data: osEntregues } = await supabase
-      .from('ordens_servico_adesivo')
-      .select('valor_total')
-      .eq('empresa_id', empresaId.value)
-      .eq('status', 'entregue')
-      .gte('data_entrega', inicioDate)
-      .lte('data_entrega', fimDate)
+    const receitaOS = (osEntreguesRes.data ?? []).reduce((sum, o) => sum + (o.valor_total ?? 0), 0)
 
-    const receitaOS = (osEntregues ?? []).reduce((sum, o) => sum + (o.valor_total ?? 0), 0)
-
-    // RECEITA: Vendas finalizadas no período
-    const { data: vendasFinalizadas } = await supabase
-      .from('vendas')
-      .select('preco_veiculo, vendas_itens(preco_unitario, quantidade, valor_total)')
-      .eq('empresa_id', empresaId.value)
-      .eq('status', 'finalizada')
-      .gte('data_venda', inicioDate)
-      .lte('data_venda', fimDate)
-
-    const receitaVendas = (vendasFinalizadas ?? []).reduce((sum, v: any) => {
+    const receitaVendas = (vendasRes.data ?? []).reduce((sum, v: any) => {
       const itemsTotal = (v.vendas_itens ?? []).reduce((s: number, it: any) => s + (it.valor_total ?? it.preco_unitario * it.quantidade), 0)
       return sum + (v.preco_veiculo ?? 0) + itemsTotal
     }, 0)
@@ -270,16 +273,8 @@ export function useDashboardAdmin(): DashboardAdminState {
     const faturamento = receitaContas + receitaOS + receitaVendas
 
     // DESPESAS: contas (tipo ≠ receber, status ≠ cancelado) no período
-    const { data: contas } = await supabase
-      .from('contas_pagar')
-      .select('valor, data_vencimento, status')
-      .eq('empresa_id', empresaId.value)
-      .neq('tipo', 'receber')
-      .neq('status', 'cancelado')
-      .gte('data_vencimento', inicioDate)
-      .lte('data_vencimento', fimDate)
-
-    const despesas = (contas ?? []).reduce((sum, c) => sum + (c.valor ?? 0), 0)
+    const contas = contasRes.data ?? []
+    const despesas = contas.reduce((sum, c) => sum + (c.valor ?? 0), 0)
 
     // Contas vencidas (despesas): data_vencimento < hoje e status ≠ pago
     const hoje = new Date().toISOString().split('T')[0]
@@ -302,32 +297,30 @@ export function useDashboardAdmin(): DashboardAdminState {
     const inicioDate = periodoRange.value.inicio.split('T')[0]
     const fimDate = periodoRange.value.fim.split('T')[0]
 
-    // A RECEBER: contas tipo='receber', status ≠ pago, ≠ cancelado, vencimento no período
-    const { data: aReceberData } = await supabase
-      .from('contas_pagar')
-      .select('valor')
-      .eq('empresa_id', empresaId.value)
-      .eq('tipo', 'receber')
-      .neq('status', 'pago')
-      .neq('status', 'cancelado')
-      .gte('data_vencimento', inicioDate)
-      .lte('data_vencimento', fimDate)
+    // A receber e a pagar em paralelo (contas pendentes com vencimento no período)
+    const [aReceberRes, aPagarRes] = await Promise.all([
+      supabase.from('contas_pagar')
+        .select('valor')
+        .eq('empresa_id', empresaId.value)
+        .eq('tipo', 'receber')
+        .neq('status', 'pago')
+        .neq('status', 'cancelado')
+        .gte('data_vencimento', inicioDate)
+        .lte('data_vencimento', fimDate),
+      supabase.from('contas_pagar')
+        .select('valor')
+        .eq('empresa_id', empresaId.value)
+        .neq('tipo', 'receber')
+        .neq('status', 'pago')
+        .neq('status', 'cancelado')
+        .gte('data_vencimento', inicioDate)
+        .lte('data_vencimento', fimDate),
+    ])
 
-    const itensReceber = aReceberData ?? []
+    const itensReceber = aReceberRes.data ?? []
     const aReceber = itensReceber.reduce((sum, c) => sum + (c.valor ?? 0), 0)
 
-    // A PAGAR: contas tipo ≠ receber, status ≠ pago, ≠ cancelado, vencimento no período
-    const { data: aPagarData } = await supabase
-      .from('contas_pagar')
-      .select('valor')
-      .eq('empresa_id', empresaId.value)
-      .neq('tipo', 'receber')
-      .neq('status', 'pago')
-      .neq('status', 'cancelado')
-      .gte('data_vencimento', inicioDate)
-      .lte('data_vencimento', fimDate)
-
-    const itensPagar = aPagarData ?? []
+    const itensPagar = aPagarRes.data ?? []
     const aPagar = itensPagar.reduce((sum, c) => sum + (c.valor ?? 0), 0)
 
     previsao.value = {
@@ -367,27 +360,29 @@ export function useDashboardAdmin(): DashboardAdminState {
   async function fetchProducao(): Promise<void> {
     // OS em produção (NÃO finalizadas) — usar data_entrega para calcular atraso
     // pois é o campo que o calendário de entregas gerencia
-    const { data: osEmAndamento } = await supabase
-      .from('ordens_servico_adesivo')
-      .select('id, status, data_entrega')
-      .eq('empresa_id', empresaId.value)
-      .in('status', ['aguardando_producao', 'em_producao'])
+    // 4 queries em paralelo (OS em andamento, prontas, faturamento, processos ativos)
+    const [osEmAndamentoRes, prontasRes, faturamentoRes, processosRes] = await Promise.all([
+      supabase.from('ordens_servico_adesivo')
+        .select('id, status, data_entrega')
+        .eq('empresa_id', empresaId.value)
+        .in('status', ['aguardando_producao', 'em_producao']),
+      supabase.from('ordens_servico_adesivo')
+        .select('id', { count: 'exact', head: true })
+        .eq('empresa_id', empresaId.value)
+        .eq('status', 'pronto'),
+      supabase.from('ordens_servico_adesivo')
+        .select('id', { count: 'exact', head: true })
+        .eq('empresa_id', empresaId.value)
+        .eq('status', 'faturamento'),
+      supabase.from('processos_instancia')
+        .select('id', { count: 'exact', head: true })
+        .eq('empresa_id', empresaId.value)
+        .is('data_conclusao', null),
+    ])
 
-    // OS prontas (separado, apenas contagem)
-    const { count: countProntas } = await supabase
-      .from('ordens_servico_adesivo')
-      .select('id', { count: 'exact', head: true })
-      .eq('empresa_id', empresaId.value)
-      .eq('status', 'pronto')
-
-    // OS em faturamento (emissão de nota / conferência / aguardando pagamento)
-    const { count: countFaturamento } = await supabase
-      .from('ordens_servico_adesivo')
-      .select('id', { count: 'exact', head: true })
-      .eq('empresa_id', empresaId.value)
-      .eq('status', 'faturamento')
-
-    const items = osEmAndamento ?? []
+    const countProntas = prontasRes.count
+    const countFaturamento = faturamentoRes.count
+    const items = osEmAndamentoRes.data ?? []
     const hoje = new Date().toISOString().slice(0, 10)
 
     const osEmProducao = items.length
@@ -404,18 +399,11 @@ export function useDashboardAdmin(): DashboardAdminState {
       return dataStr < hoje
     }).length
 
-    // Processos ativos: data_conclusao is null
-    const { count } = await supabase
-      .from('processos_instancia')
-      .select('id', { count: 'exact', head: true })
-      .eq('empresa_id', empresaId.value)
-      .is('data_conclusao', null)
-
     producao.value = {
       osEmProducao,
       osProntas,
       osFaturamento,
-      processosAtivos: count ?? 0,
+      processosAtivos: processosRes.count ?? 0,
       osAtrasadas,
     }
   }
@@ -424,35 +412,34 @@ export function useDashboardAdmin(): DashboardAdminState {
     const inicio = periodoRange.value.inicio
     const fim = periodoRange.value.fim
 
-    // Orçamentos criados no período (com join em clientes)
-    const { data: orcCriados } = await supabase
-      .from('orcamentos_adesivo')
-      .select('id, status, created_at, cliente_id, clientes(nome)')
-      .eq('empresa_id', empresaId.value)
-      .gte('created_at', inicio)
-      .lte('created_at', fim)
-      .order('created_at', { ascending: false })
-      .limit(10)
+    // Orçamentos / OS / contas criados no período — em paralelo (com joins em clientes)
+    const [orcRes, osRes, contasCriadasRes] = await Promise.all([
+      supabase.from('orcamentos_adesivo')
+        .select('id, status, created_at, cliente_id, clientes(nome)')
+        .eq('empresa_id', empresaId.value)
+        .gte('created_at', inicio)
+        .lte('created_at', fim)
+        .order('created_at', { ascending: false })
+        .limit(10),
+      supabase.from('ordens_servico_adesivo')
+        .select('id, created_at, cliente_id, clientes(nome)')
+        .eq('empresa_id', empresaId.value)
+        .gte('created_at', inicio)
+        .lte('created_at', fim)
+        .order('created_at', { ascending: false })
+        .limit(10),
+      supabase.from('contas_pagar')
+        .select('id, created_at')
+        .eq('empresa_id', empresaId.value)
+        .gte('created_at', inicio)
+        .lte('created_at', fim)
+        .order('created_at', { ascending: false })
+        .limit(10),
+    ])
 
-    // OS criadas no período (com join em clientes)
-    const { data: osCriadas } = await supabase
-      .from('ordens_servico_adesivo')
-      .select('id, created_at, cliente_id, clientes(nome)')
-      .eq('empresa_id', empresaId.value)
-      .gte('created_at', inicio)
-      .lte('created_at', fim)
-      .order('created_at', { ascending: false })
-      .limit(10)
-
-    // Contas criadas no período
-    const { data: contasCriadas } = await supabase
-      .from('contas_pagar')
-      .select('id, created_at')
-      .eq('empresa_id', empresaId.value)
-      .gte('created_at', inicio)
-      .lte('created_at', fim)
-      .order('created_at', { ascending: false })
-      .limit(10)
+    const orcCriados = orcRes.data
+    const osCriadas = osRes.data
+    const contasCriadas = contasCriadasRes.data
 
     const events: RawEvent[] = []
 
@@ -656,48 +643,49 @@ export function useDashboardAdmin(): DashboardAdminState {
     const prevFim = new Date(inicioDate.getTime() - 1).toISOString()
     const prevInicio = new Date(inicioDate.getTime() - duracao).toISOString()
 
-    // Receita anterior: OS entregues no período anterior
-    const { data: osEntreguesAnterior } = await supabase
-      .from('ordens_servico_adesivo')
-      .select('valor_total')
-      .eq('empresa_id', empresaId.value)
-      .eq('status', 'entregue')
-      .gte('data_entrega', prevInicio)
-      .lte('data_entrega', prevFim)
-
-    const receitaOSAnterior = (osEntreguesAnterior ?? []).reduce(
-      (sum, o) => sum + (o.valor_total ?? 0), 0
-    )
-
-    // Receita anterior: Contas a receber pagas no período anterior.
-    // Mesmo critério do período atual (fetchFinanceiro): filtra por
-    // data_pagamento ?? data_vencimento (em JS), não só por data_vencimento.
     const prevInicioDate = prevInicio.split('T')[0]
     const prevFimDate = prevFim.split('T')[0]
-    const { data: contasReceberAnterior } = await supabase
-      .from('contas_pagar')
-      .select('valor, data_pagamento, data_vencimento')
-      .eq('empresa_id', empresaId.value)
-      .eq('tipo', 'receber')
-      .eq('status', 'pago')
 
-    const receitaContasAnterior = (contasReceberAnterior ?? []).filter(c => {
+    // 4 queries do período anterior em paralelo (OS entregues, contas a receber pagas,
+    // vendas finalizadas, despesas) — antes eram 4 idas sequenciais ao banco.
+    const [osAntRes, contasRecAntRes, vendasAntRes, contasAntRes] = await Promise.all([
+      supabase.from('ordens_servico_adesivo')
+        .select('valor_total')
+        .eq('empresa_id', empresaId.value)
+        .eq('status', 'entregue')
+        .gte('data_entrega', prevInicio)
+        .lte('data_entrega', prevFim),
+      supabase.from('contas_pagar')
+        .select('valor, data_pagamento, data_vencimento')
+        .eq('empresa_id', empresaId.value)
+        .eq('tipo', 'receber')
+        .eq('status', 'pago'),
+      supabase.from('vendas')
+        .select('preco_veiculo, vendas_itens(preco_unitario, quantidade, valor_total)')
+        .eq('empresa_id', empresaId.value)
+        .eq('status', 'finalizada')
+        .gte('data_venda', prevInicio)
+        .lte('data_venda', prevFim),
+      supabase.from('contas_pagar')
+        .select('valor')
+        .eq('empresa_id', empresaId.value)
+        .neq('tipo', 'receber')
+        .neq('status', 'cancelado')
+        .gte('data_vencimento', prevInicio)
+        .lte('data_vencimento', prevFim),
+    ])
+
+    const receitaOSAnterior = (osAntRes.data ?? []).reduce((sum, o) => sum + (o.valor_total ?? 0), 0)
+
+    // Contas a receber pagas — mesmo critério do atual (data_pagamento ?? data_vencimento)
+    const receitaContasAnterior = (contasRecAntRes.data ?? []).filter(c => {
       const dateStr = c.data_pagamento ?? c.data_vencimento
       if (!dateStr) return false
       const d = dateStr.split('T')[0]
       return d >= prevInicioDate && d <= prevFimDate
     }).reduce((sum, c) => sum + (c.valor ?? 0), 0)
 
-    // Receita anterior: Vendas finalizadas no período anterior (simétrico ao atual)
-    const { data: vendasAnterior } = await supabase
-      .from('vendas')
-      .select('preco_veiculo, vendas_itens(preco_unitario, quantidade, valor_total)')
-      .eq('empresa_id', empresaId.value)
-      .eq('status', 'finalizada')
-      .gte('data_venda', prevInicio)
-      .lte('data_venda', prevFim)
-
-    const receitaVendasAnterior = (vendasAnterior ?? []).reduce((sum, v: any) => {
+    const receitaVendasAnterior = (vendasAntRes.data ?? []).reduce((sum, v: any) => {
       const itemsTotal = (v.vendas_itens ?? []).reduce((s: number, it: any) => s + (it.valor_total ?? it.preco_unitario * it.quantidade), 0)
       return sum + (v.preco_veiculo ?? 0) + itemsTotal
     }, 0)
@@ -706,19 +694,7 @@ export function useDashboardAdmin(): DashboardAdminState {
     // Agendamento entra via receitaContasAnterior (já lançado em contas_pagar), sem dobra.
     const faturamentoAnterior = receitaOSAnterior + receitaContasAnterior + receitaVendasAnterior
 
-    // Despesas anteriores
-    const { data: contasAnterior } = await supabase
-      .from('contas_pagar')
-      .select('valor')
-      .eq('empresa_id', empresaId.value)
-      .neq('tipo', 'receber')
-      .neq('status', 'cancelado')
-      .gte('data_vencimento', prevInicio)
-      .lte('data_vencimento', prevFim)
-
-    const despesasAnterior = (contasAnterior ?? []).reduce(
-      (sum, c) => sum + (c.valor ?? 0), 0
-    )
+    const despesasAnterior = (contasAntRes.data ?? []).reduce((sum, c) => sum + (c.valor ?? 0), 0)
 
     // Calculate percentage variations
     const variacaoFaturamento = faturamentoAnterior > 0
@@ -788,23 +764,23 @@ export function useDashboardAdmin(): DashboardAdminState {
   }
 
   async function fetchAlertas(): Promise<void> {
-    // Orçamentos enviados (para calcular os que estão expirando)
-    const { data: orcEnviados } = await supabase
-      .from('orcamentos_adesivo')
-      .select('created_at, validade_dias')
-      .eq('empresa_id', empresaId.value)
-      .eq('status', 'enviado')
-
-    // Contas vencidas: data_vencimento < hoje, tipo='pagar', status ≠ pago, ≠ cancelado
+    // Orçamentos enviados (expirando) + contas vencidas — em paralelo
     const hoje = new Date().toISOString()
-    const { data: contasVencidasData } = await supabase
-      .from('contas_pagar')
-      .select('valor')
-      .eq('empresa_id', empresaId.value)
-      .neq('tipo', 'receber')
-      .lt('data_vencimento', hoje)
-      .neq('status', 'pago')
-      .neq('status', 'cancelado')
+    const [orcEnviadosRes, contasVencidasRes] = await Promise.all([
+      supabase.from('orcamentos_adesivo')
+        .select('created_at, validade_dias')
+        .eq('empresa_id', empresaId.value)
+        .eq('status', 'enviado'),
+      supabase.from('contas_pagar')
+        .select('valor')
+        .eq('empresa_id', empresaId.value)
+        .neq('tipo', 'receber')
+        .lt('data_vencimento', hoje)
+        .neq('status', 'pago')
+        .neq('status', 'cancelado'),
+    ])
+    const orcEnviados = orcEnviadosRes.data
+    const contasVencidasData = contasVencidasRes.data
 
     // Calcular orçamentos expirando
     const hojeStart = new Date()
