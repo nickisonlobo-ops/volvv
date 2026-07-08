@@ -669,19 +669,24 @@ export function useDashboardAdmin(): DashboardAdminState {
       (sum, o) => sum + (o.valor_total ?? 0), 0
     )
 
-    // Receita anterior: Contas a receber pagas no período anterior
+    // Receita anterior: Contas a receber pagas no período anterior.
+    // Mesmo critério do período atual (fetchFinanceiro): filtra por
+    // data_pagamento ?? data_vencimento (em JS), não só por data_vencimento.
+    const prevInicioDate = prevInicio.split('T')[0]
+    const prevFimDate = prevFim.split('T')[0]
     const { data: contasReceberAnterior } = await supabase
       .from('contas_pagar')
-      .select('valor')
+      .select('valor, data_pagamento, data_vencimento')
       .eq('empresa_id', empresaId.value)
       .eq('tipo', 'receber')
       .eq('status', 'pago')
-      .gte('data_vencimento', prevInicio)
-      .lte('data_vencimento', prevFim)
 
-    const receitaContasAnterior = (contasReceberAnterior ?? []).reduce(
-      (sum, c) => sum + (c.valor ?? 0), 0
-    )
+    const receitaContasAnterior = (contasReceberAnterior ?? []).filter(c => {
+      const dateStr = c.data_pagamento ?? c.data_vencimento
+      if (!dateStr) return false
+      const d = dateStr.split('T')[0]
+      return d >= prevInicioDate && d <= prevFimDate
+    }).reduce((sum, c) => sum + (c.valor ?? 0), 0)
 
     // Receita anterior: Vendas finalizadas no período anterior (simétrico ao atual)
     const { data: vendasAnterior } = await supabase
