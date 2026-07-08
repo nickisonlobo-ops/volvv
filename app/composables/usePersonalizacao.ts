@@ -582,6 +582,47 @@ export function usePersonalizacao() {
       .inline-flex.rounded-xl.shadow-lg:hover {
         background-color: ${darken(cfg.cor_botao || p, 0.08)} !important;
       }
+
+      /* ═══ Ilha de tema claro (.page-light-panel) — reverte o override dark ═══
+         Só necessário quando o tema global é escuro. Fica por último para vencer
+         empates de especificidade com o bloco dark acima. */
+      ${isColorDark(cfg.cor_card) ? `
+      .page-light-panel .bg-white,
+      .page-light-panel .bg-white.rounded-3xl,
+      .page-light-panel .bg-white.rounded-2xl,
+      .page-light-panel .bg-white.rounded-xl,
+      .page-light-panel .bg-white.shadow-sm,
+      .page-light-panel .bg-white.shadow-md,
+      .page-light-panel .bg-white.border {
+        background-color: #ffffff !important;
+        color: #1f2937 !important;
+        border-color: rgba(0,0,0,0.08) !important;
+      }
+      .page-light-panel .bg-gray-50, .page-light-panel .bg-gray-50\\/80, .page-light-panel .bg-gray-50\\/70, .page-light-panel .bg-gray-50\\/50, .page-light-panel .bg-gray-100 {
+        background-color: #f3f4f6 !important; color: #1f2937 !important;
+      }
+      .page-light-panel .text-gray-950, .page-light-panel .text-gray-900, .page-light-panel .text-gray-800 { color: #1f2937 !important; }
+      .page-light-panel .text-gray-700, .page-light-panel .text-gray-600 { color: #374151 !important; }
+      .page-light-panel .text-gray-500 { color: #6b7280 !important; }
+      .page-light-panel .text-gray-400 { color: #9ca3af !important; }
+      .page-light-panel .text-gray-300 { color: #d1d5db !important; }
+      /* dentro de cards brancos (bate a especificidade 0,3,0 do override dark) */
+      .page-light-panel .bg-white .text-gray-950, .page-light-panel .bg-white .text-gray-900, .page-light-panel .bg-white .text-gray-800 { color: #1f2937 !important; }
+      .page-light-panel .bg-white .text-gray-700, .page-light-panel .bg-white .text-gray-600 { color: #374151 !important; }
+      .page-light-panel .bg-white .text-gray-500 { color: #6b7280 !important; }
+      .page-light-panel .bg-white .text-gray-400 { color: #9ca3af !important; }
+      .page-light-panel .border-gray-50, .page-light-panel .border-gray-100, .page-light-panel .border-gray-200 { border-color: #e5e7eb !important; }
+      .page-light-panel .divide-gray-50 > * + *, .page-light-panel .divide-gray-100 > * + * { border-color: #e5e7eb !important; }
+      .page-light-panel input, .page-light-panel select, .page-light-panel textarea {
+        background-color: #ffffff !important; color: #1f2937 !important; border-color: #e5e7eb !important;
+      }
+      .page-light-panel ::placeholder { color: #9ca3af !important; }
+      .page-light-panel table thead, .page-light-panel table thead tr { background-color: #f9fafb !important; }
+      .page-light-panel table thead th { color: #6b7280 !important; }
+      .page-light-panel .shadow-sm, .page-light-panel .shadow-md { box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important; }
+      .page-light-panel tr:hover, .page-light-panel .hover\\:bg-gray-50:hover { background-color: #f9fafb !important; }
+      .page-light-panel .bg-gray-100.text-gray-600 { background-color: #f3f4f6 !important; color: #4b5563 !important; }
+      ` : ''}
     `
   }
 

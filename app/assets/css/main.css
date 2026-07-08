@@ -49,6 +49,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ═══ Ilha de tema claro (painel de conteúdo padronizado - PageShell) ═══
+   Redefine as variáveis de card para valores claros dentro do painel, de
+   modo que classes baseadas em var (bg-theme-card, text-theme-card-text,
+   border-primary-10) fiquem claras mesmo com o tema global escuro.
+   Os overrides de classes hardcoded (bg-white, text-gray-*) são revertidos
+   dinamicamente em usePersonalizacao.injectGlobalThemeCSS. */
+.page-light-panel {
+  --color-card:        #ffffff;
+  --color-card-texto:  #1f2937;
+  --color-card-border: rgba(0,0,0,0.08);
+}
+
 /* ═══ Font-family fallback (Inter → ui-sans-serif → system-ui → sans-serif) ═══ */
 html, body {
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;

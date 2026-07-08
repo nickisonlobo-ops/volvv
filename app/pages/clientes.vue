@@ -1,86 +1,61 @@
 ﻿<template>
-  <div class="min-h-full bg-transparent p-3 sm:p-8">
+  <PageShell
+    title="Clientes"
+    eyebrow="CRM"
+    eyebrow-muted="UpStudio"
+    :subtitle="loading ? 'Carregando...' : `${clientesFiltrados.length} de ${clientes.length} cliente(s) exibido(s)`"
+  >
 
     <!-- �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� CABE�?ALHO �.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.��.� -->
-    <div class="relative rounded-3xl overflow-hidden mb-8 shadow-xl">
-      <div class="absolute inset-0" :style="{ background: 'var(--color-primary-bg, linear-gradient(135deg, #ec4899, #f43f5e))' }" />
-      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.1),transparent_60%)]" />
-      <div class="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/[0.03] pointer-events-none" />
-      <div class="absolute -bottom-20 left-1/4 w-96 h-96 rounded-full bg-white/[0.02] pointer-events-none" />
-      <PageLogo />
+    <template #icon>
+      <svg class="w-5 sm:w-7 h-5 sm:h-7" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.5 0a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm-1.5 6.75a3.375 3.375 0 00-6.75 0h6.75z"/></svg>
+    </template>
 
-      <div class="relative px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-7">
-        <div class="flex flex-wrap items-start justify-between gap-3 sm:gap-6">
-          <div class="flex items-center gap-3 sm:gap-5">
-            <div class="flex items-center justify-center w-10 sm:w-14 h-10 sm:h-14 rounded-2xl bg-white/[0.12] backdrop-blur-sm border border-white/20 shadow-lg">
-              <svg class="w-5 sm:w-7 h-5 sm:h-7 text-white" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.5 0a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm-1.5 6.75a3.375 3.375 0 00-6.75 0h6.75z"/></svg>
-            </div>
-            <div>
-              <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-semibold text-white/80 uppercase tracking-widest">CRM</span>
-                <span class="w-1 h-1 rounded-full bg-white/40" />
-                <span class="text-xs text-white/70 hidden sm:inline">UpStudio</span>
-              </div>
-              <h1 class="text-xl sm:text-3xl font-bold text-white tracking-tight leading-none">Clientes</h1>
-              <p class="text-sm text-white/80 mt-1.5">
-                {{ loading ? 'Carregando...' : `${clientesFiltrados.length} de ${clientes.length} cliente(s) exibido(s)` }}
-              </p>
-            </div>
-          </div>
+    <template #actions>
+      <button
+        type="button"
+        class="inline-flex items-center gap-2 text-sm font-semibold px-3 sm:px-5 py-2.5 rounded-xl transition-all duration-200"
+        :class="filtroAberto
+          ? 'bg-white text-primary shadow-lg scale-[1.02]'
+          : 'bg-white/10 text-white hover:bg-white/20 border border-white/15 backdrop-blur-sm'"
+        @click="filtroAberto = !filtroAberto"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
+        <span class="hidden sm:inline">Filtros</span>
+        <span v-if="filtrosAtivos > 0" class="inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-white text-primary text-xs font-black">{{ filtrosAtivos }}</span>
+      </button>
+      <button
+        v-if="isAdminOrGerente"
+        type="button"
+        class="inline-flex items-center gap-2 text-sm font-bold px-3 sm:px-5 py-2.5 rounded-xl bg-white text-primary hover:bg-primary-5 shadow-lg transition-all duration-200 hover:scale-[1.02]"
+        @click="abrirAdicionar"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        <span class="hidden sm:inline">Adicionar Cliente</span>
+      </button>
+    </template>
 
-          <div class="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              class="inline-flex items-center gap-2 text-sm font-semibold px-3 sm:px-5 py-2.5 rounded-xl transition-all duration-200"
-              :class="filtroAberto
-                ? 'bg-white text-primary shadow-lg scale-[1.02]'
-                : 'bg-white/10 text-white hover:bg-white/20 border border-white/15 backdrop-blur-sm'"
-              @click="filtroAberto = !filtroAberto"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
-              <span class="hidden sm:inline">Filtros</span>
-              <span v-if="filtrosAtivos > 0" class="inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-white text-primary text-xs font-black">{{ filtrosAtivos }}</span>
-            </button>
-            <button
-              v-if="isAdminOrGerente"
-              type="button"
-              class="inline-flex items-center gap-2 text-sm font-bold px-3 sm:px-5 py-2.5 rounded-xl bg-white text-primary hover:bg-primary-5 shadow-lg transition-all duration-200 hover:scale-[1.02]"
-              @click="abrirAdicionar"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-              <span class="hidden sm:inline">Adicionar Cliente</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="h-px bg-white/10 my-4 sm:my-6" />
-
-        <!-- Stats -->
-        <div v-if="!loading" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div class="flex flex-col gap-1 bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
-            <span class="text-xs font-semibold text-white/70 uppercase tracking-widest">Total</span>
-            <span class="text-xl font-black text-white leading-tight">{{ clientes.length }}</span>
-            <span class="text-xs text-white/50">cliente(s)</span>
-          </div>
-          <div class="flex flex-col gap-1 bg-white/10 rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/15 transition-colors">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-white" />
-              <span class="text-xs font-semibold text-white/70 uppercase tracking-widest">Ativos</span>
-            </div>
-            <span class="text-xl font-black text-white leading-tight">{{ clientesAtivos }}</span>
-            <span class="text-xs text-white/50">habilitados</span>
-          </div>
-          <div class="flex flex-col gap-1 bg-white/[0.07] rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/12 transition-colors">
-            <span class="text-xs font-semibold text-white/70 uppercase tracking-widest">Com E-mail</span>
-            <span class="text-xl font-black text-white leading-tight">{{ comEmail }}</span>
-            <span class="text-xs text-white/50">de {{ clientes.length }} cadastrados</span>
-          </div>
-          <div class="flex flex-col gap-1 bg-white/[0.07] rounded-2xl px-5 py-4 border border-white/10 hover:bg-white/12 transition-colors">
-            <span class="text-xs font-semibold text-white/70 uppercase tracking-widest">Cidades</span>
-            <span class="text-xl font-black text-white leading-tight">{{ cidadesUnicas.length }}</span>
-            <span class="text-xs text-white/50">distintas</span>
-          </div>
-        </div>
+    <!-- Stats (cards claros no painel) -->
+    <div v-if="!loading" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+      <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 16px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+        <div style="font-size:11px;font-weight:700;color:#6b7079;text-transform:uppercase;letter-spacing:.5px">Total</div>
+        <div style="font-size:24px;font-weight:800;color:#0f1216;letter-spacing:-.5px;margin:6px 0 2px">{{ clientes.length }}</div>
+        <div style="font-size:11.5px;color:#8b9099">cliente(s)</div>
+      </div>
+      <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 16px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:#16a34a"></span><div style="font-size:11px;font-weight:700;color:#6b7079;text-transform:uppercase;letter-spacing:.5px">Ativos</div></div>
+        <div style="font-size:24px;font-weight:800;color:#0f1216;letter-spacing:-.5px;margin:6px 0 2px">{{ clientesAtivos }}</div>
+        <div style="font-size:11.5px;color:#8b9099">habilitados</div>
+      </div>
+      <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 16px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+        <div style="font-size:11px;font-weight:700;color:#6b7079;text-transform:uppercase;letter-spacing:.5px">Com E-mail</div>
+        <div style="font-size:24px;font-weight:800;color:#0f1216;letter-spacing:-.5px;margin:6px 0 2px">{{ comEmail }}</div>
+        <div style="font-size:11.5px;color:#8b9099">de {{ clientes.length }} cadastrados</div>
+      </div>
+      <div style="background:#fff;border:1px solid #ecece9;border-radius:16px;padding:15px 16px;box-shadow:0 1px 2px rgba(0,0,0,.02)">
+        <div style="font-size:11px;font-weight:700;color:#6b7079;text-transform:uppercase;letter-spacing:.5px">Cidades</div>
+        <div style="font-size:24px;font-weight:800;color:#0f1216;letter-spacing:-.5px;margin:6px 0 2px">{{ cidadesUnicas.length }}</div>
+        <div style="font-size:11.5px;color:#8b9099">distintas</div>
       </div>
     </div>
 
@@ -836,7 +811,7 @@
         </div>
       </Transition>
     </Teleport>
-  </div>
+  </PageShell>
 </template>
 
 <script setup lang="ts">
